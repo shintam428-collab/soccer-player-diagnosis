@@ -1,3 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>あなたが目指すべきサッカー選手診断</title>
+</head>
+<body>
+
+<h1>あなたが目指すべきサッカー選手診断</h1>
+
+<p>Q1 試合で一番楽しい瞬間は？</p>
+
+<input type="radio" name="q1"> パス<br>
+<input type="radio" name="q1"> ドリブル<br>
+<input type="radio" name="q1"> ゴール<br>
+<input type="radio" name="q1"> ボール奪取<br><br>
+
+<button onclick="result()">診断する</button>
+
+<p id="answer"></p>
+
+<script>
 function result() {
 
     let choice = document.querySelector('input[name="q1"]:checked');
