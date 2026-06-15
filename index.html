@@ -5,10 +5,26 @@
     <title>あなたが目指すべきサッカー選手診断</title>
 </head>
 <body>
-    <h1>あなたが目指すべきサッカー選手診断</h1>
 
-    <p>サッカーのプレースタイルから、目標にすると良い選手を診断します。</p>
+<h1>あなたが目指すべきサッカー選手診断</h1>
 
-    <button>診断スタート</button>
+<p>Q1 試合で一番楽しい瞬間は？</p>
+
+<input type="radio" name="q1"> パス<br>
+<input type="radio" name="q1"> ドリブル<br>
+<input type="radio" name="q1"> ゴール<br>
+<input type="radio" name="q1"> ボール奪取<br><br>
+
+<button onclick="result()">診断する</button>
+
+<p id="answer"></p>
+
+<script>
+function result() {
+    document.getElementById("answer").innerHTML =
+    "あなたが目指すべき選手はデブライネです！";
+}
+</script>
+
 </body>
 </html>
