@@ -21,30 +21,10 @@
 
 <script>
 function result() {
-
-    let choice = document.querySelector('input[name="q1"]:checked');
-
-    if (!choice) {
-        document.getElementById("answer").innerHTML =
-        "選択肢を選んでください";
-        return;
-    }
-
-    let player = "";
-
-    if (choice.value === "pass") {
-        player = "デブライネ";
-    }
-    else if (choice.value === "dribble") {
-        player = "ヴィニシウス";
-    }
-    else if (choice.value === "shoot") {
-        player = "ハーランド";
-    }
-    else {
-        player = "カンテ";
-    }
-
     document.getElementById("answer").innerHTML =
-    "あなたが目指すべき選手は" + player + "です！";
+    "あなたが目指すべき選手はデブライネです！";
 }
+</script>
+
+</body>
+</html>
