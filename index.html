@@ -1,21 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
 <title>あなたが目指すべき選手診断</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    text-align:center;
+    padding:30px;
+}
+
+button{
+    display:block;
+    width:300px;
+    margin:10px auto;
+    padding:15px;
+    font-size:16px;
+}
+
+#question{
+    font-size:24px;
+    margin:30px;
+}
+
+#result{
+    font-size:20px;
+    margin-top:20px;
+}
+</style>
+
 </head>
 <body>
 
-<h1>あなたが目指すべき選手診断</h1>
+<h1>⚽ あなたが目指すべき選手診断</h1>
 
 <p id="question">Q1 試合で一番楽しい瞬間は？</p>
 
-<button onclick="answer('A')">A</button>
-<button onclick="answer('B')">B</button>
-<button onclick="answer('C')">C</button>
-<button onclick="answer('D')">D</button>
+<button id="btnA" onclick="answer('A')">味方への決定的なパス</button>
+<button id="btnB" onclick="answer('B')">相手を抜く瞬間</button>
+<button id="btnC" onclick="answer('C')">ゴールを決める瞬間</button>
+<button id="btnD" onclick="answer('D')">ボールを奪う瞬間</button>
 
-<h2 id="result"></h2>
+<div id="result"></div>
+
+<canvas id="radarChart" width="400" height="400"></canvas>
 
 <script>
 
@@ -30,6 +61,30 @@ const questions = [
 "Q8 チームメイトから言われたい言葉は？",
 "Q9 理想の選手像は？",
 "Q10 能力を1つ伸ばせるなら？"
+];
+
+const choices = [
+
+["味方への決定的なパス","相手を抜く瞬間","ゴールを決める瞬間","ボールを奪う瞬間"],
+
+["司令塔","ドリブラー","ストライカー","ディフェンダー"],
+
+["パス","ドリブル","シュート","守備"],
+
+["連携","個人技","得点","守備"],
+
+["味方へパス","ドリブル突破","シュート","安全に守る"],
+
+["パスセンス","突破力","得点力","守備力"],
+
+["パス練習","ドリブル練習","シュート練習","守備練習"],
+
+["視野が広い","仕掛けが上手い","決定力が高い","守備が上手い"],
+
+["司令塔","ドリブラー","ストライカー","守備の要"],
+
+["パス","ドリブル","シュート","守備"]
+
 ];
 
 let step = 0;
@@ -50,8 +105,12 @@ function answer(choice){
 
     if(step < questions.length){
 
-        document.getElementById("question").innerText =
-        questions[step];
+        document.getElementById("question").innerText = questions[step];
+
+        document.getElementById("btnA").innerText = choices[step][0];
+        document.getElementById("btnB").innerText = choices[step][1];
+        document.getElementById("btnC").innerText = choices[step][2];
+        document.getElementById("btnD").innerText = choices[step][3];
 
     }else{
 
@@ -72,16 +131,35 @@ function answer(choice){
             player = "ファンダイク";
         }
 
-        document.getElementById("question").innerText =
-        "診断終了";
+        document.getElementById("question").innerText = "診断終了";
 
         document.getElementById("result").innerHTML =
-        "<br>パス：" + pass +
-        "<br>ドリブル：" + dribble +
-        "<br>シュート：" + shoot +
-        "<br>守備：" + defense +
-        "<br><br>あなたが目指すべき選手は【" +
-        player + "】です！";
+        "<h2>診断結果</h2>" +
+        "パス：" + pass + "<br>" +
+        "ドリブル：" + dribble + "<br>" +
+        "シュート：" + shoot + "<br>" +
+        "守備：" + defense + "<br><br>" +
+        "あなたが目指すべき選手は<br><b>" +
+        player +
+        "</b>です！";
+
+        const ctx = document.getElementById('radarChart');
+
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['パス','ドリブル','シュート','守備'],
+                datasets: [{
+                    label: 'あなた',
+                    data: [pass, dribble, shoot, defense]
+                }]
+            }
+        });
+
+        document.getElementById("btnA").style.display="none";
+        document.getElementById("btnB").style.display="none";
+        document.getElementById("btnC").style.display="none";
+        document.getElementById("btnD").style.display="none";
     }
 }
 
