@@ -18,14 +18,22 @@
 <p id="result"></p>
 
 <script>
+
 let step = 1;
-let answers = [];
+
+let pass = 0;
+let dribble = 0;
+let shoot = 0;
+let defense = 0;
 
 function answer(choice){
 
-    answers.push(choice);
-
     if(step === 1){
+
+        if(choice === "A") pass += 3;
+        if(choice === "B") dribble += 3;
+        if(choice === "C") shoot += 3;
+        if(choice === "D") defense += 3;
 
         document.getElementById("question").innerText =
         "Q2 チームで任されたい役割は？";
@@ -34,14 +42,22 @@ function answer(choice){
 
     }else{
 
+        if(choice === "A") pass += 3;
+        if(choice === "B") dribble += 3;
+        if(choice === "C") shoot += 3;
+        if(choice === "D") defense += 3;
+
         document.getElementById("question").innerText =
         "診断終了";
 
         document.getElementById("result").innerText =
-        "回答：" + answers.join(", ");
-
+        "パス：" + pass +
+        "　ドリブル：" + dribble +
+        "　シュート：" + shoot +
+        "　守備：" + defense;
     }
 }
+
 </script>
 
 </body>
