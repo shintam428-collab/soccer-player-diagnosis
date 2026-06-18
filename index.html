@@ -2,50 +2,47 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>あなたが目指すべきサッカー選手診断</title>
+    <title>あなたが目指すべき選手診断</title>
 </head>
 <body>
 
-<h1>あなたが目指すべきサッカー選手診断</h1>
+<h1>あなたが目指すべき選手診断</h1>
 
-<p>Q1 試合で一番楽しい瞬間は？</p>
+<p id="question">Q1 試合で一番楽しい瞬間は？</p>
 
-<input type="radio" name="q1" value="pass"> パス
-<input type="radio" name="q1" value="dribble"> ドリブル
-<input type="radio" name="q1" value="shoot"> ゴール
-<input type="radio" name="q1" value="defense"> ボール奪取
+<button onclick="answer('A')">味方への決定的なパス</button>
+<button onclick="answer('B')">相手を抜く瞬間</button>
+<button onclick="answer('C')">ゴールを決める瞬間</button>
+<button onclick="answer('D')">ボールを奪う瞬間</button>
 
-<button onclick="result()">診断する</button>
-
-<p id="answer"></p>
+<p id="result"></p>
 
 <script>
-function result() {
+let step = 1;
+let answers = [];
 
-    let choice = document.querySelector('input[name="q1"]:checked');
+function answer(choice){
 
-    if (!choice) {
-        document.getElementById("answer").innerHTML =
-        "選択肢を選んでください";
-        return;
-    }
+    answers.push(choice);
 
-    let player = "";
+    if(step === 1){
 
-    if (choice.value === "pass") {
-        player = "デブライネ";
-    }
-    else if (choice.value === "dribble") {
-        player = "ヴィニシウス";
-    }
-    else if (choice.value === "shoot") {
-        player = "ハーランド";
-    }
-    else {
-        player = "カンテ";
-    }
+        document.getElementById("question").innerText =
+        "Q2 チームで任されたい役割は？";
 
-    document.getElementById("answer").innerHTML =
-    "あなたが目指すべき選手は" + player + "です！";
+        step = 2;
+
+    }else{
+
+        document.getElementById("question").innerText =
+        "診断終了";
+
+        document.getElementById("result").innerText =
+        "回答：" + answers.join(", ");
+
+    }
 }
 </script>
+
+</body>
+</html>
