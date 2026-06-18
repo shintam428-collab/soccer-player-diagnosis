@@ -2,40 +2,105 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>あなたが目指すべき選手診断</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+
 body{
     font-family: Arial, sans-serif;
+    background: linear-gradient(135deg,#0f9b0f,#006400);
+    color:white;
     text-align:center;
-    padding:30px;
+    padding:20px;
+    min-height:100vh;
+}
+
+h1{
+    font-size:40px;
+    margin-bottom:10px;
+}
+
+h2{
+    margin-bottom:30px;
+}
+
+#question{
+    background:white;
+    color:black;
+    max-width:700px;
+    margin:20px auto;
+    padding:20px;
+    border-radius:15px;
+    font-size:24px;
+    font-weight:bold;
 }
 
 button{
     display:block;
-    width:300px;
-    margin:10px auto;
+    width:90%;
+    max-width:400px;
+    margin:12px auto;
     padding:15px;
-    font-size:16px;
+    border:none;
+    border-radius:10px;
+    font-size:18px;
+    cursor:pointer;
+    transition:0.3s;
 }
 
-#question{
-    font-size:24px;
-    margin:30px;
+button:hover{
+    transform:scale(1.03);
+}
+
+#btnA{
+    background:#3498db;
+    color:white;
+}
+
+#btnB{
+    background:#e67e22;
+    color:white;
+}
+
+#btnC{
+    background:#e74c3c;
+    color:white;
+}
+
+#btnD{
+    background:#2c3e50;
+    color:white;
 }
 
 #result{
+    background:white;
+    color:black;
+    max-width:700px;
+    margin:30px auto;
+    padding:20px;
+    border-radius:15px;
     font-size:20px;
-    margin-top:20px;
 }
+
+canvas{
+    background:white;
+    border-radius:15px;
+    padding:10px;
+    margin-top:20px;
+    max-width:700px;
+}
+
 </style>
 
 </head>
 <body>
 
-<h1>⚽ あなたが目指すべき選手診断</h1>
+<h1>⚽ FUTURE PLAYER FINDER ⚽</h1>
+<h2>あなたが目指すべき選手診断</h2>
 
 <p id="question">Q1 試合で一番楽しい瞬間は？</p>
 
@@ -46,7 +111,7 @@ button{
 
 <div id="result"></div>
 
-<canvas id="radarChart" width="400" height="400"></canvas>
+<canvas id="radarChart"></canvas>
 
 <script>
 
@@ -139,7 +204,7 @@ function answer(choice){
         "ドリブル：" + dribble + "<br>" +
         "シュート：" + shoot + "<br>" +
         "守備：" + defense + "<br><br>" +
-        "あなたが目指すべき選手は<br><b>" +
+        "🏆 あなたが目指すべき選手は<br><b>" +
         player +
         "</b>です！";
 
