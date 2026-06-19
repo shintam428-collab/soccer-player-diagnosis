@@ -95,6 +95,185 @@ button:nth-child(4){
     font-size:18px;
     line-height:1.8;
 }
+
+.result-hero{
+    background:linear-gradient(135deg,#111827,#064e3b);
+    color:white;
+    padding:25px;
+    border-radius:20px;
+    margin-top:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.35);
+}
+
+.result-badge{
+    display:inline-block;
+    background:#facc15;
+    color:#111827;
+    padding:6px 16px;
+    border-radius:999px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.result-title{
+    font-size:28px;
+    margin:10px 0;
+}
+
+.result-title span{
+    font-size:38px;
+    color:#facc15;
+}
+
+.result-description{
+    background:rgba(255,255,255,0.12);
+    padding:15px;
+    border-radius:12px;
+    line-height:1.8;
+}
+
+.section-card{
+    background:#f8fafc;
+    border-radius:16px;
+    padding:18px;
+    margin-top:18px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.15);
+}
+
+.ability-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+    margin-top:15px;
+}
+
+.ability-item{
+    background:white;
+    border-radius:12px;
+    padding:12px;
+    text-align:left;
+    box-shadow:0 3px 10px rgba(0,0,0,0.12);
+}
+
+.ability-name{
+    font-weight:bold;
+    margin-bottom:6px;
+}
+
+.ability-bar{
+    background:#e5e7eb;
+    border-radius:999px;
+    height:10px;
+    overflow:hidden;
+}
+
+.ability-bar-fill{
+    background:linear-gradient(90deg,#22c55e,#3b82f6);
+    height:100%;
+}
+
+.training-list li{
+    background:white;
+    margin:8px 0;
+    padding:10px 14px;
+    border-radius:10px;
+    box-shadow:0 3px 8px rgba(0,0,0,0.12);
+}
+
+.result-hero{
+    background:linear-gradient(135deg,#111827,#064e3b);
+    color:white;
+    padding:25px;
+    border-radius:20px;
+    margin-top:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.35);
+}
+
+.result-badge{
+    display:inline-block;
+    background:#facc15;
+    color:#111827;
+    padding:6px 16px;
+    border-radius:999px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.result-title{
+    font-size:28px;
+    margin:10px 0;
+}
+
+.result-title span{
+    font-size:38px;
+    color:#facc15;
+}
+
+.result-description{
+    background:rgba(255,255,255,0.12);
+    padding:15px;
+    border-radius:12px;
+    line-height:1.8;
+}
+
+.section-card{
+    background:#f8fafc;
+    border-radius:16px;
+    padding:18px;
+    margin-top:18px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.15);
+}
+
+.ability-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+    margin-top:15px;
+}
+
+.ability-item{
+    background:white;
+    border-radius:12px;
+    padding:12px;
+    text-align:left;
+    box-shadow:0 3px 10px rgba(0,0,0,0.12);
+}
+
+.ability-name{
+    font-weight:bold;
+    margin-bottom:6px;
+}
+
+.ability-bar{
+    background:#e5e7eb;
+    border-radius:999px;
+    height:10px;
+    overflow:hidden;
+}
+
+.ability-bar-fill{
+    background:linear-gradient(90deg,#22c55e,#3b82f6);
+    height:100%;
+}
+
+.training-list li{
+    background:white;
+    margin:8px 0;
+    padding:10px 14px;
+    border-radius:10px;
+    box-shadow:0 3px 8px rgba(0,0,0,0.12);
+}
+
+@media(max-width:600px){
+    .ability-grid{
+        grid-template-columns:1fr;
+    }
+
+    .result-title span{
+        font-size:32px;
+    }
+}
+    
 .chart-box{
     background:white;
     max-width:800px;
@@ -346,26 +525,51 @@ function finish(){
         }
     }
 
-    document.getElementById("result").innerHTML = `
-        <h2>🏆 あなたが目指すべき選手は<br>${best} です！</h2>
-        <img class="player-img" src="${playerImages[best]}" alt="${best}">
-<p>${descriptions[best]}</p>
+const abilityNames = ["パス","ドリブル","シュート","守備","運動量","リーダーシップ"];
 
-<h3>おすすめ練習メニュー</h3>
-<ul class="training-list">
-    ${trainingMenus[best].map(menu => `<li>${menu}</li>`).join("")}
-</ul>
+const abilityHtml = abilityNames.map((name,i)=>{
+    const percent = Math.min((me[i] / 30) * 100, 100);
 
-<h3>あなたの能力</h3>
-        <p>
-        パス：${me[0]}　
-        ドリブル：${me[1]}　
-        シュート：${me[2]}<br>
-        守備：${me[3]}　
-        運動量：${me[4]}　
-        リーダーシップ：${me[5]}
-        </p>
+    return `
+        <div class="ability-item">
+            <div class="ability-name">${name}：${me[i]}</div>
+            <div class="ability-bar">
+                <div class="ability-bar-fill" style="width:${percent}%"></div>
+            </div>
+        </div>
     `;
+}).join("");
+
+const trainingHtml = trainingMenus[best].map(menu => `<li>${menu}</li>`).join("");
+
+document.getElementById("result").innerHTML = `
+    <div class="result-hero">
+        <div class="result-badge">診断結果</div>
+
+        <h2 class="result-title">
+            あなたが目指すべき選手は<br>
+            <span>${best}</span>
+        </h2>
+
+        <img class="player-img" src="${playerImages[best]}" alt="${best}">
+
+        <p class="result-description">${descriptions[best]}</p>
+    </div>
+
+    <div class="section-card">
+        <h3>おすすめ練習メニュー</h3>
+        <ul class="training-list">
+            ${trainingHtml}
+        </ul>
+    </div>
+
+    <div class="section-card">
+        <h3>あなたの能力</h3>
+        <div class="ability-grid">
+            ${abilityHtml}
+        </div>
+    </div>
+`;
 
     document.getElementById("chartBox").style.display = "block";
 
