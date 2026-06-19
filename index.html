@@ -88,6 +88,13 @@ button:nth-child(4){
     box-shadow:0 8px 25px rgba(0,0,0,0.35);
 }
 
+.training-list{
+    display:inline-block;
+    text-align:left;
+    margin:10px auto 20px;
+    font-size:18px;
+    line-height:1.8;
+}
 .chart-box{
     background:white;
     max-width:800px;
@@ -254,6 +261,33 @@ const descriptions = {
     "ファンダイク":"守備力とリーダーシップに優れたディフェンダータイプです。冷静な判断と統率力でチームを支える存在です。",
     "カンテ":"豊富な運動量と守備力でチームを支えるミッドフィルダータイプです。ボール奪取や献身的なプレーに優れています。"
 };
+const trainingMenus = {
+    "デブライネ":[
+        "スルーパス練習",
+        "首振りで周囲を見る練習",
+        "ロングキック練習"
+    ],
+    "ヴィニシウス":[
+        "1対1のドリブル練習",
+        "スピードに乗った突破練習",
+        "切り返し練習"
+    ],
+    "ハーランド":[
+        "シュート精度を高める練習",
+        "ゴール前のポジショニング練習",
+        "フィジカル強化"
+    ],
+    "ファンダイク":[
+        "1対1の守備練習",
+        "ヘディング・空中戦の練習",
+        "守備ラインの声かけ練習"
+    ],
+    "カンテ":[
+        "ボール奪取の練習",
+        "持久力を高める走り込み",
+        "相手の動きを予測する練習"
+    ]
+};
 
 const playerImages = {
     "デブライネ":"debruyne.jpg.png",
@@ -315,8 +349,14 @@ function finish(){
     document.getElementById("result").innerHTML = `
         <h2>🏆 あなたが目指すべき選手は<br>${best} です！</h2>
         <img class="player-img" src="${playerImages[best]}" alt="${best}">
-        <p>${descriptions[best]}</p>
-        <h3>あなたの能力</h3>
+<p>${descriptions[best]}</p>
+
+<h3>おすすめ練習メニュー</h3>
+<ul class="training-list">
+    ${trainingMenus[best].map(menu => `<li>${menu}</li>`).join("")}
+</ul>
+
+<h3>あなたの能力</h3>
         <p>
         パス：${me[0]}　
         ドリブル：${me[1]}　
