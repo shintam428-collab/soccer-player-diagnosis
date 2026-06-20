@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>縺ゅ↑縺溘′逶ｮ謖・☆縺ｹ縺埼∈謇玖ｨｺ譁ｭ</title>
+<title>あなたが目指すべき選手診断</title>
 
 <style>
 html{
@@ -27,7 +27,7 @@ body{
     z-index:1;
 }
 
-/* 逕ｻ髱｢繧剃ｸ譎ら噪縺ｫ髫縺吶◆繧√・蜈ｱ騾壹け繝ｩ繧ｹ縺ｧ縺・*/
+/* 画面を一時的に隠すための共通クラスです */
 .is-hidden{
     display:none !important;
 }
@@ -125,11 +125,6 @@ body{
 @keyframes spotlight-pulse{
     0%,100%{opacity:0.7;}
     50%{opacity:1;}
-}
-
-h1{
-    font-size:36px;
-    margin-bottom:10px;
 }
 
 .card{
@@ -262,7 +257,7 @@ button:hover{
     height:100%;
 }
 
-/* CSV縺ｮ縲後い繧､繧ｳ繝ｳ縲榊・縺ｫ蜷医ｏ縺帙※濶ｲ縺ｨ繝槭・繧ｯ繧貞・繧頑崛縺医ｋCSS陬ｽ繧｢繧､繧ｳ繝ｳ縺ｧ縺・*/
+/* players.csvの「アイコン」列に合わせて色とマークを切り替えるCSS製アイコンです */
 .player-icon{
     --icon-main:#22c55e;
     --icon-accent:#facc15;
@@ -455,7 +450,7 @@ canvas{
     font-size:clamp(15px, 3.5vw, 18px);
     line-height:1.85;
     color:rgba(255,255,255,0.9);
-    margin:0 auto 32px;
+    margin:0 auto 24px;
     max-width:480px;
     text-shadow:0 2px 8px rgba(0,0,0,0.4);
 }
@@ -549,7 +544,6 @@ canvas{
 }
 
 .nav-btn,
-.check-btn,
 .back-btn,
 .diagnose-btn,
 .restart-btn{
@@ -560,10 +554,6 @@ canvas{
 .nav-btn,
 .back-btn{
     background:#64748b !important;
-}
-
-.check-btn{
-    background:linear-gradient(180deg,#22c55e,#16a34a) !important;
 }
 
 .diagnose-btn{
@@ -603,10 +593,6 @@ canvas{
 @media(max-width:600px){
     body{
         padding:12px;
-    }
-
-    h1{
-        font-size:28px;
     }
 
     #question{
@@ -662,14 +648,14 @@ canvas{
         <div class="start-screen__grass" aria-hidden="true"></div>
 
         <div class="start-screen__content">
-            <p class="start-screen__icon">笞ｽ</p>
-            <h1 class="start-title">縺ゅ↑縺溘′逶ｮ謖・☆縺ｹ縺埼∈謇玖ｨｺ譁ｭ</h1>
+            <p class="start-screen__icon">⚽</p>
+            <h1 class="start-title">あなたが目指すべき選手診断</h1>
             <p class="start-description">
-                縺・￥縺､縺九・雉ｪ蝠上↓遲斐∴繧九□縺代〒縲√≠縺ｪ縺溘・繝励Ξ繝ｼ繧ｹ繧ｿ繧､繝ｫ縺ｫ霑代＞驕ｸ謇九ち繧､繝励ｒ險ｺ譁ｭ縺励∪縺吶・
+                いくつかの質問に答えるだけで、あなたのプレースタイルに近い選手タイプを診断します。
             </p>
             <div id="questionStatus"></div>
             <button type="button" id="startBtn" class="start-btn" onclick="startDiagnosis()">
-                險ｺ譁ｭ繧貞ｧ九ａ繧・
+                診断を始める
             </button>
         </div>
     </section>
@@ -679,7 +665,7 @@ canvas{
             <div id="csvStatus"></div>
 
             <div class="progress-area" id="progressArea">
-                <div id="progressText">Q1 / 10</div>
+                <div id="progressText">Q1 / 1</div>
                 <div class="progress-bar">
                     <div id="progressFill"></div>
                 </div>
@@ -689,19 +675,19 @@ canvas{
             <div id="choices"></div>
 
             <div class="nav-buttons" id="questionButtons">
-                <button type="button" class="nav-btn" id="backQuestionBtn" onclick="backQuestion()">蜑阪・雉ｪ蝠上↓謌ｻ繧・/button>
+                <button type="button" class="nav-btn" id="backQuestionBtn" onclick="backQuestion()">前の質問に戻る</button>
             </div>
 
             <div id="result"></div>
         </div>
 
         <div class="card is-hidden" id="confirmArea">
-            <h2>蝗樒ｭ皮｢ｺ隱・/h2>
-            <p>驕ｸ繧薙□蝗樒ｭ斐ｒ遒ｺ隱阪＠縺ｦ縺上□縺輔＞縲ゆｿｮ豁｣縺励◆縺・ｴ蜷医・縲梧綾縺｣縺ｦ菫ｮ豁｣縺吶ｋ縲阪ｒ謚ｼ縺励※縺上□縺輔＞縲・/p>
+            <h2>回答確認</h2>
+            <p>選んだ回答を確認してください。修正したい場合は「戻って修正する」を押してください。</p>
             <ul class="confirm-list" id="confirmList"></ul>
 
-            <button type="button" class="back-btn" onclick="returnToQuestions()">謌ｻ縺｣縺ｦ菫ｮ豁｣縺吶ｋ</button>
-            <button type="button" class="diagnose-btn" onclick="finish()">險ｺ譁ｭ縺吶ｋ</button>
+            <button type="button" class="back-btn" onclick="returnToQuestions()">戻って修正する</button>
+            <button type="button" class="diagnose-btn" onclick="finish()">診断する</button>
         </div>
 
         <div class="chart-box" id="chartBox">
@@ -712,7 +698,7 @@ canvas{
 
 <script>
 let questions = [];
-let questionLoadError = '';
+let questionLoadError = "";
 
 const scores = {
     Q1:{A:[3,0,0,0,0,1],B:[0,3,0,0,0,0],C:[0,0,3,0,0,0],D:[0,0,0,3,1,0]},
@@ -737,7 +723,7 @@ let radarChart = null;
 let players = [];
 let csvLoadError = "";
 
-// players.csv縺ｯ螟夜Κ繝・・繧ｿ縺ｪ縺ｮ縺ｧ縲∫判髱｢髢句ｧ句燕縺ｫ隱ｭ縺ｿ霎ｼ縺ｿ縺ｾ縺吶・
+// ページ読み込み時に、質問CSVと結果用CSVをそれぞれ読み込みます。
 document.addEventListener("DOMContentLoaded", () => {
     loadQuestionsCsv();
     loadPlayersCsv();
@@ -774,14 +760,14 @@ async function loadPlayersCsv(){
         const response = await fetch("players.csv", {cache:"no-store"});
 
         if(!response.ok){
-            throw new Error("players.csv 繧貞叙蠕励〒縺阪∪縺帙ｓ縺ｧ縺励◆");
+            throw new Error("players.csv を取得できませんでした");
         }
 
         const csvText = await response.text();
         players = parsePlayersCsv(csvText);
 
         if(players.length === 0){
-            throw new Error("players.csv 縺ｫ譛牙柑縺ｪ驕ｸ謇九ョ繝ｼ繧ｿ縺後≠繧翫∪縺帙ｓ");
+            throw new Error("players.csv に有効な選手データがありません");
         }
 
         csvLoadError = "";
@@ -793,7 +779,7 @@ async function loadPlayersCsv(){
     }
 }
 
-// 繧ｫ繝ｳ繝槫・繧翫・隱ｬ譏取枚縺ｫ繧ょｯｾ蠢懊〒縺阪ｋ繧医≧縲，SV繧・譁・ｭ励★縺､隱ｭ繧薙〒蛻・ｧ｣縺励∪縺吶・
+// カンマ入りの文章にも対応できるよう、CSVを1文字ずつ読んで分解します。
 function parseCsv(text){
     const rows = [];
     let row = [];
@@ -835,7 +821,26 @@ function parseCsv(text){
     return rows;
 }
 
-// CSV縺ｮ蛻怜錐繧剃ｽｿ縺｣縺ｦ縲∬ｨｺ譁ｭ縺ｧ菴ｿ縺・ｄ縺吶＞蠖｢縺ｮ繧ｪ繝悶ず繧ｧ繧ｯ繝医↓螟画鋤縺励∪縺吶・
+// questions.csvの列名を使って、診断で使う質問データに変換します。
+function parseQuestionsCsv(csvText){
+    const rows = parseCsv(csvText.trim());
+    const header = rows.shift() || [];
+
+    return rows.map(row => {
+        const record = {};
+        header.forEach((key, index) => {
+            record[key.trim()] = (row[index] || "").trim();
+        });
+
+        return {
+            id: record["id"],
+            q: record["question"],
+            c: [record["A"], record["B"], record["C"], record["D"]]
+        };
+    }).filter(question => question.id && question.q && question.c.every(choice => choice));
+}
+
+// players.csvの列名を使って、診断結果で使う選手タイプデータに変換します。
 function parsePlayersCsv(csvText){
     const rows = parseCsv(csvText.trim());
     const header = rows.shift() || [];
@@ -857,24 +862,6 @@ function parsePlayersCsv(csvText){
             description: record["説明文"] || ""
         };
     }).filter(player => player.typeName && player.abilities.some(value => value > 0));
-}
-
-function parseQuestionsCsv(csvText){
-    const rows = parseCsv(csvText.trim());
-    const header = rows.shift() || [];
-
-    return rows.map(row => {
-        const record = {};
-        header.forEach((key, index) => {
-            record[key.trim()] = (row[index] || "").trim();
-        });
-
-        return {
-            id: record["id"],
-            q: record["question"],
-            c: [record["A"], record["B"], record["C"], record["D"]]
-        };
-    }).filter(question => question.id && question.q && question.c.every(choice => choice));
 }
 
 function updateCsvStatus(){
@@ -945,7 +932,7 @@ function render(){
         html += `
             <button type="button" class="choice-btn${selectedClass}" onclick="selectChoice('${key}')">
                 <span class="choice-label">${key}</span>
-                <span class="choice-text">${questions[idx].c[i]}</span>
+                <span class="choice-text">${escapeHtml(questions[idx].c[i])}</span>
             </button>
         `;
     });
@@ -983,12 +970,12 @@ function showConfirmPage(){
     questions.forEach((question, questionIndex) => {
         const answerKey = answers[questionIndex];
         const answerIndex = choiceKeys.indexOf(answerKey);
-        const answerText = question.c[answerIndex];
+        const answerText = question.c[answerIndex] || "";
 
         html += `
             <li class="confirm-item">
-                <div class="confirm-question">${question.id || "Q" + (questionIndex + 1)}. ${question.q}</div>
-                <div class="confirm-answer">${answerKey}. ${answerText}</div>
+                <div class="confirm-question">${escapeHtml(question.id || "Q" + (questionIndex + 1))}. ${escapeHtml(question.q)}</div>
+                <div class="confirm-answer">${escapeHtml(answerKey)}. ${escapeHtml(answerText)}</div>
             </li>
         `;
     });
@@ -1003,7 +990,7 @@ function returnToQuestions(){
     render();
 }
 
-// 蝗樒ｭ斐＃縺ｨ縺ｮ轤ｹ謨ｰ繧貞粋險医＠縺ｾ縺吶ょ・縺ｮ險ｺ譁ｭ縺ｨ蜷後§6閭ｽ蜉帙・驟榊・縺ｧ縺吶・
+// 回答ごとの点数を合計します。スコア表にない追加質問は0点として扱います。
 function calculateScore(){
     me = [0,0,0,0,0,0];
 
@@ -1022,7 +1009,7 @@ function finish(){
     document.getElementById("progressArea").style.display = "none";
     document.getElementById("choices").style.display = "none";
     document.getElementById("questionButtons").style.display = "none";
-    document.getElementById("question").innerText = "險ｺ譁ｭ邨先棡";
+    document.getElementById("question").innerText = "診断結果";
     updateCsvStatus();
 
     if(players.length === 0){
@@ -1036,34 +1023,34 @@ function finish(){
 
     document.getElementById("result").innerHTML = `
         <div class="result-hero">
-            <div class="result-badge">險ｺ譁ｭ邨先棡</div>
+            <div class="result-badge">診断結果</div>
 
             <h2 class="result-title">
-                縺ゅ↑縺溘′逶ｮ謖・☆縺ｹ縺埼∈謇九ち繧､繝励・<br>
+                あなたが目指すべき選手タイプは<br>
                 <span>${escapeHtml(best.typeName)}</span>
             </h2>
 
             <div class="player-icon ${best.icon}" aria-hidden="true"></div>
 
-            <p><strong>蜿り・∈謇具ｼ・/strong>${escapeHtml(best.referencePlayer)}</p>
+            <p><strong>参考選手：</strong>${escapeHtml(best.referencePlayer)}</p>
             <p class="result-description">${escapeHtml(best.description)}</p>
         </div>
 
         <div class="section-card">
-            <h3>縺ゅ↑縺溘・閭ｽ蜉・/h3>
+            <h3>あなたの能力</h3>
             <div class="ability-grid">
                 ${abilityHtml}
             </div>
         </div>
 
         <div class="section-card">
-            <h3>險ｺ譁ｭ縺輔ｌ縺滄∈謇九ち繧､繝励・閭ｽ蜉・/h3>
+            <h3>診断された選手タイプの能力</h3>
             <div class="ability-grid">
                 ${playerAbilityHtml}
             </div>
         </div>
 
-        <button type="button" class="restart-btn" onclick="startDiagnosis()">繧ゅ≧荳蠎ｦ險ｺ譁ｭ縺吶ｋ</button>
+        <button type="button" class="restart-btn" onclick="startDiagnosis()">もう一度診断する</button>
     `;
 
     drawRadarChart(best);
@@ -1231,25 +1218,25 @@ function showCsvFallbackResult(){
     document.getElementById("chartBox").style.display = "none";
     document.getElementById("result").innerHTML = `
         <div class="result-hero">
-            <div class="result-badge">險ｺ譁ｭ邨先棡</div>
-            <h2 class="result-title">邨先棡繝・・繧ｿ繧定ｪｭ縺ｿ霎ｼ繧√∪縺帙ｓ縺ｧ縺励◆</h2>
+            <div class="result-badge">診断結果</div>
+            <h2 class="result-title">結果データを読み込めませんでした</h2>
             <p class="result-description">
-                蝗樒ｭ斐・螳御ｺ・＠縺ｦ縺・∪縺吶Ｑlayers.csv繧段ndex.html縺ｨ蜷後§髫主ｱ､縺ｫ鄂ｮ縺上→縲∬ｨｺ譁ｭ邨先棡縺ｮ驕ｸ謇九ち繧､繝励ｒ陦ｨ遉ｺ縺ｧ縺阪∪縺吶・
+                回答は完了しています。players.csvをindex.htmlと同じ階層に置くと、診断結果の選手タイプを表示できます。
             </p>
         </div>
 
         <div class="section-card">
-            <h3>縺ゅ↑縺溘・閭ｽ蜉・/h3>
+            <h3>あなたの能力</h3>
             <div class="ability-grid">
                 ${createAbilityHtml(me, 30)}
             </div>
         </div>
 
-        <button type="button" class="restart-btn" onclick="startDiagnosis()">繧ゅ≧荳蠎ｦ險ｺ譁ｭ縺吶ｋ</button>
+        <button type="button" class="restart-btn" onclick="startDiagnosis()">もう一度診断する</button>
     `;
 }
 
-// CSV縺ｮ譁・ｭ励′HTML縺ｨ縺励※螳溯｡後＆繧後↑縺・ｈ縺・↓縺吶ｋ螳牙・蟇ｾ遲悶〒縺吶・
+// CSVの文字がHTMLとして実行されないようにする安全対策です。
 function escapeHtml(value){
     return String(value)
         .replace(/&/g, "&amp;")
@@ -1262,4 +1249,3 @@ function escapeHtml(value){
 
 </body>
 </html>
-
