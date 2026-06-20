@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>あなたが目指すべき選手診断</title>
+<title>縺ゅ↑縺溘′逶ｮ謖・☆縺ｹ縺埼∈謇玖ｨｺ譁ｭ</title>
 
 <style>
 html{
@@ -27,7 +27,7 @@ body{
     z-index:1;
 }
 
-/* 画面を一時的に隠すための共通クラスです */
+/* 逕ｻ髱｢繧剃ｸ譎ら噪縺ｫ髫縺吶◆繧√・蜈ｱ騾壹け繝ｩ繧ｹ縺ｧ縺・*/
 .is-hidden{
     display:none !important;
 }
@@ -262,7 +262,7 @@ button:hover{
     height:100%;
 }
 
-/* CSVの「アイコン」列に合わせて色とマークを切り替えるCSS製アイコンです */
+/* CSV縺ｮ縲後い繧､繧ｳ繝ｳ縲榊・縺ｫ蜷医ｏ縺帙※濶ｲ縺ｨ繝槭・繧ｯ繧貞・繧頑崛縺医ｋCSS陬ｽ繧｢繧､繧ｳ繝ｳ縺ｧ縺・*/
 .player-icon{
     --icon-main:#22c55e;
     --icon-accent:#facc15;
@@ -662,13 +662,14 @@ canvas{
         <div class="start-screen__grass" aria-hidden="true"></div>
 
         <div class="start-screen__content">
-            <p class="start-screen__icon">⚽</p>
-            <h1 class="start-title">あなたが目指すべき選手診断</h1>
+            <p class="start-screen__icon">笞ｽ</p>
+            <h1 class="start-title">縺ゅ↑縺溘′逶ｮ謖・☆縺ｹ縺埼∈謇玖ｨｺ譁ｭ</h1>
             <p class="start-description">
-                いくつかの質問に答えるだけで、あなたのプレースタイルに近い選手タイプを診断します。
+                縺・￥縺､縺九・雉ｪ蝠上↓遲斐∴繧九□縺代〒縲√≠縺ｪ縺溘・繝励Ξ繝ｼ繧ｹ繧ｿ繧､繝ｫ縺ｫ霑代＞驕ｸ謇九ち繧､繝励ｒ險ｺ譁ｭ縺励∪縺吶・
             </p>
+            <div id="questionStatus"></div>
             <button type="button" id="startBtn" class="start-btn" onclick="startDiagnosis()">
-                診断を始める
+                險ｺ譁ｭ繧貞ｧ九ａ繧・
             </button>
         </div>
     </section>
@@ -688,19 +689,19 @@ canvas{
             <div id="choices"></div>
 
             <div class="nav-buttons" id="questionButtons">
-                <button type="button" class="nav-btn" id="backQuestionBtn" onclick="backQuestion()">前の質問に戻る</button>
+                <button type="button" class="nav-btn" id="backQuestionBtn" onclick="backQuestion()">蜑阪・雉ｪ蝠上↓謌ｻ繧・/button>
             </div>
 
             <div id="result"></div>
         </div>
 
         <div class="card is-hidden" id="confirmArea">
-            <h2>回答確認</h2>
-            <p>選んだ回答を確認してください。修正したい場合は「戻って修正する」を押してください。</p>
+            <h2>蝗樒ｭ皮｢ｺ隱・/h2>
+            <p>驕ｸ繧薙□蝗樒ｭ斐ｒ遒ｺ隱阪＠縺ｦ縺上□縺輔＞縲ゆｿｮ豁｣縺励◆縺・ｴ蜷医・縲梧綾縺｣縺ｦ菫ｮ豁｣縺吶ｋ縲阪ｒ謚ｼ縺励※縺上□縺輔＞縲・/p>
             <ul class="confirm-list" id="confirmList"></ul>
 
-            <button type="button" class="back-btn" onclick="returnToQuestions()">戻って修正する</button>
-            <button type="button" class="diagnose-btn" onclick="finish()">診断する</button>
+            <button type="button" class="back-btn" onclick="returnToQuestions()">謌ｻ縺｣縺ｦ菫ｮ豁｣縺吶ｋ</button>
+            <button type="button" class="diagnose-btn" onclick="finish()">險ｺ譁ｭ縺吶ｋ</button>
         </div>
 
         <div class="chart-box" id="chartBox">
@@ -710,48 +711,8 @@ canvas{
 </div>
 
 <script>
-const questions = [
-    {
-        q:"試合中、一番楽しい瞬間は？",
-        c:["味方へ決定的なパスを出す瞬間","相手をドリブルで抜く瞬間","ゴールを決める瞬間","ボールを奪う瞬間"]
-    },
-    {
-        q:"チームで任されたい役割は？",
-        c:["ゲームメイカー","チャンスメイカー","エースストライカー","守備の中心"]
-    },
-    {
-        q:"成長させたい能力は？",
-        c:["視野とパス","ドリブル","決定力","守備力"]
-    },
-    {
-        q:"サッカーで一番大切だと思うことは？",
-        c:["チームを動かすこと","個人技で打開すること","得点を取ること","失点を防ぐこと"]
-    },
-    {
-        q:"同点の終盤でボールを持ったら？",
-        c:["味方を活かす","仕掛ける","ゴールを狙う","ボールを失わない"]
-    },
-    {
-        q:"監督から褒められたいことは？",
-        c:["判断力","技術力","得点力","守備力"]
-    },
-    {
-        q:"好きな練習は？",
-        c:["パス練習","ドリブル練習","シュート練習","守備練習"]
-    },
-    {
-        q:"チームメイトから言われたい言葉は？",
-        c:["試合を作ってくれる","何かしてくれそう","点を取ってくれる","安心して任せられる"]
-    },
-    {
-        q:"理想の選手像は？",
-        c:["チームを指揮する選手","観客を沸かせる選手","ゴールを量産する選手","チームを支える選手"]
-    },
-    {
-        q:"能力を一つ伸ばせるなら？",
-        c:["戦術理解と視野","ドリブル技術","シュート精度","守備能力"]
-    }
-];
+let questions = [];
+let questionLoadError = '';
 
 const scores = {
     Q1:{A:[3,0,0,0,0,1],B:[0,3,0,0,0,0],C:[0,0,3,0,0,0],D:[0,0,0,3,1,0]},
@@ -770,30 +731,57 @@ const abilityNames = ["パス","ドリブル","シュート","守備","運動量
 const validIconClasses = ["pass-icon","dribble-icon","shoot-icon","defense-icon","stamina-icon"];
 
 let idx = 0;
-let answers = Array(questions.length).fill(null);
+let answers = [];
 let me = [0,0,0,0,0,0];
 let radarChart = null;
 let players = [];
 let csvLoadError = "";
 
-// players.csvは外部データなので、画面開始前に読み込みます。
+// players.csv縺ｯ螟夜Κ繝・・繧ｿ縺ｪ縺ｮ縺ｧ縲∫判髱｢髢句ｧ句燕縺ｫ隱ｭ縺ｿ霎ｼ縺ｿ縺ｾ縺吶・
 document.addEventListener("DOMContentLoaded", () => {
+    loadQuestionsCsv();
     loadPlayersCsv();
 });
+
+async function loadQuestionsCsv(){
+    try{
+        const response = await fetch("questions.csv", {cache:"no-store"});
+
+        if(!response.ok){
+            throw new Error("questions.csv を取得できませんでした");
+        }
+
+        const csvText = await response.text();
+        questions = parseQuestionsCsv(csvText);
+
+        if(questions.length === 0){
+            throw new Error("questions.csv に有効な質問データがありません");
+        }
+
+        questionLoadError = "";
+        answers = Array(questions.length).fill(null);
+        updateCsvStatus();
+    }catch(error){
+        questions = [];
+        answers = [];
+        questionLoadError = "questions.csvを読み込めませんでした。index.htmlと同じ階層にquestions.csvを置いてください。";
+        updateCsvStatus();
+    }
+}
 
 async function loadPlayersCsv(){
     try{
         const response = await fetch("players.csv", {cache:"no-store"});
 
         if(!response.ok){
-            throw new Error("players.csv を取得できませんでした");
+            throw new Error("players.csv 繧貞叙蠕励〒縺阪∪縺帙ｓ縺ｧ縺励◆");
         }
 
         const csvText = await response.text();
         players = parsePlayersCsv(csvText);
 
         if(players.length === 0){
-            throw new Error("players.csv に有効な選手データがありません");
+            throw new Error("players.csv 縺ｫ譛牙柑縺ｪ驕ｸ謇九ョ繝ｼ繧ｿ縺後≠繧翫∪縺帙ｓ");
         }
 
         csvLoadError = "";
@@ -805,7 +793,7 @@ async function loadPlayersCsv(){
     }
 }
 
-// カンマ入りの説明文にも対応できるよう、CSVを1文字ずつ読んで分解します。
+// 繧ｫ繝ｳ繝槫・繧翫・隱ｬ譏取枚縺ｫ繧ょｯｾ蠢懊〒縺阪ｋ繧医≧縲，SV繧・譁・ｭ励★縺､隱ｭ繧薙〒蛻・ｧ｣縺励∪縺吶・
 function parseCsv(text){
     const rows = [];
     let row = [];
@@ -847,7 +835,7 @@ function parseCsv(text){
     return rows;
 }
 
-// CSVの列名を使って、診断で使いやすい形のオブジェクトに変換します。
+// CSV縺ｮ蛻怜錐繧剃ｽｿ縺｣縺ｦ縲∬ｨｺ譁ｭ縺ｧ菴ｿ縺・ｄ縺吶＞蠖｢縺ｮ繧ｪ繝悶ず繧ｧ繧ｯ繝医↓螟画鋤縺励∪縺吶・
 function parsePlayersCsv(csvText){
     const rows = parseCsv(csvText.trim());
     const header = rows.shift() || [];
@@ -871,17 +859,51 @@ function parsePlayersCsv(csvText){
     }).filter(player => player.typeName && player.abilities.some(value => value > 0));
 }
 
-function updateCsvStatus(){
-    const status = document.getElementById("csvStatus");
+function parseQuestionsCsv(csvText){
+    const rows = parseCsv(csvText.trim());
+    const header = rows.shift() || [];
 
-    if(!status){
-        return;
+    return rows.map(row => {
+        const record = {};
+        header.forEach((key, index) => {
+            record[key.trim()] = (row[index] || "").trim();
+        });
+
+        return {
+            id: record["id"],
+            q: record["question"],
+            c: [record["A"], record["B"], record["C"], record["D"]]
+        };
+    }).filter(question => question.id && question.q && question.c.every(choice => choice));
+}
+
+function updateCsvStatus(){
+    const statusAreas = [
+        document.getElementById("questionStatus"),
+        document.getElementById("csvStatus")
+    ].filter(Boolean);
+
+    const messages = [];
+
+    if(questionLoadError){
+        messages.push(questionLoadError);
     }
 
-    status.innerHTML = csvLoadError ? `<div class="csv-message">${escapeHtml(csvLoadError)}</div>` : "";
+    if(csvLoadError){
+        messages.push(csvLoadError);
+    }
+
+    statusAreas.forEach(status => {
+        status.innerHTML = messages.map(message => `<div class="csv-message">${escapeHtml(message)}</div>`).join("");
+    });
 }
 
 function startDiagnosis(){
+    if(questions.length === 0){
+        updateCsvStatus();
+        return;
+    }
+
     document.getElementById("startScreen").classList.add("is-hidden");
     document.getElementById("quizArea").classList.remove("is-hidden");
 
@@ -906,7 +928,9 @@ function render(){
     document.getElementById("questionButtons").style.display = "block";
     document.getElementById("result").innerHTML = "";
 
-    document.getElementById("question").innerText = "Q" + (idx + 1) + " " + questions[idx].q;
+    const questionId = questions[idx].id || "Q" + (idx + 1);
+
+    document.getElementById("question").innerText = questionId + " " + questions[idx].q;
     document.getElementById("progressText").innerText = "Q" + (idx + 1) + " / " + questions.length;
 
     const progress = ((idx + 1) / questions.length) * 100;
@@ -963,7 +987,7 @@ function showConfirmPage(){
 
         html += `
             <li class="confirm-item">
-                <div class="confirm-question">Q${questionIndex + 1}. ${question.q}</div>
+                <div class="confirm-question">${question.id || "Q" + (questionIndex + 1)}. ${question.q}</div>
                 <div class="confirm-answer">${answerKey}. ${answerText}</div>
             </li>
         `;
@@ -979,12 +1003,13 @@ function returnToQuestions(){
     render();
 }
 
-// 回答ごとの点数を合計します。元の診断と同じ6能力の配列です。
+// 蝗樒ｭ斐＃縺ｨ縺ｮ轤ｹ謨ｰ繧貞粋險医＠縺ｾ縺吶ょ・縺ｮ險ｺ譁ｭ縺ｨ蜷後§6閭ｽ蜉帙・驟榊・縺ｧ縺吶・
 function calculateScore(){
     me = [0,0,0,0,0,0];
 
     answers.forEach((choice, questionIndex) => {
-        const add = scores["Q" + (questionIndex + 1)][choice];
+        const questionId = questions[questionIndex]?.id || "Q" + (questionIndex + 1);
+        const add = scores[questionId]?.[choice] || scores["Q" + (questionIndex + 1)]?.[choice] || [0,0,0,0,0,0];
         me = me.map((value, index) => value + add[index]);
     });
 }
@@ -997,7 +1022,7 @@ function finish(){
     document.getElementById("progressArea").style.display = "none";
     document.getElementById("choices").style.display = "none";
     document.getElementById("questionButtons").style.display = "none";
-    document.getElementById("question").innerText = "診断結果";
+    document.getElementById("question").innerText = "險ｺ譁ｭ邨先棡";
     updateCsvStatus();
 
     if(players.length === 0){
@@ -1011,34 +1036,34 @@ function finish(){
 
     document.getElementById("result").innerHTML = `
         <div class="result-hero">
-            <div class="result-badge">診断結果</div>
+            <div class="result-badge">險ｺ譁ｭ邨先棡</div>
 
             <h2 class="result-title">
-                あなたが目指すべき選手タイプは<br>
+                縺ゅ↑縺溘′逶ｮ謖・☆縺ｹ縺埼∈謇九ち繧､繝励・<br>
                 <span>${escapeHtml(best.typeName)}</span>
             </h2>
 
             <div class="player-icon ${best.icon}" aria-hidden="true"></div>
 
-            <p><strong>参考選手：</strong>${escapeHtml(best.referencePlayer)}</p>
+            <p><strong>蜿り・∈謇具ｼ・/strong>${escapeHtml(best.referencePlayer)}</p>
             <p class="result-description">${escapeHtml(best.description)}</p>
         </div>
 
         <div class="section-card">
-            <h3>あなたの能力</h3>
+            <h3>縺ゅ↑縺溘・閭ｽ蜉・/h3>
             <div class="ability-grid">
                 ${abilityHtml}
             </div>
         </div>
 
         <div class="section-card">
-            <h3>診断された選手タイプの能力</h3>
+            <h3>險ｺ譁ｭ縺輔ｌ縺滄∈謇九ち繧､繝励・閭ｽ蜉・/h3>
             <div class="ability-grid">
                 ${playerAbilityHtml}
             </div>
         </div>
 
-        <button type="button" class="restart-btn" onclick="startDiagnosis()">もう一度診断する</button>
+        <button type="button" class="restart-btn" onclick="startDiagnosis()">繧ゅ≧荳蠎ｦ險ｺ譁ｭ縺吶ｋ</button>
     `;
 
     drawRadarChart(best);
@@ -1206,25 +1231,25 @@ function showCsvFallbackResult(){
     document.getElementById("chartBox").style.display = "none";
     document.getElementById("result").innerHTML = `
         <div class="result-hero">
-            <div class="result-badge">診断結果</div>
-            <h2 class="result-title">結果データを読み込めませんでした</h2>
+            <div class="result-badge">險ｺ譁ｭ邨先棡</div>
+            <h2 class="result-title">邨先棡繝・・繧ｿ繧定ｪｭ縺ｿ霎ｼ繧√∪縺帙ｓ縺ｧ縺励◆</h2>
             <p class="result-description">
-                回答は完了しています。players.csvをindex.htmlと同じ階層に置くと、診断結果の選手タイプを表示できます。
+                蝗樒ｭ斐・螳御ｺ・＠縺ｦ縺・∪縺吶Ｑlayers.csv繧段ndex.html縺ｨ蜷後§髫主ｱ､縺ｫ鄂ｮ縺上→縲∬ｨｺ譁ｭ邨先棡縺ｮ驕ｸ謇九ち繧､繝励ｒ陦ｨ遉ｺ縺ｧ縺阪∪縺吶・
             </p>
         </div>
 
         <div class="section-card">
-            <h3>あなたの能力</h3>
+            <h3>縺ゅ↑縺溘・閭ｽ蜉・/h3>
             <div class="ability-grid">
                 ${createAbilityHtml(me, 30)}
             </div>
         </div>
 
-        <button type="button" class="restart-btn" onclick="startDiagnosis()">もう一度診断する</button>
+        <button type="button" class="restart-btn" onclick="startDiagnosis()">繧ゅ≧荳蠎ｦ險ｺ譁ｭ縺吶ｋ</button>
     `;
 }
 
-// CSVの文字がHTMLとして実行されないようにする安全対策です。
+// CSV縺ｮ譁・ｭ励′HTML縺ｨ縺励※螳溯｡後＆繧後↑縺・ｈ縺・↓縺吶ｋ螳牙・蟇ｾ遲悶〒縺吶・
 function escapeHtml(value){
     return String(value)
         .replace(/&/g, "&amp;")
@@ -1237,3 +1262,4 @@ function escapeHtml(value){
 
 </body>
 </html>
+
