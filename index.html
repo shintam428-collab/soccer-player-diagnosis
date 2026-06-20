@@ -733,6 +733,73 @@ canvas{
     flex:1;
 }
     
+
+/* ===== 回答確認ページ・操作ボタン ===== */
+.nav-buttons{
+    margin-top:20px;
+}
+
+.nav-btn,
+.check-btn,
+.back-btn,
+.diagnose-btn,
+.restart-btn{
+    font-weight:bold;
+    box-shadow:0 5px 15px rgba(0,0,0,0.18);
+}
+
+.nav-btn{
+    background:#64748b !important;
+}
+
+.check-btn{
+    background:linear-gradient(180deg,#22c55e,#16a34a) !important;
+}
+
+.back-btn{
+    background:#64748b !important;
+}
+
+.diagnose-btn{
+    background:linear-gradient(180deg,#f59e0b,#ea580c) !important;
+}
+
+.restart-btn{
+    background:#2563eb !important;
+}
+
+.choice-btn.is-selected{
+    border-color:#16a34a;
+    background:#dcfce7 !important;
+    box-shadow:0 0 0 3px rgba(34,197,94,0.25);
+}
+
+.confirm-list{
+    text-align:left;
+    margin:20px auto;
+    padding:0;
+    list-style:none;
+}
+
+.confirm-item{
+    background:#f8fafc;
+    border-radius:14px;
+    padding:16px;
+    margin-bottom:12px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.12);
+}
+
+.confirm-question{
+    font-weight:bold;
+    margin-bottom:8px;
+    color:#111827;
+}
+
+.confirm-answer{
+    color:#166534;
+    font-weight:bold;
+}
+
 </style>
 </head>
 
@@ -778,24 +845,42 @@ canvas{
     </div>
 </section>
 
-<!-- 質問・結果エリア（最初は非表示） -->
+<!-- 質問・確認・結果エリア（最初は非表示） -->
 <div id="quizArea" class="quiz-area is-hidden">
-<div class="card">
-    <div class="progress-area">
-        <div id="progressText">Q1 / 10</div>
-        <div class="progress-bar">
-            <div id="progressFill"></div>
+
+    <!-- 質問画面 -->
+    <div class="card" id="quizCard">
+        <div class="progress-area" id="progressArea">
+            <div id="progressText">Q1 / 10</div>
+            <div class="progress-bar">
+                <div id="progressFill"></div>
+            </div>
         </div>
+
+        <h2 id="question"></h2>
+        <div id="choices"></div>
+
+        <div class="nav-buttons" id="questionButtons">
+            <button type="button" class="nav-btn" id="backQuestionBtn" onclick="backQuestion()">前の質問に戻る</button>
+            <button type="button" class="check-btn" id="nextQuestionBtn" onclick="nextQuestion()">次の質問へ</button>
+        </div>
+
+        <div id="result"></div>
     </div>
 
-    <h2 id="question"></h2>
-    <div id="choices"></div>
-    <div id="result"></div>
-</div>
+    <!-- 回答確認ページ -->
+    <div class="card is-hidden" id="confirmArea">
+        <h2>回答確認</h2>
+        <p>選んだ回答を確認してください。修正したい場合は「戻って修正する」を押してください。</p>
+        <ul class="confirm-list" id="confirmList"></ul>
 
-<div class="chart-box" id="chartBox">
-    <canvas id="radarChart"></canvas>
-</div>
+        <button type="button" class="back-btn" onclick="returnToQuestions()">戻って修正する</button>
+        <button type="button" class="diagnose-btn" onclick="finish()">診断する</button>
+    </div>
+
+    <div class="chart-box" id="chartBox">
+        <canvas id="radarChart"></canvas>
+    </div>
 
 </div><!-- /quizArea -->
 
@@ -960,28 +1045,53 @@ const playerImages = {
 };
 
 let idx = 0;
+let answers = Array(questions.length).fill(null);
 let me = [0,0,0,0,0,0];
+let radarChart = null;
 
 // 「診断を始める」ボタンが押されたときの処理
 function startDiagnosis(){
     document.getElementById("startScreen").classList.add("is-hidden");
     document.getElementById("quizArea").classList.remove("is-hidden");
+
+    idx = 0;
+    answers = Array(questions.length).fill(null);
+    me = [0,0,0,0,0,0];
+
+    document.getElementById("quizCard").classList.remove("is-hidden");
+    document.getElementById("confirmArea").classList.add("is-hidden");
+    document.getElementById("chartBox").style.display = "none";
+    document.getElementById("result").innerHTML = "";
+
+    if(radarChart !== null){
+        radarChart.destroy();
+        radarChart = null;
+    }
+
     render();
 }
 
+// 質問を表示する処理
 function render(){
-    document.getElementById("question").innerText = "Q" + (idx + 1) + " " + questions[idx].q;
+    document.getElementById("progressArea").style.display = "block";
+    document.getElementById("choices").style.display = "block";
+    document.getElementById("questionButtons").style.display = "block";
+    document.getElementById("result").innerHTML = "";
 
+    document.getElementById("question").innerText = "Q" + (idx + 1) + " " + questions[idx].q;
     document.getElementById("progressText").innerText = "Q" + (idx + 1) + " / " + questions.length;
 
     const progress = ((idx + 1) / questions.length) * 100;
     document.getElementById("progressFill").style.width = progress + "%";
 
     let html = "";
+    const choiceKeys = ["A","B","C","D"];
 
-    ["A","B","C","D"].forEach((key,i)=>{
+    choiceKeys.forEach((key,i)=>{
+        const selectedClass = answers[idx] === key ? " is-selected" : "";
+
         html += `
-            <button class="choice-btn" onclick="answer('${key}')">
+            <button type="button" class="choice-btn${selectedClass}" onclick="selectChoice('${key}')">
                 <span class="choice-label">${key}</span>
                 <span class="choice-text">${questions[idx].c[i]}</span>
             </button>
@@ -989,24 +1099,98 @@ function render(){
     });
 
     document.getElementById("choices").innerHTML = html;
+
+    // 1問目では「前の質問に戻る」ボタンを隠す
+    document.getElementById("backQuestionBtn").style.display = idx === 0 ? "none" : "block";
+
+    // 最後の質問ではボタン名を「回答を確認する」にする
+    document.getElementById("nextQuestionBtn").innerText = idx === questions.length - 1 ? "回答を確認する" : "次の質問へ";
 }
 
-function answer(choice){
-    const add = scores["Q" + (idx + 1)][choice];
+// 回答を選んだときの処理
+function selectChoice(choice){
+    answers[idx] = choice;
+    render();
+}
 
-    me = me.map((v,i)=>v + add[i]);
+// 次の質問へ進む処理
+function nextQuestion(){
+    if(answers[idx] === null){
+        alert("回答を1つ選んでください。");
+        return;
+    }
 
-    idx++;
-
-    if(idx < questions.length){
+    if(idx < questions.length - 1){
+        idx++;
         render();
     }else{
-        finish();
+        showConfirmPage();
     }
 }
 
+// 前の質問へ戻る処理
+function backQuestion(){
+    if(idx > 0){
+        idx--;
+        render();
+    }
+}
+
+// 回答確認ページを表示する処理
+function showConfirmPage(){
+    document.getElementById("quizCard").classList.add("is-hidden");
+    document.getElementById("confirmArea").classList.remove("is-hidden");
+    document.getElementById("chartBox").style.display = "none";
+
+    let html = "";
+    const choiceKeys = ["A","B","C","D"];
+
+    questions.forEach((question, questionIndex)=>{
+        const answerKey = answers[questionIndex];
+        const answerIndex = choiceKeys.indexOf(answerKey);
+        const answerText = question.c[answerIndex];
+
+        html += `
+            <li class="confirm-item">
+                <div class="confirm-question">Q${questionIndex + 1}. ${question.q}</div>
+                <div class="confirm-answer">${answerKey}. ${answerText}</div>
+            </li>
+        `;
+    });
+
+    document.getElementById("confirmList").innerHTML = html;
+}
+
+// 回答確認ページから質問画面に戻る処理
+function returnToQuestions(){
+    document.getElementById("confirmArea").classList.add("is-hidden");
+    document.getElementById("quizCard").classList.remove("is-hidden");
+
+    // 最初の質問に戻す。選んだ回答は残るので修正しやすい。
+    idx = 0;
+    render();
+}
+
+// 選んだ回答から診断用の点数を計算する処理
+function calculateScore(){
+    me = [0,0,0,0,0,0];
+
+    answers.forEach((choice, questionIndex)=>{
+        const add = scores["Q" + (questionIndex + 1)][choice];
+        me = me.map((v,i)=>v + add[i]);
+    });
+}
+
+// 「診断する」ボタンが押されたときの処理
 function finish(){
-    document.getElementById("choices").innerHTML = "";
+    calculateScore();
+
+    document.getElementById("confirmArea").classList.add("is-hidden");
+    document.getElementById("quizCard").classList.remove("is-hidden");
+
+    document.getElementById("progressArea").style.display = "none";
+    document.getElementById("choices").style.display = "none";
+    document.getElementById("questionButtons").style.display = "none";
     document.getElementById("question").innerText = "診断結果";
 
     let best = "";
@@ -1025,55 +1209,61 @@ function finish(){
         }
     }
 
-const abilityNames = ["パス","ドリブル","シュート","守備","運動量","リーダーシップ"];
+    const abilityNames = ["パス","ドリブル","シュート","守備","運動量","リーダーシップ"];
 
-const abilityHtml = abilityNames.map((name,i)=>{
-    const percent = Math.min((me[i] / 30) * 100, 100);
+    const abilityHtml = abilityNames.map((name,i)=>{
+        const percent = Math.min((me[i] / 30) * 100, 100);
 
-    return `
-        <div class="ability-item">
-            <div class="ability-name">${name}：${me[i]}</div>
-            <div class="ability-bar">
-                <div class="ability-bar-fill" style="width:${percent}%"></div>
+        return `
+            <div class="ability-item">
+                <div class="ability-name">${name}：${me[i]}</div>
+                <div class="ability-bar">
+                    <div class="ability-bar-fill" style="width:${percent}%"></div>
+                </div>
+            </div>
+        `;
+    }).join("");
+
+    const trainingHtml = trainingMenus[best].map(menu => `<li>${menu}</li>`).join("");
+
+    document.getElementById("result").innerHTML = `
+        <div class="result-hero">
+            <div class="result-badge">診断結果</div>
+
+            <h2 class="result-title">
+                あなたが目指すべき選手は<br>
+                <span>${best}</span>
+            </h2>
+
+            <img class="player-img" src="${playerImages[best]}" alt="${best}">
+
+            <p class="result-description">${descriptions[best]}</p>
+        </div>
+
+        <div class="section-card">
+            <h3>おすすめ練習メニュー</h3>
+            <ul class="training-list">
+                ${trainingHtml}
+            </ul>
+        </div>
+
+        <div class="section-card">
+            <h3>あなたの能力</h3>
+            <div class="ability-grid">
+                ${abilityHtml}
             </div>
         </div>
+
+        <button type="button" class="restart-btn" onclick="startDiagnosis()">もう一度診断する</button>
     `;
-}).join("");
-
-const trainingHtml = trainingMenus[best].map(menu => `<li>${menu}</li>`).join("");
-
-document.getElementById("result").innerHTML = `
-    <div class="result-hero">
-        <div class="result-badge">診断結果</div>
-
-        <h2 class="result-title">
-            あなたが目指すべき選手は<br>
-            <span>${best}</span>
-        </h2>
-
-        <img class="player-img" src="${playerImages[best]}" alt="${best}">
-
-        <p class="result-description">${descriptions[best]}</p>
-    </div>
-
-    <div class="section-card">
-        <h3>おすすめ練習メニュー</h3>
-        <ul class="training-list">
-            ${trainingHtml}
-        </ul>
-    </div>
-
-    <div class="section-card">
-        <h3>あなたの能力</h3>
-        <div class="ability-grid">
-            ${abilityHtml}
-        </div>
-    </div>
-`;
 
     document.getElementById("chartBox").style.display = "block";
 
-    new Chart(document.getElementById("radarChart"),{
+    if(radarChart !== null){
+        radarChart.destroy();
+    }
+
+    radarChart = new Chart(document.getElementById("radarChart"),{
         type:"radar",
         data:{
             labels:["パス","ドリブル","シュート","守備","運動量","リーダーシップ"],
