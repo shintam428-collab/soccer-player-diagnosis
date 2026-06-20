@@ -1,18 +1,14 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>縺ゅ↑縺溘′逶ｮ謖・☆縺ｹ縺埼∈謇玖ｨｺ譁ｭ</title>
+<title>あなたが目指すべき選手診断</title>
 
 <style>
-html{
-    background:#0a1628;
-}
-
+html{background:#0a1628;}
 body{
-    font-family: Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    font-family:Arial,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
     color:white;
     text-align:center;
     padding:20px;
@@ -21,24 +17,9 @@ body{
     background:transparent;
     overflow-x:hidden;
 }
-
-.page-content{
-    position:relative;
-    z-index:1;
-}
-
-.is-hidden{
-    display:none !important;
-}
-
-.ambient-bg{
-    position:fixed;
-    inset:0;
-    z-index:0;
-    overflow:hidden;
-    pointer-events:none;
-}
-
+.page-content{position:relative;z-index:1;}
+.is-hidden{display:none!important;}
+.ambient-bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
 .ambient-bg__gradient{
     position:absolute;
     inset:0;
@@ -46,44 +27,20 @@ body{
         radial-gradient(ellipse 80% 50% at 50% 0%, rgba(34,197,94,0.35) 0%, transparent 55%),
         radial-gradient(ellipse 60% 40% at 20% 80%, rgba(59,130,246,0.2) 0%, transparent 50%),
         radial-gradient(ellipse 50% 35% at 85% 70%, rgba(250,204,21,0.12) 0%, transparent 45%),
-        linear-gradient(165deg, #0a1628 0%, #064e3b 45%, #14532d 100%);
+        linear-gradient(165deg,#0a1628 0%,#064e3b 45%,#14532d 100%);
     animation:bg-shift 12s ease-in-out infinite alternate;
 }
-
 .ambient-bg__pitch{
     position:absolute;
     inset:0;
     opacity:0.55;
     background:
-        repeating-linear-gradient(0deg, transparent, transparent 48px, rgba(255,255,255,0.04) 48px, rgba(255,255,255,0.04) 96px),
-        radial-gradient(circle at 50% 115%, transparent 28%, rgba(255,255,255,0.07) 28.2%, rgba(255,255,255,0.07) 28.8%, transparent 29%),
-        radial-gradient(circle at 50% 115%, transparent 42%, rgba(255,255,255,0.05) 42.2%, rgba(255,255,255,0.05) 42.6%, transparent 43%);
+        repeating-linear-gradient(0deg,transparent,transparent 48px,rgba(255,255,255,0.04) 48px,rgba(255,255,255,0.04) 96px),
+        radial-gradient(circle at 50% 115%,transparent 28%,rgba(255,255,255,0.07) 28.2%,rgba(255,255,255,0.07) 28.8%,transparent 29%);
 }
-
-.ambient-bg__glow{
-    position:absolute;
-    border-radius:50%;
-    filter:blur(60px);
-    animation:float-glow 8s ease-in-out infinite;
-}
-
-.ambient-bg__glow--1{
-    width:320px;
-    height:320px;
-    top:-80px;
-    left:-60px;
-    background:rgba(34,197,94,0.45);
-}
-
-.ambient-bg__glow--2{
-    width:280px;
-    height:280px;
-    bottom:-40px;
-    right:-40px;
-    background:rgba(59,130,246,0.35);
-    animation-delay:-4s;
-}
-
+.ambient-bg__glow{position:absolute;border-radius:50%;filter:blur(60px);animation:float-glow 8s ease-in-out infinite;}
+.ambient-bg__glow--1{width:320px;height:320px;top:-80px;left:-60px;background:rgba(34,197,94,0.45);}
+.ambient-bg__glow--2{width:280px;height:280px;bottom:-40px;right:-40px;background:rgba(59,130,246,0.35);animation-delay:-4s;}
 .ambient-bg__spotlight{
     position:absolute;
     top:0;
@@ -91,35 +48,19 @@ body{
     transform:translateX(-50%);
     width:140%;
     height:55%;
-    background:radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.14) 0%, transparent 65%);
+    background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,0.14) 0%,transparent 65%);
     animation:spotlight-pulse 6s ease-in-out infinite;
 }
-
 .ambient-bg__grid{
     position:absolute;
     inset:0;
-    background-image:
-        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);
     background-size:60px 60px;
-    mask-image:radial-gradient(ellipse 70% 60% at 50% 40%, black 20%, transparent 75%);
+    mask-image:radial-gradient(ellipse 70% 60% at 50% 40%,black 20%,transparent 75%);
 }
-
-@keyframes bg-shift{
-    0%{filter:hue-rotate(0deg) brightness(1);}
-    100%{filter:hue-rotate(8deg) brightness(1.05);}
-}
-
-@keyframes float-glow{
-    0%,100%{transform:translate(0,0) scale(1);}
-    50%{transform:translate(30px,20px) scale(1.08);}
-}
-
-@keyframes spotlight-pulse{
-    0%,100%{opacity:0.7;}
-    50%{opacity:1;}
-}
-
+@keyframes bg-shift{0%{filter:hue-rotate(0deg) brightness(1);}100%{filter:hue-rotate(8deg) brightness(1.05);}}
+@keyframes float-glow{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(30px,20px) scale(1.08);}}
+@keyframes spotlight-pulse{0%,100%{opacity:0.7;}50%{opacity:1;}}
 .card{
     background:white;
     color:black;
@@ -129,13 +70,7 @@ body{
     border-radius:18px;
     box-shadow:0 8px 25px rgba(0,0,0,0.3);
 }
-
-#question{
-    font-size:24px;
-    font-weight:bold;
-    margin-bottom:20px;
-}
-
+#question{font-size:24px;font-weight:bold;margin-bottom:20px;}
 button{
     display:block;
     width:90%;
@@ -149,17 +84,8 @@ button{
     transition:0.3s;
     color:white;
 }
-
-button:hover{
-    transform:scale(1.04);
-}
-
-#result{
-    margin-top:20px;
-    font-size:18px;
-    line-height:1.7;
-}
-
+button:hover{transform:scale(1.04);}
+#result{margin-top:20px;font-size:18px;line-height:1.7;}
 .result-hero{
     background:linear-gradient(135deg,#111827,#064e3b);
     color:white;
@@ -168,7 +94,6 @@ button:hover{
     margin-top:20px;
     box-shadow:0 10px 30px rgba(0,0,0,0.35);
 }
-
 .result-badge{
     display:inline-block;
     background:#facc15;
@@ -178,24 +103,9 @@ button:hover{
     font-weight:bold;
     margin-bottom:10px;
 }
-
-.result-title{
-    font-size:28px;
-    margin:10px 0;
-}
-
-.result-title span{
-    font-size:38px;
-    color:#facc15;
-}
-
-.result-description{
-    background:rgba(255,255,255,0.12);
-    padding:15px;
-    border-radius:12px;
-    line-height:1.8;
-}
-
+.result-title{font-size:28px;margin:10px 0;}
+.result-title span{font-size:38px;color:#facc15;}
+.result-description{background:rgba(255,255,255,0.12);padding:15px;border-radius:12px;line-height:1.8;}
 .csv-message{
     background:#fff7ed;
     color:#9a3412;
@@ -206,50 +116,12 @@ button:hover{
     max-width:760px;
     text-align:left;
 }
-
-.section-card{
-    background:#f8fafc;
-    border-radius:16px;
-    padding:18px;
-    margin-top:18px;
-    box-shadow:0 5px 15px rgba(0,0,0,0.15);
-}
-
-.ability-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:12px;
-    margin-top:15px;
-}
-
-.ability-item{
-    background:white;
-    border-radius:12px;
-    padding:12px;
-    text-align:left;
-    box-shadow:0 3px 10px rgba(0,0,0,0.12);
-}
-
-.ability-name{
-    display:flex;
-    justify-content:space-between;
-    gap:10px;
-    font-weight:bold;
-    margin-bottom:6px;
-}
-
-.ability-bar{
-    background:#e5e7eb;
-    border-radius:999px;
-    height:10px;
-    overflow:hidden;
-}
-
-.ability-bar-fill{
-    background:linear-gradient(90deg,#22c55e,#3b82f6);
-    height:100%;
-}
-
+.section-card{background:#f8fafc;border-radius:16px;padding:18px;margin-top:18px;box-shadow:0 5px 15px rgba(0,0,0,0.15);}
+.ability-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:15px;}
+.ability-item{background:white;border-radius:12px;padding:12px;text-align:left;box-shadow:0 3px 10px rgba(0,0,0,0.12);}
+.ability-name{display:flex;justify-content:space-between;gap:10px;font-weight:bold;margin-bottom:6px;}
+.ability-bar{background:#e5e7eb;border-radius:999px;height:10px;overflow:hidden;}
+.ability-bar-fill{background:linear-gradient(90deg,#22c55e,#3b82f6);height:100%;}
 .player-icon{
     --icon-main:#22c55e;
     --icon-accent:#facc15;
@@ -259,21 +131,14 @@ button:hover{
     margin:22px auto;
     border-radius:50%;
     background:
-        radial-gradient(circle at 50% 36%, rgba(255,255,255,0.9) 0 12px, transparent 13px),
-        radial-gradient(circle at 50% 52%, var(--icon-main) 0 34px, transparent 35px),
-        linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.04)),
+        radial-gradient(circle at 50% 36%,rgba(255,255,255,0.9) 0 12px,transparent 13px),
+        radial-gradient(circle at 50% 52%,var(--icon-main) 0 34px,transparent 35px),
+        linear-gradient(135deg,rgba(255,255,255,0.22),rgba(255,255,255,0.04)),
         var(--icon-main);
-    box-shadow:0 16px 35px rgba(0,0,0,0.32), inset 0 0 0 7px rgba(255,255,255,0.12);
+    box-shadow:0 16px 35px rgba(0,0,0,0.32),inset 0 0 0 7px rgba(255,255,255,0.12);
     overflow:hidden;
 }
-
-.player-icon::before,
-.player-icon::after{
-    content:"";
-    position:absolute;
-    display:block;
-}
-
+.player-icon::before,.player-icon::after{content:"";position:absolute;display:block;}
 .player-icon::before{
     left:50%;
     bottom:22px;
@@ -283,7 +148,6 @@ button:hover{
     border-radius:42px 42px 20px 20px;
     background:rgba(15,23,42,0.74);
 }
-
 .player-icon::after{
     left:50%;
     top:50%;
@@ -294,93 +158,18 @@ button:hover{
     border:4px solid var(--icon-accent);
     box-shadow:0 0 0 7px rgba(255,255,255,0.1);
 }
-
-.player-icon.pass-icon{
-    --icon-main:#2563eb;
-    --icon-accent:#bfdbfe;
-}
-
-.player-icon.pass-icon::after{
-    width:86px;
-    height:4px;
-    border:0;
-    border-radius:999px;
-    background:var(--icon-accent);
-    box-shadow:24px -18px 0 -1px var(--icon-accent), 24px 18px 0 -1px var(--icon-accent);
-}
-
-.player-icon.dribble-icon{
-    --icon-main:#7c3aed;
-    --icon-accent:#ddd6fe;
-}
-
-.player-icon.dribble-icon::after{
-    width:84px;
-    height:48px;
-    border:0;
-    border-radius:50%;
-    background:
-        radial-gradient(circle, var(--icon-accent) 0 5px, transparent 6px) 0 4px / 28px 20px repeat-x,
-        radial-gradient(circle, var(--icon-accent) 0 5px, transparent 6px) 14px 26px / 28px 20px repeat-x;
-}
-
-.player-icon.shoot-icon{
-    --icon-main:#dc2626;
-    --icon-accent:#fee2e2;
-}
-
-.player-icon.shoot-icon::after{
-    width:0;
-    height:0;
-    border-top:24px solid transparent;
-    border-bottom:24px solid transparent;
-    border-left:66px solid var(--icon-accent);
-    border-right:0;
-    border-radius:0;
-    box-shadow:0 0 0 0 transparent;
-}
-
-.player-icon.defense-icon{
-    --icon-main:#0f766e;
-    --icon-accent:#ccfbf1;
-}
-
-.player-icon.defense-icon::after{
-    width:62px;
-    height:72px;
-    border:5px solid var(--icon-accent);
-    border-radius:28px 28px 18px 18px;
-    box-shadow:0 0 0 0 transparent;
-}
-
-.player-icon.stamina-icon{
-    --icon-main:#ea580c;
-    --icon-accent:#ffedd5;
-}
-
-.player-icon.stamina-icon::after{
-    width:82px;
-    height:52px;
-    border:0;
-    border-radius:0;
-    background:
-        linear-gradient(90deg, transparent 0 8px, var(--icon-accent) 8px 14px, transparent 14px 24px, var(--icon-accent) 24px 30px, transparent 30px 40px, var(--icon-accent) 40px 46px, transparent 46px),
-        linear-gradient(135deg, transparent 0 38%, var(--icon-accent) 39% 50%, transparent 51%);
-}
-
-.chart-box{
-    background:white;
-    max-width:800px;
-    margin:25px auto;
-    padding:20px;
-    border-radius:18px;
-    display:none;
-}
-
-canvas{
-    max-width:100%;
-}
-
+.player-icon.pass-icon{--icon-main:#2563eb;--icon-accent:#bfdbfe;}
+.player-icon.pass-icon::after{width:86px;height:4px;border:0;border-radius:999px;background:var(--icon-accent);box-shadow:24px -18px 0 -1px var(--icon-accent),24px 18px 0 -1px var(--icon-accent);}
+.player-icon.dribble-icon{--icon-main:#7c3aed;--icon-accent:#ddd6fe;}
+.player-icon.dribble-icon::after{width:84px;height:48px;border:0;border-radius:50%;background:radial-gradient(circle,var(--icon-accent) 0 5px,transparent 6px) 0 4px / 28px 20px repeat-x,radial-gradient(circle,var(--icon-accent) 0 5px,transparent 6px) 14px 26px / 28px 20px repeat-x;}
+.player-icon.shoot-icon{--icon-main:#dc2626;--icon-accent:#fee2e2;}
+.player-icon.shoot-icon::after{width:0;height:0;border-top:24px solid transparent;border-bottom:24px solid transparent;border-left:66px solid var(--icon-accent);border-right:0;border-radius:0;box-shadow:none;}
+.player-icon.defense-icon{--icon-main:#0f766e;--icon-accent:#ccfbf1;}
+.player-icon.defense-icon::after{width:62px;height:72px;border:5px solid var(--icon-accent);border-radius:28px 28px 18px 18px;box-shadow:none;}
+.player-icon.stamina-icon{--icon-main:#ea580c;--icon-accent:#ffedd5;}
+.player-icon.stamina-icon::after{width:82px;height:52px;border:0;border-radius:0;background:linear-gradient(90deg,transparent 0 8px,var(--icon-accent) 8px 14px,transparent 14px 24px,var(--icon-accent) 24px 30px,transparent 30px 40px,var(--icon-accent) 40px 46px,transparent 46px),linear-gradient(135deg,transparent 0 38%,var(--icon-accent) 39% 50%,transparent 51%);}
+.chart-box{background:white;max-width:800px;margin:25px auto;padding:20px;border-radius:18px;display:none;}
+canvas{max-width:100%;}
 .start-screen{
     position:relative;
     max-width:900px;
@@ -395,236 +184,46 @@ canvas{
     border:1px solid rgba(255,255,255,0.1);
     box-shadow:0 16px 48px rgba(0,0,0,0.45);
 }
-
-.start-screen__overlay{
-    position:absolute;
-    inset:0;
-    background:linear-gradient(180deg, rgba(10,22,40,0.92) 0%, rgba(10,22,40,0.72) 35%, rgba(6,78,59,0.55) 65%, rgba(10,22,40,0.88) 100%);
-    z-index:1;
-}
-
-.start-screen__grass{
-    position:absolute;
-    bottom:0;
-    left:0;
-    right:0;
-    height:38%;
-    z-index:0;
-    background:
-        repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.05) 40px, rgba(255,255,255,0.05) 80px),
-        radial-gradient(ellipse 55% 40% at 50% 0%, rgba(34,197,94,0.45) 0%, transparent 70%),
-        linear-gradient(180deg, transparent 0%, rgba(21,128,61,0.5) 30%, rgba(22,101,52,0.75) 100%);
-}
-
-.start-screen__content{
-    position:relative;
-    z-index:3;
-    max-width:560px;
-    padding:20px;
-}
-
-.start-screen__icon{
-    font-size:48px;
-    margin:0 0 12px;
-    line-height:1;
-}
-
-.start-title{
-    font-size:clamp(28px, 6vw, 42px);
-    font-weight:bold;
-    color:#ffffff;
-    margin:0 0 18px;
-    line-height:1.35;
-    text-shadow:0 4px 24px rgba(0,0,0,0.55), 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.start-description{
-    font-size:clamp(15px, 3.5vw, 18px);
-    line-height:1.85;
-    color:rgba(255,255,255,0.9);
-    margin:0 auto 24px;
-    max-width:480px;
-    text-shadow:0 2px 8px rgba(0,0,0,0.4);
-}
-
-.start-btn{
-    display:inline-block;
-    width:auto;
-    max-width:none;
-    margin:0;
-    padding:18px 52px;
-    font-size:20px;
-    font-weight:bold;
-    border-radius:14px;
-    background:linear-gradient(180deg, #4ade80 0%, #22c55e 45%, #16a34a 100%);
-    box-shadow:0 6px 0 #15803d, 0 12px 28px rgba(0,0,0,0.45);
-}
-
-.quiz-area{
-    max-width:900px;
-    margin:0 auto;
-}
-
-.progress-area{
-    margin-bottom:20px;
-}
-
-#progressText{
-    text-align:left;
-    font-weight:bold;
-    color:#166534;
-    margin-bottom:8px;
-}
-
-.progress-bar{
-    width:100%;
-    height:12px;
-    background:#e5e7eb;
-    border-radius:999px;
-    overflow:hidden;
-}
-
-#progressFill{
-    height:100%;
-    width:0%;
-    background:linear-gradient(90deg,#22c55e,#3b82f6);
-    border-radius:999px;
-    transition:0.3s;
-}
-
-.choice-btn{
-    background:white !important;
-    color:#111827 !important;
-    border:2px solid #e5e7eb;
-    display:flex;
-    align-items:center;
-    gap:14px;
-    text-align:left;
-    box-shadow:0 5px 15px rgba(0,0,0,0.12);
-}
-
-.choice-btn:hover{
-    border-color:#22c55e;
-    background:#f0fdf4 !important;
-}
-
-.choice-label{
-    background:#16a34a;
-    color:white;
-    width:34px;
-    height:34px;
-    border-radius:50%;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    font-weight:bold;
-    flex-shrink:0;
-}
-
-.choice-text{
-    flex:1;
-}
-
-.choice-btn.is-selected{
-    border-color:#16a34a;
-    background:#dcfce7 !important;
-    box-shadow:0 0 0 3px rgba(34,197,94,0.25);
-}
-
-.nav-buttons{
-    margin-top:20px;
-}
-
-.nav-btn,
-.back-btn,
-.diagnose-btn,
-.restart-btn{
-    font-weight:bold;
-    box-shadow:0 5px 15px rgba(0,0,0,0.18);
-}
-
-.nav-btn,
-.back-btn{
-    background:#64748b !important;
-}
-
-.diagnose-btn{
-    background:linear-gradient(180deg,#f59e0b,#ea580c) !important;
-}
-
-.restart-btn{
-    background:#2563eb !important;
-}
-
-.confirm-list{
-    text-align:left;
-    margin:20px auto;
-    padding:0;
-    list-style:none;
-}
-
-.confirm-item{
-    background:#f8fafc;
-    border-radius:14px;
-    padding:16px;
-    margin-bottom:12px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.12);
-}
-
-.confirm-question{
-    font-weight:bold;
-    margin-bottom:8px;
-    color:#111827;
-}
-
-.confirm-answer{
-    color:#166534;
-    font-weight:bold;
-}
-
+.start-screen__overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,22,40,0.92) 0%,rgba(10,22,40,0.72) 35%,rgba(6,78,59,0.55) 65%,rgba(10,22,40,0.88) 100%);z-index:1;}
+.start-screen__grass{position:absolute;bottom:0;left:0;right:0;height:38%;z-index:0;background:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(255,255,255,0.05) 40px,rgba(255,255,255,0.05) 80px),radial-gradient(ellipse 55% 40% at 50% 0%,rgba(34,197,94,0.45) 0%,transparent 70%),linear-gradient(180deg,transparent 0%,rgba(21,128,61,0.5) 30%,rgba(22,101,52,0.75) 100%);}
+.start-screen__content{position:relative;z-index:3;max-width:560px;padding:20px;}
+.start-screen__icon{font-size:48px;margin:0 0 12px;line-height:1;}
+.start-title{font-size:clamp(28px,6vw,42px);font-weight:bold;color:#fff;margin:0 0 18px;line-height:1.35;text-shadow:0 4px 24px rgba(0,0,0,0.55),0 2px 4px rgba(0,0,0,0.3);}
+.start-description{font-size:clamp(15px,3.5vw,18px);line-height:1.85;color:rgba(255,255,255,0.9);margin:0 auto 24px;max-width:480px;text-shadow:0 2px 8px rgba(0,0,0,0.4);}
+.start-btn{display:inline-block;width:auto;max-width:none;margin:0;padding:18px 52px;font-size:20px;font-weight:bold;border-radius:14px;background:linear-gradient(180deg,#4ade80 0%,#22c55e 45%,#16a34a 100%);box-shadow:0 6px 0 #15803d,0 12px 28px rgba(0,0,0,0.45);}
+.quiz-area{max-width:900px;margin:0 auto;}
+.progress-area{margin-bottom:20px;}
+#progressText{text-align:left;font-weight:bold;color:#166534;margin-bottom:8px;}
+.progress-bar{width:100%;height:12px;background:#e5e7eb;border-radius:999px;overflow:hidden;}
+#progressFill{height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#3b82f6);border-radius:999px;transition:0.3s;}
+.choice-btn{background:white!important;color:#111827!important;border:2px solid #e5e7eb;display:flex;align-items:center;gap:14px;text-align:left;box-shadow:0 5px 15px rgba(0,0,0,0.12);}
+.choice-btn:hover{border-color:#22c55e;background:#f0fdf4!important;}
+.choice-label{background:#16a34a;color:white;width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:bold;flex-shrink:0;}
+.choice-text{flex:1;}
+.choice-btn.is-selected{border-color:#16a34a;background:#dcfce7!important;box-shadow:0 0 0 3px rgba(34,197,94,0.25);}
+.nav-buttons{margin-top:20px;}
+.nav-btn,.back-btn,.diagnose-btn,.restart-btn{font-weight:bold;box-shadow:0 5px 15px rgba(0,0,0,0.18);}
+.nav-btn,.back-btn{background:#64748b!important;}
+.diagnose-btn{background:linear-gradient(180deg,#f59e0b,#ea580c)!important;}
+.restart-btn{background:#2563eb!important;}
+.confirm-list{text-align:left;margin:20px auto;padding:0;list-style:none;}
+.confirm-item{background:#f8fafc;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 4px 12px rgba(0,0,0,0.12);}
+.confirm-question{font-weight:bold;margin-bottom:8px;color:#111827;}
+.confirm-answer{color:#166534;font-weight:bold;}
 @media(max-width:600px){
-    body{
-        padding:12px;
-    }
-
-    #question{
-        font-size:20px;
-    }
-
-    button{
-        font-size:16px;
-    }
-
-    .ability-grid{
-        grid-template-columns:1fr;
-    }
-
-    .result-title span{
-        font-size:32px;
-    }
-
-    .start-screen{
-        min-height:calc(100vh - 24px);
-        padding:24px 16px;
-        border-radius:18px;
-    }
-
-    .start-screen__icon{
-        font-size:40px;
-    }
-
-    .start-btn{
-        padding:16px 36px;
-        font-size:18px;
-        width:100%;
-        max-width:320px;
-    }
+    body{padding:12px;}
+    #question{font-size:20px;}
+    button{font-size:16px;}
+    .ability-grid{grid-template-columns:1fr;}
+    .result-title span{font-size:32px;}
+    .start-screen{min-height:calc(100vh - 24px);padding:24px 16px;border-radius:18px;}
+    .start-screen__icon{font-size:40px;}
+    .start-btn{padding:16px 36px;font-size:18px;width:100%;max-width:320px;}
 }
 </style>
 </head>
 
 <body>
-
 <div class="ambient-bg" aria-hidden="true">
     <div class="ambient-bg__gradient"></div>
     <div class="ambient-bg__pitch"></div>
@@ -638,46 +237,36 @@ canvas{
     <section id="startScreen" class="start-screen">
         <div class="start-screen__overlay" aria-hidden="true"></div>
         <div class="start-screen__grass" aria-hidden="true"></div>
-
         <div class="start-screen__content">
-            <p class="start-screen__icon">笞ｽ</p>
-            <h1 class="start-title">縺ゅ↑縺溘′逶ｮ謖・☆縺ｹ縺埼∈謇玖ｨｺ譁ｭ</h1>
-            <p class="start-description">
-                雉ｪ蝠上↓遲斐∴繧九→縲√≠縺ｪ縺溘・繝励Ξ繝ｼ繧ｹ繧ｿ繧､繝ｫ縺ｫ霑代＞驕ｸ謇九ち繧､繝励ｒ險ｺ譁ｭ縺励∪縺吶・            </p>
+            <p class="start-screen__icon">⚽</p>
+            <h1 class="start-title">あなたが目指すべき選手診断</h1>
+            <p class="start-description">質問に答えると、あなたのプレースタイルに近い選手タイプを診断します。</p>
             <div id="questionStatus"></div>
-            <button type="button" id="startBtn" class="start-btn" onclick="startDiagnosis()">
-                險ｺ譁ｭ繧貞ｧ九ａ繧・            </button>
+            <button type="button" id="startBtn" class="start-btn" onclick="startDiagnosis()">診断を始める</button>
         </div>
     </section>
 
     <div id="quizArea" class="quiz-area is-hidden">
         <div class="card" id="quizCard">
             <div id="csvStatus"></div>
-
             <div class="progress-area" id="progressArea">
                 <div id="progressText">Q1 / 1</div>
-                <div class="progress-bar">
-                    <div id="progressFill"></div>
-                </div>
+                <div class="progress-bar"><div id="progressFill"></div></div>
             </div>
-
             <h2 id="question"></h2>
             <div id="choices"></div>
-
             <div class="nav-buttons" id="questionButtons">
-                <button type="button" class="nav-btn" id="backQuestionBtn" onclick="backQuestion()">蜑阪・雉ｪ蝠上↓謌ｻ繧・/button>
+                <button type="button" class="nav-btn" id="backQuestionBtn" onclick="backQuestion()">前の質問に戻る</button>
             </div>
-
             <div id="result"></div>
         </div>
 
         <div class="card is-hidden" id="confirmArea">
-            <h2>蝗樒ｭ皮｢ｺ隱・/h2>
-            <p>驕ｸ繧薙□蝗樒ｭ斐ｒ遒ｺ隱阪＠縺ｦ縺上□縺輔＞縲ゆｿｮ豁｣縺励◆縺・ｴ蜷医・縲梧綾縺｣縺ｦ菫ｮ豁｣縺吶ｋ縲阪ｒ謚ｼ縺励※縺上□縺輔＞縲・/p>
+            <h2>回答確認</h2>
+            <p>選んだ回答を確認してください。修正したい場合は「戻って修正する」を押してください。</p>
             <ul class="confirm-list" id="confirmList"></ul>
-
-            <button type="button" class="back-btn" onclick="returnToQuestions()">謌ｻ縺｣縺ｦ菫ｮ豁｣縺吶ｋ</button>
-            <button type="button" class="diagnose-btn" onclick="finish()">險ｺ譁ｭ縺吶ｋ</button>
+            <button type="button" class="back-btn" onclick="returnToQuestions()">戻って修正する</button>
+            <button type="button" class="diagnose-btn" onclick="finish()">診断する</button>
         </div>
 
         <div class="chart-box" id="chartBox">
@@ -720,6 +309,7 @@ const radarGroups = [
     {name:"空中戦", abilities:["ヘディング","ジャンプ力"]},
     {name:"スピード", abilities:["スピード","瞬発力"]}
 ];
+
 const radarAbilityNames = radarGroups.map(group => group.name);
 const validIconClasses = ["pass-icon","dribble-icon","shoot-icon","defense-icon","stamina-icon"];
 
@@ -743,14 +333,14 @@ async function loadQuestionsCsv(){
         const response = await fetch("questions.csv", {cache:"no-store"});
 
         if(!response.ok){
-            throw new Error("questions.csv繧定ｪｭ縺ｿ霎ｼ繧√∪縺帙ｓ縺ｧ縺励◆");
+            throw new Error("questions.csvを読み込めませんでした");
         }
 
         const csvText = await response.text();
         questions = parseQuestionsCsv(csvText);
 
         if(questions.length === 0){
-            throw new Error("questions.csv縺ｫ譛牙柑縺ｪ雉ｪ蝠上ョ繝ｼ繧ｿ縺後≠繧翫∪縺帙ｓ");
+            throw new Error("questions.csvに有効な質問データがありません");
         }
 
         questionLoadError = "";
@@ -759,7 +349,7 @@ async function loadQuestionsCsv(){
     }catch(error){
         questions = [];
         answers = [];
-        questionLoadError = "questions.csv繧定ｪｭ縺ｿ霎ｼ繧√∪縺帙ｓ縺ｧ縺励◆";
+        questionLoadError = "questions.csvを読み込めませんでした";
         updateCsvStatus();
     }
 }
@@ -769,22 +359,21 @@ async function loadPlayersCsv(){
         const response = await fetch("players.csv", {cache:"no-store"});
 
         if(!response.ok){
-            throw new Error("players.csv繧定ｪｭ縺ｿ霎ｼ繧√∪縺帙ｓ縺ｧ縺励◆");
+            throw new Error("players.csvを読み込めませんでした");
         }
 
         const csvText = await response.text();
         players = parsePlayersCsv(csvText);
-        console.log(players);
 
         if(players.length === 0){
-            throw new Error("players.csv縺ｫ譛牙柑縺ｪ驕ｸ謇九ョ繝ｼ繧ｿ縺後≠繧翫∪縺帙ｓ");
+            throw new Error("players.csvに有効な選手データがありません");
         }
 
         csvLoadError = "";
         updateCsvStatus();
     }catch(error){
         players = [];
-        csvLoadError = "players.csv繧定ｪｭ縺ｿ霎ｼ繧√∪縺帙ｓ縺ｧ縺励◆";
+        csvLoadError = "players.csvを読み込めませんでした";
         updateCsvStatus();
     }
 }
@@ -834,7 +423,7 @@ function parseQuestionsCsv(csvText){
     const rows = parseCsv(csvText.trim());
     const majorHeader = rows.shift() || [];
     const abilityHeader = rows.shift() || [];
-    const abilityColumns = getQuestionAbilityColumns(majorHeader, abilityHeader);
+    const abilityColumns = getAbilityColumns(majorHeader, abilityHeader);
     const groupedQuestions = new Map();
 
     rows.forEach(row => {
@@ -870,7 +459,7 @@ function parseQuestionsCsv(csvText){
     return Array.from(groupedQuestions.values()).filter(question => question.choices.length > 0);
 }
 
-function getQuestionAbilityColumns(majorHeader, abilityHeader){
+function getAbilityColumns(majorHeader, abilityHeader){
     const columns = [];
 
     abilityHeader.forEach((name, index) => {
@@ -927,6 +516,7 @@ function parsePlayersCsv(csvText){
 function clampPlayerScore(value){
     return Math.max(0, Math.min(Number(value) || 0, 100));
 }
+
 function createEmptyFineScores(){
     return fineAbilityNames.reduce((scores, name) => {
         scores[name] = 0;
@@ -988,9 +578,7 @@ function startDiagnosis(){
     document.getElementById("chartBox").style.display = "none";
     document.getElementById("result").innerHTML = "";
     updateCsvStatus();
-
     radarChart = null;
-
     render();
 }
 
@@ -1096,7 +684,7 @@ function finish(){
     document.getElementById("progressArea").style.display = "none";
     document.getElementById("choices").style.display = "none";
     document.getElementById("questionButtons").style.display = "none";
-    document.getElementById("question").innerText = "險ｺ譁ｭ邨先棡";
+    document.getElementById("question").innerText = "診断結果";
     updateCsvStatus();
 
     if(players.length === 0){
@@ -1110,33 +698,26 @@ function finish(){
 
     document.getElementById("result").innerHTML = `
         <div class="result-hero">
-            <div class="result-badge">險ｺ譁ｭ邨先棡</div>
-
+            <div class="result-badge">診断結果</div>
             <h2 class="result-title">
-                縺ゅ↑縺溘′逶ｮ謖・☆縺ｹ縺埼∈謇九ち繧､繝励・<br>
+                あなたが目指すべき選手タイプは<br>
                 <span>${escapeHtml(best.typeName)}</span>
             </h2>
-
             <div class="player-icon ${best.icon}" aria-hidden="true"></div>
-
-            <p><strong>蜿り・∈謇具ｼ・/strong>${escapeHtml(best.referencePlayer)}</p>
+            <p><strong>参考選手：</strong>${escapeHtml(best.referencePlayer)}</p>
         </div>
 
         <div class="section-card">
-            <h3>縺ゅ↑縺溘・閭ｽ蜉・/h3>
-            <div class="ability-grid">
-                ${abilityHtml}
-            </div>
+            <h3>あなたの能力</h3>
+            <div class="ability-grid">${abilityHtml}</div>
         </div>
 
         <div class="section-card">
-            <h3>險ｺ譁ｭ縺輔ｌ縺滄∈謇九ち繧､繝励・閭ｽ蜉・/h3>
-            <div class="ability-grid">
-                ${playerAbilityHtml}
-            </div>
+            <h3>診断された選手タイプの能力</h3>
+            <div class="ability-grid">${playerAbilityHtml}</div>
         </div>
 
-        <button type="button" class="restart-btn" onclick="startDiagnosis()">繧ゅ≧荳蠎ｦ險ｺ譁ｭ縺吶ｋ</button>
+        <button type="button" class="restart-btn" onclick="startDiagnosis()">もう一度診断する</button>
     `;
 
     drawRadarChart(best);
@@ -1206,14 +787,12 @@ function drawRadarChart(best){
     drawRadarPolygon(ctx, best.radarScores, maxValue, center, radius, "rgba(231,76,60,0.25)", "rgba(231,76,60,1)");
     drawRadarLabels(ctx, center, radius, size);
     drawRadarLegend(ctx, best.typeName);
-
     radarChart = true;
 }
 
 function getRadarPoint(index, value, maxValue, center, radius){
     const angle = (Math.PI * 2 * index / radarAbilityNames.length) - Math.PI / 2;
     const distance = Math.min(value / maxValue, 1) * radius;
-
     return {
         x:center + Math.cos(angle) * distance,
         y:center + Math.sin(angle) * distance
@@ -1304,20 +883,17 @@ function showCsvFallbackResult(){
     document.getElementById("chartBox").style.display = "none";
     document.getElementById("result").innerHTML = `
         <div class="result-hero">
-            <div class="result-badge">險ｺ譁ｭ邨先棡</div>
-            <h2 class="result-title">邨先棡繝・・繧ｿ繧定ｪｭ縺ｿ霎ｼ繧√∪縺帙ｓ縺ｧ縺励◆</h2>
+            <div class="result-badge">診断結果</div>
+            <h2 class="result-title">結果データを読み込めませんでした</h2>
             <p class="result-description">
-                蝗樒ｭ斐・螳御ｺ・＠縺ｦ縺・∪縺吶Ｑlayers.csv繧段ndex.html縺ｨ蜷後§髫主ｱ､縺ｫ鄂ｮ縺上→縲∬ｨｺ譁ｭ邨先棡縺ｮ驕ｸ謇九ち繧､繝励ｒ陦ｨ遉ｺ縺ｧ縺阪∪縺吶・            </p>
+                回答は完了しています。players.csvをindex.htmlと同じ階層に置くと、診断結果の選手タイプを表示できます。
+            </p>
         </div>
-
         <div class="section-card">
-            <h3>縺ゅ↑縺溘・閭ｽ蜉・/h3>
-            <div class="ability-grid">
-                ${createAbilityHtml(userRadarScores)}
-            </div>
+            <h3>あなたの能力</h3>
+            <div class="ability-grid">${createAbilityHtml(userRadarScores)}</div>
         </div>
-
-        <button type="button" class="restart-btn" onclick="startDiagnosis()">繧ゅ≧荳蠎ｦ險ｺ譁ｭ縺吶ｋ</button>
+        <button type="button" class="restart-btn" onclick="startDiagnosis()">もう一度診断する</button>
     `;
 }
 
@@ -1338,9 +914,5 @@ function escapeAttribute(value){
     return escapeHtml(value).replace(/`/g, "&#096;");
 }
 </script>
-
 </body>
 </html>
-
-
-
