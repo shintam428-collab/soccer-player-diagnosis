@@ -6,15 +6,13 @@
 
 <title>あなたが目指すべき選手診断</title>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <style>
 html{
     background:#0a1628;
 }
 
 body{
-    font-family: Arial, sans-serif;
+    font-family: Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
     color:white;
     text-align:center;
     padding:20px;
@@ -29,7 +27,7 @@ body{
     z-index:1;
 }
 
-/* 非表示用クラス */
+/* 画面を一時的に隠すための共通クラスです */
 .is-hidden{
     display:none !important;
 }
@@ -82,7 +80,6 @@ body{
     top:-80px;
     left:-60px;
     background:rgba(34,197,94,0.45);
-    animation-delay:0s;
 }
 
 .ambient-bg__glow--2{
@@ -169,223 +166,221 @@ button:hover{
     transform:scale(1.04);
 }
 
-button:nth-child(1){
-    background:#3498db;
-}
-
-button:nth-child(2){
-    background:#e67e22;
-}
-
-button:nth-child(3){
-    background:#e74c3c;
-}
-
-button:nth-child(4){
-    background:#2c3e50;
-}
-
 #result{
     margin-top:20px;
     font-size:18px;
     line-height:1.7;
 }
 
-.player-img{
-    width:280px;
-    max-width:90%;
-    border-radius:18px;
-    margin:18px auto;
+.result-hero{
+    background:linear-gradient(135deg,#111827,#064e3b);
+    color:white;
+    padding:25px;
+    border-radius:20px;
+    margin-top:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.35);
+}
+
+.result-badge{
+    display:inline-block;
+    background:#facc15;
+    color:#111827;
+    padding:6px 16px;
+    border-radius:999px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.result-title{
+    font-size:28px;
+    margin:10px 0;
+}
+
+.result-title span{
+    font-size:38px;
+    color:#facc15;
+}
+
+.result-description{
+    background:rgba(255,255,255,0.12);
+    padding:15px;
+    border-radius:12px;
+    line-height:1.8;
+}
+
+.csv-message{
+    background:#fff7ed;
+    color:#9a3412;
+    border:1px solid #fed7aa;
+    border-radius:12px;
+    padding:12px 14px;
+    margin:0 auto 16px;
+    max-width:760px;
+    text-align:left;
+}
+
+.section-card{
+    background:#f8fafc;
+    border-radius:16px;
+    padding:18px;
+    margin-top:18px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.15);
+}
+
+.ability-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+    margin-top:15px;
+}
+
+.ability-item{
+    background:white;
+    border-radius:12px;
+    padding:12px;
+    text-align:left;
+    box-shadow:0 3px 10px rgba(0,0,0,0.12);
+}
+
+.ability-name{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    font-weight:bold;
+    margin-bottom:6px;
+}
+
+.ability-bar{
+    background:#e5e7eb;
+    border-radius:999px;
+    height:10px;
+    overflow:hidden;
+}
+
+.ability-bar-fill{
+    background:linear-gradient(90deg,#22c55e,#3b82f6);
+    height:100%;
+}
+
+/* CSVの「アイコン」列に合わせて色とマークを切り替えるCSS製アイコンです */
+.player-icon{
+    --icon-main:#22c55e;
+    --icon-accent:#facc15;
+    position:relative;
+    width:170px;
+    height:170px;
+    margin:22px auto;
+    border-radius:50%;
+    background:
+        radial-gradient(circle at 50% 36%, rgba(255,255,255,0.9) 0 12px, transparent 13px),
+        radial-gradient(circle at 50% 52%, var(--icon-main) 0 34px, transparent 35px),
+        linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.04)),
+        var(--icon-main);
+    box-shadow:0 16px 35px rgba(0,0,0,0.32), inset 0 0 0 7px rgba(255,255,255,0.12);
+    overflow:hidden;
+}
+
+.player-icon::before,
+.player-icon::after{
+    content:"";
+    position:absolute;
     display:block;
-    box-shadow:0 8px 25px rgba(0,0,0,0.35);
 }
 
-.training-list{
-    display:inline-block;
-    text-align:left;
-    margin:10px auto 20px;
-    font-size:18px;
-    line-height:1.8;
+.player-icon::before{
+    left:50%;
+    bottom:22px;
+    width:76px;
+    height:58px;
+    transform:translateX(-50%);
+    border-radius:42px 42px 20px 20px;
+    background:rgba(15,23,42,0.74);
 }
 
-.result-hero{
-    background:linear-gradient(135deg,#111827,#064e3b);
-    color:white;
-    padding:25px;
-    border-radius:20px;
-    margin-top:20px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.35);
+.player-icon::after{
+    left:50%;
+    top:50%;
+    width:54px;
+    height:54px;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    border:4px solid var(--icon-accent);
+    box-shadow:0 0 0 7px rgba(255,255,255,0.1);
 }
 
-.result-badge{
-    display:inline-block;
-    background:#facc15;
-    color:#111827;
-    padding:6px 16px;
+.player-icon.pass-icon{
+    --icon-main:#2563eb;
+    --icon-accent:#bfdbfe;
+}
+
+.player-icon.pass-icon::after{
+    width:86px;
+    height:4px;
+    border:0;
     border-radius:999px;
-    font-weight:bold;
-    margin-bottom:10px;
+    background:var(--icon-accent);
+    box-shadow:24px -18px 0 -1px var(--icon-accent), 24px 18px 0 -1px var(--icon-accent);
 }
 
-.result-title{
-    font-size:28px;
-    margin:10px 0;
+.player-icon.dribble-icon{
+    --icon-main:#7c3aed;
+    --icon-accent:#ddd6fe;
 }
 
-.result-title span{
-    font-size:38px;
-    color:#facc15;
+.player-icon.dribble-icon::after{
+    width:84px;
+    height:48px;
+    border:0;
+    border-radius:50%;
+    background:
+        radial-gradient(circle, var(--icon-accent) 0 5px, transparent 6px) 0 4px / 28px 20px repeat-x,
+        radial-gradient(circle, var(--icon-accent) 0 5px, transparent 6px) 14px 26px / 28px 20px repeat-x;
 }
 
-.result-description{
-    background:rgba(255,255,255,0.12);
-    padding:15px;
-    border-radius:12px;
-    line-height:1.8;
+.player-icon.shoot-icon{
+    --icon-main:#dc2626;
+    --icon-accent:#fee2e2;
 }
 
-.section-card{
-    background:#f8fafc;
-    border-radius:16px;
-    padding:18px;
-    margin-top:18px;
-    box-shadow:0 5px 15px rgba(0,0,0,0.15);
+.player-icon.shoot-icon::after{
+    width:0;
+    height:0;
+    border-top:24px solid transparent;
+    border-bottom:24px solid transparent;
+    border-left:66px solid var(--icon-accent);
+    border-right:0;
+    border-radius:0;
+    box-shadow:0 0 0 0 transparent;
 }
 
-.ability-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:12px;
-    margin-top:15px;
+.player-icon.defense-icon{
+    --icon-main:#0f766e;
+    --icon-accent:#ccfbf1;
 }
 
-.ability-item{
-    background:white;
-    border-radius:12px;
-    padding:12px;
-    text-align:left;
-    box-shadow:0 3px 10px rgba(0,0,0,0.12);
+.player-icon.defense-icon::after{
+    width:62px;
+    height:72px;
+    border:5px solid var(--icon-accent);
+    border-radius:28px 28px 18px 18px;
+    box-shadow:0 0 0 0 transparent;
 }
 
-.ability-name{
-    font-weight:bold;
-    margin-bottom:6px;
+.player-icon.stamina-icon{
+    --icon-main:#ea580c;
+    --icon-accent:#ffedd5;
 }
 
-.ability-bar{
-    background:#e5e7eb;
-    border-radius:999px;
-    height:10px;
-    overflow:hidden;
+.player-icon.stamina-icon::after{
+    width:82px;
+    height:52px;
+    border:0;
+    border-radius:0;
+    background:
+        linear-gradient(90deg, transparent 0 8px, var(--icon-accent) 8px 14px, transparent 14px 24px, var(--icon-accent) 24px 30px, transparent 30px 40px, var(--icon-accent) 40px 46px, transparent 46px),
+        linear-gradient(135deg, transparent 0 38%, var(--icon-accent) 39% 50%, transparent 51%);
 }
 
-.ability-bar-fill{
-    background:linear-gradient(90deg,#22c55e,#3b82f6);
-    height:100%;
-}
-
-.training-list li{
-    background:white;
-    margin:8px 0;
-    padding:10px 14px;
-    border-radius:10px;
-    box-shadow:0 3px 8px rgba(0,0,0,0.12);
-}
-
-.result-hero{
-    background:linear-gradient(135deg,#111827,#064e3b);
-    color:white;
-    padding:25px;
-    border-radius:20px;
-    margin-top:20px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.35);
-}
-
-.result-badge{
-    display:inline-block;
-    background:#facc15;
-    color:#111827;
-    padding:6px 16px;
-    border-radius:999px;
-    font-weight:bold;
-    margin-bottom:10px;
-}
-
-.result-title{
-    font-size:28px;
-    margin:10px 0;
-}
-
-.result-title span{
-    font-size:38px;
-    color:#facc15;
-}
-
-.result-description{
-    background:rgba(255,255,255,0.12);
-    padding:15px;
-    border-radius:12px;
-    line-height:1.8;
-}
-
-.section-card{
-    background:#f8fafc;
-    border-radius:16px;
-    padding:18px;
-    margin-top:18px;
-    box-shadow:0 5px 15px rgba(0,0,0,0.15);
-}
-
-.ability-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:12px;
-    margin-top:15px;
-}
-
-.ability-item{
-    background:white;
-    border-radius:12px;
-    padding:12px;
-    text-align:left;
-    box-shadow:0 3px 10px rgba(0,0,0,0.12);
-}
-
-.ability-name{
-    font-weight:bold;
-    margin-bottom:6px;
-}
-
-.ability-bar{
-    background:#e5e7eb;
-    border-radius:999px;
-    height:10px;
-    overflow:hidden;
-}
-
-.ability-bar-fill{
-    background:linear-gradient(90deg,#22c55e,#3b82f6);
-    height:100%;
-}
-
-.training-list li{
-    background:white;
-    margin:8px 0;
-    padding:10px 14px;
-    border-radius:10px;
-    box-shadow:0 3px 8px rgba(0,0,0,0.12);
-}
-
-@media(max-width:600px){
-    .ability-grid{
-        grid-template-columns:1fr;
-    }
-
-    .result-title span{
-        font-size:32px;
-    }
-}
-    
 .chart-box{
     background:white;
     max-width:800px;
@@ -399,21 +394,6 @@ canvas{
     max-width:100%;
 }
 
-@media(max-width:600px){
-    h1{
-        font-size:28px;
-    }
-
-    #question{
-        font-size:20px;
-    }
-
-    button{
-        font-size:16px;
-    }
-}
-
-/* ===== スタート画面 ===== */
 .start-screen{
     position:relative;
     max-width:900px;
@@ -432,8 +412,7 @@ canvas{
 .start-screen__overlay{
     position:absolute;
     inset:0;
-    background:
-        linear-gradient(180deg, rgba(10,22,40,0.92) 0%, rgba(10,22,40,0.72) 35%, rgba(6,78,59,0.55) 65%, rgba(10,22,40,0.88) 100%);
+    background:linear-gradient(180deg, rgba(10,22,40,0.92) 0%, rgba(10,22,40,0.72) 35%, rgba(6,78,59,0.55) 65%, rgba(10,22,40,0.88) 100%);
     z-index:1;
 }
 
@@ -445,129 +424,9 @@ canvas{
     height:38%;
     z-index:0;
     background:
-        repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 40px,
-            rgba(255,255,255,0.05) 40px,
-            rgba(255,255,255,0.05) 80px
-        ),
+        repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.05) 40px, rgba(255,255,255,0.05) 80px),
         radial-gradient(ellipse 55% 40% at 50% 0%, rgba(34,197,94,0.45) 0%, transparent 70%),
         linear-gradient(180deg, transparent 0%, rgba(21,128,61,0.5) 30%, rgba(22,101,52,0.75) 100%);
-}
-
-.start-screen__grass::after{
-    content:"";
-    position:absolute;
-    bottom:18%;
-    left:50%;
-    transform:translateX(-50%);
-    width:55%;
-    height:28%;
-    border:2px solid rgba(255,255,255,0.12);
-    border-radius:50%;
-    box-shadow:0 0 30px rgba(34,197,94,0.15);
-}
-
-.start-lights{
-    position:absolute;
-    inset:0;
-    z-index:0;
-    pointer-events:none;
-}
-
-.start-light{
-    position:absolute;
-    top:-30%;
-    height:90%;
-    filter:blur(2px);
-    animation:light-sway 7s ease-in-out infinite;
-}
-
-.start-light--left{
-    left:5%;
-    width:45%;
-    background:linear-gradient(158deg, rgba(255,255,255,0.18) 0%, transparent 68%);
-    transform-origin:top left;
-    animation-delay:0s;
-}
-
-.start-light--right{
-    right:5%;
-    width:45%;
-    background:linear-gradient(202deg, rgba(255,255,255,0.16) 0%, transparent 68%);
-    transform-origin:top right;
-    animation-delay:-2.5s;
-}
-
-.start-light--center{
-    left:30%;
-    width:40%;
-    background:radial-gradient(ellipse at 50% 0%, rgba(250,204,21,0.14) 0%, transparent 65%);
-    animation:spotlight-pulse 5s ease-in-out infinite;
-}
-
-@keyframes light-sway{
-    0%,100%{opacity:0.75; transform:rotate(-2deg);}
-    50%{opacity:1; transform:rotate(3deg);}
-}
-
-.start-silhouettes{
-    position:absolute;
-    inset:0;
-    z-index:2;
-    pointer-events:none;
-}
-
-.start-player{
-    position:absolute;
-    bottom:10%;
-    filter:drop-shadow(0 10px 20px rgba(0,0,0,0.55));
-    animation:player-float 5s ease-in-out infinite;
-}
-
-.start-player--left{
-    left:6%;
-    width:64px;
-    height:100px;
-    background:linear-gradient(180deg, #475569 0%, #1e293b 55%, #0f172a 100%);
-    clip-path:polygon(38% 0%,62% 0%,68% 12%,88% 38%,72% 44%,62% 32%,58% 52%,78% 100%,54% 100%,50% 58%,46% 100%,22% 100%,42% 52%,38% 32%,28% 44%,12% 38%,32% 12%);
-    opacity:0.75;
-    animation-delay:0s;
-}
-
-.start-player--center{
-    left:50%;
-    transform:translateX(-50%);
-    width:78px;
-    height:118px;
-    bottom:14%;
-    background:linear-gradient(180deg, #64748b 0%, #334155 50%, #0f172a 100%);
-    clip-path:polygon(35% 0%,65% 0%,72% 10%,95% 22%,80% 30%,68% 22%,62% 40%,90% 55%,70% 58%,58% 48%,55% 100%,45% 100%,42% 48%,30% 58%,10% 55%,38% 40%,32% 22%,20% 30%,5% 22%,28% 10%);
-    opacity:0.85;
-    animation:player-float-center 5s ease-in-out infinite;
-    animation-delay:-1.5s;
-}
-
-.start-player--right{
-    right:8%;
-    width:60px;
-    height:96px;
-    background:linear-gradient(180deg, #475569 0%, #1e293b 55%, #0f172a 100%);
-    clip-path:polygon(40% 0%,60% 0%,65% 14%,82% 42%,68% 46%,58% 34%,54% 54%,75% 100%,50% 100%,46% 56%,42% 100%,18% 100%,38% 54%,34% 34%,24% 46%,10% 42%,28% 14%);
-    opacity:0.7;
-    animation:player-float 5s ease-in-out infinite;
-    animation-delay:-3s;
-}
-
-@keyframes player-float{
-    0%,100%{transform:translateY(0);}
-    50%{transform:translateY(-8px);}
-}
-
-@keyframes player-float-center{
-    0%,100%{transform:translateX(-50%) translateY(0);}
-    50%{transform:translateX(-50%) translateY(-8px);}
 }
 
 .start-screen__content{
@@ -581,7 +440,6 @@ canvas{
     font-size:48px;
     margin:0 0 12px;
     line-height:1;
-    filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4));
 }
 
 .start-title{
@@ -610,67 +468,14 @@ canvas{
     padding:18px 52px;
     font-size:20px;
     font-weight:bold;
-    border:none;
     border-radius:14px;
-    color:#ffffff;
-    cursor:pointer;
     background:linear-gradient(180deg, #4ade80 0%, #22c55e 45%, #16a34a 100%);
     box-shadow:0 6px 0 #15803d, 0 12px 28px rgba(0,0,0,0.45);
-    transition:transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.start-btn:hover{
-    transform:translateY(-3px) scale(1.04);
-    box-shadow:0 9px 0 #15803d, 0 18px 36px rgba(0,0,0,0.5);
-}
-
-.start-btn:active{
-    transform:translateY(4px);
-    box-shadow:0 2px 0 #15803d, 0 6px 16px rgba(0,0,0,0.4);
 }
 
 .quiz-area{
     max-width:900px;
     margin:0 auto;
-}
-
-@media(max-width:600px){
-    .start-screen{
-        min-height:calc(100vh - 24px);
-        padding:24px 16px;
-        border-radius:18px;
-    }
-
-    .start-player--left{
-        width:48px;
-        height:76px;
-        left:2%;
-        bottom:8%;
-    }
-
-    .start-player--center{
-        width:58px;
-        height:88px;
-        bottom:10%;
-    }
-
-    .start-player--right{
-        width:44px;
-        height:72px;
-        right:2%;
-        bottom:8%;
-    }
-
-    .start-screen__icon{
-        font-size:40px;
-    }
-
-    .start-btn{
-        padding:16px 36px;
-        font-size:18px;
-        width:100%;
-        max-width:320px;
-    }
 }
 
 .progress-area{
@@ -732,9 +537,13 @@ canvas{
 .choice-text{
     flex:1;
 }
-    
 
-/* ===== 回答確認ページ・操作ボタン ===== */
+.choice-btn.is-selected{
+    border-color:#16a34a;
+    background:#dcfce7 !important;
+    box-shadow:0 0 0 3px rgba(34,197,94,0.25);
+}
+
 .nav-buttons{
     margin-top:20px;
 }
@@ -748,16 +557,13 @@ canvas{
     box-shadow:0 5px 15px rgba(0,0,0,0.18);
 }
 
-.nav-btn{
+.nav-btn,
+.back-btn{
     background:#64748b !important;
 }
 
 .check-btn{
     background:linear-gradient(180deg,#22c55e,#16a34a) !important;
-}
-
-.back-btn{
-    background:#64748b !important;
 }
 
 .diagnose-btn{
@@ -766,12 +572,6 @@ canvas{
 
 .restart-btn{
     background:#2563eb !important;
-}
-
-.choice-btn.is-selected{
-    border-color:#16a34a;
-    background:#dcfce7 !important;
-    box-shadow:0 0 0 3px rgba(34,197,94,0.25);
 }
 
 .confirm-list{
@@ -800,6 +600,48 @@ canvas{
     font-weight:bold;
 }
 
+@media(max-width:600px){
+    body{
+        padding:12px;
+    }
+
+    h1{
+        font-size:28px;
+    }
+
+    #question{
+        font-size:20px;
+    }
+
+    button{
+        font-size:16px;
+    }
+
+    .ability-grid{
+        grid-template-columns:1fr;
+    }
+
+    .result-title span{
+        font-size:32px;
+    }
+
+    .start-screen{
+        min-height:calc(100vh - 24px);
+        padding:24px 16px;
+        border-radius:18px;
+    }
+
+    .start-screen__icon{
+        font-size:40px;
+    }
+
+    .start-btn{
+        padding:16px 36px;
+        font-size:18px;
+        width:100%;
+        max-width:320px;
+    }
+}
 </style>
 </head>
 
@@ -815,82 +657,64 @@ canvas{
 </div>
 
 <div class="page-content">
+    <section id="startScreen" class="start-screen">
+        <div class="start-screen__overlay" aria-hidden="true"></div>
+        <div class="start-screen__grass" aria-hidden="true"></div>
 
-<!-- スタート画面（最初に表示） -->
-<section id="startScreen" class="start-screen">
-    <div class="start-screen__overlay" aria-hidden="true"></div>
-    <div class="start-screen__grass" aria-hidden="true"></div>
+        <div class="start-screen__content">
+            <p class="start-screen__icon">⚽</p>
+            <h1 class="start-title">あなたが目指すべき選手診断</h1>
+            <p class="start-description">
+                いくつかの質問に答えるだけで、あなたのプレースタイルに近い選手タイプを診断します。
+            </p>
+            <button type="button" id="startBtn" class="start-btn" onclick="startDiagnosis()">
+                診断を始める
+            </button>
+        </div>
+    </section>
 
-    <div class="start-lights" aria-hidden="true">
-        <div class="start-light start-light--left"></div>
-        <div class="start-light start-light--right"></div>
-        <div class="start-light start-light--center"></div>
-    </div>
+    <div id="quizArea" class="quiz-area is-hidden">
+        <div class="card" id="quizCard">
+            <div id="csvStatus"></div>
 
-    <div class="start-silhouettes" aria-hidden="true">
-        <div class="start-player start-player--left"></div>
-        <div class="start-player start-player--center"></div>
-        <div class="start-player start-player--right"></div>
-    </div>
-
-    <div class="start-screen__content">
-        <p class="start-screen__icon">⚽</p>
-        <h1 class="start-title">あなたが目指すべき選手診断</h1>
-        <p class="start-description">
-            いくつかの質問に答えるだけで、あなたのプレースタイルに近い世界的選手を診断します。
-        </p>
-        <button type="button" id="startBtn" class="start-btn" onclick="startDiagnosis()">
-            診断を始める
-        </button>
-    </div>
-</section>
-
-<!-- 質問・確認・結果エリア（最初は非表示） -->
-<div id="quizArea" class="quiz-area is-hidden">
-
-    <!-- 質問画面 -->
-    <div class="card" id="quizCard">
-        <div class="progress-area" id="progressArea">
-            <div id="progressText">Q1 / 10</div>
-            <div class="progress-bar">
-                <div id="progressFill"></div>
+            <div class="progress-area" id="progressArea">
+                <div id="progressText">Q1 / 10</div>
+                <div class="progress-bar">
+                    <div id="progressFill"></div>
+                </div>
             </div>
+
+            <h2 id="question"></h2>
+            <div id="choices"></div>
+
+            <div class="nav-buttons" id="questionButtons">
+                <button type="button" class="nav-btn" id="backQuestionBtn" onclick="backQuestion()">前の質問に戻る</button>
+                <button type="button" class="check-btn" id="nextQuestionBtn" onclick="nextQuestion()">次の質問へ</button>
+            </div>
+
+            <div id="result"></div>
         </div>
 
-        <h2 id="question"></h2>
-        <div id="choices"></div>
+        <div class="card is-hidden" id="confirmArea">
+            <h2>回答確認</h2>
+            <p>選んだ回答を確認してください。修正したい場合は「戻って修正する」を押してください。</p>
+            <ul class="confirm-list" id="confirmList"></ul>
 
-        <div class="nav-buttons" id="questionButtons">
-            <button type="button" class="nav-btn" id="backQuestionBtn" onclick="backQuestion()">前の質問に戻る</button>
-            <button type="button" class="check-btn" id="nextQuestionBtn" onclick="nextQuestion()">次の質問へ</button>
+            <button type="button" class="back-btn" onclick="returnToQuestions()">戻って修正する</button>
+            <button type="button" class="diagnose-btn" onclick="finish()">診断する</button>
         </div>
 
-        <div id="result"></div>
+        <div class="chart-box" id="chartBox">
+            <canvas id="radarChart"></canvas>
+        </div>
     </div>
-
-    <!-- 回答確認ページ -->
-    <div class="card is-hidden" id="confirmArea">
-        <h2>回答確認</h2>
-        <p>選んだ回答を確認してください。修正したい場合は「戻って修正する」を押してください。</p>
-        <ul class="confirm-list" id="confirmList"></ul>
-
-        <button type="button" class="back-btn" onclick="returnToQuestions()">戻って修正する</button>
-        <button type="button" class="diagnose-btn" onclick="finish()">診断する</button>
-    </div>
-
-    <div class="chart-box" id="chartBox">
-        <canvas id="radarChart"></canvas>
-    </div>
-
-</div><!-- /quizArea -->
-
 </div>
 
 <script>
 const questions = [
     {
-        q:"試合で一番楽しい瞬間は？",
-        c:["味方への決定的なパス","相手を抜く瞬間","ゴールを決める瞬間","ボールを奪う瞬間"]
+        q:"試合中、一番楽しい瞬間は？",
+        c:["味方へ決定的なパスを出す瞬間","相手をドリブルで抜く瞬間","ゴールを決める瞬間","ボールを奪う瞬間"]
     },
     {
         q:"チームで任されたい役割は？",
@@ -898,18 +722,18 @@ const questions = [
     },
     {
         q:"成長させたい能力は？",
-        c:["視野・パス","ドリブル","決定力","守備力"]
+        c:["視野とパス","ドリブル","決定力","守備力"]
     },
     {
-        q:"サッカーで一番大切なのは？",
-        c:["チームを動かす","個で打開する","得点を取る","失点を防ぐ"]
+        q:"サッカーで一番大切だと思うことは？",
+        c:["チームを動かすこと","個人技で打開すること","得点を取ること","失点を防ぐこと"]
     },
     {
         q:"同点の終盤でボールを持ったら？",
         c:["味方を活かす","仕掛ける","ゴールを狙う","ボールを失わない"]
     },
     {
-        q:"監督から褒められたいのは？",
+        q:"監督から褒められたいことは？",
         c:["判断力","技術力","得点力","守備力"]
     },
     {
@@ -922,134 +746,142 @@ const questions = [
     },
     {
         q:"理想の選手像は？",
-        c:["チームを支配する選手","観客を沸かせる選手","ゴールを量産する選手","チームを支える選手"]
+        c:["チームを指揮する選手","観客を沸かせる選手","ゴールを量産する選手","チームを支える選手"]
     },
     {
         q:"能力を一つ伸ばせるなら？",
-        c:["戦術理解・視野","ドリブル技術","シュート技術","守備能力"]
+        c:["戦術理解と視野","ドリブル技術","シュート精度","守備能力"]
     }
 ];
 
 const scores = {
-    Q1:{
-        A:[3,0,0,0,0,1],
-        B:[0,3,0,0,0,0],
-        C:[0,0,3,0,0,0],
-        D:[0,0,0,3,1,0]
-    },
-    Q2:{
-        A:[3,0,0,0,0,2],
-        B:[0,3,0,0,0,0],
-        C:[0,0,3,0,0,1],
-        D:[0,0,0,3,1,2]
-    },
-    Q3:{
-        A:[3,0,0,0,0,1],
-        B:[0,3,0,0,0,0],
-        C:[0,0,3,0,0,0],
-        D:[0,0,0,3,1,0]
-    },
-    Q4:{
-        A:[2,0,0,0,0,2],
-        B:[0,3,0,0,0,0],
-        C:[0,0,3,0,0,0],
-        D:[0,0,0,3,1,1]
-    },
-    Q5:{
-        A:[3,0,0,0,0,1],
-        B:[0,3,0,0,0,0],
-        C:[0,0,3,0,0,0],
-        D:[0,0,0,2,1,1]
-    },
-    Q6:{
-        A:[2,0,0,0,0,2],
-        B:[0,3,0,0,0,0],
-        C:[0,0,3,0,0,0],
-        D:[0,0,0,3,1,0]
-    },
-    Q7:{
-        A:[3,0,0,0,0,0],
-        B:[0,3,0,0,0,0],
-        C:[0,0,3,0,0,0],
-        D:[0,0,0,3,1,0]
-    },
-    Q8:{
-        A:[3,0,0,0,0,1],
-        B:[0,3,0,0,0,0],
-        C:[0,0,3,0,0,0],
-        D:[0,0,0,3,1,1]
-    },
-    Q9:{
-        A:[3,0,0,0,0,2],
-        B:[0,3,0,0,0,0],
-        C:[0,0,3,0,0,0],
-        D:[0,0,0,3,1,2]
-    },
-    Q10:{
-        A:[3,0,0,0,0,1],
-        B:[0,3,0,0,0,0],
-        C:[0,0,3,0,0,0],
-        D:[0,0,0,3,1,0]
-    }
+    Q1:{A:[3,0,0,0,0,1],B:[0,3,0,0,0,0],C:[0,0,3,0,0,0],D:[0,0,0,3,1,0]},
+    Q2:{A:[3,0,0,0,0,2],B:[0,3,0,0,0,0],C:[0,0,3,0,0,1],D:[0,0,0,3,1,2]},
+    Q3:{A:[3,0,0,0,0,1],B:[0,3,0,0,0,0],C:[0,0,3,0,0,0],D:[0,0,0,3,1,0]},
+    Q4:{A:[2,0,0,0,0,2],B:[0,3,0,0,0,0],C:[0,0,3,0,0,0],D:[0,0,0,3,1,1]},
+    Q5:{A:[3,0,0,0,0,1],B:[0,3,0,0,0,0],C:[0,0,3,0,0,0],D:[0,0,0,2,1,1]},
+    Q6:{A:[2,0,0,0,0,2],B:[0,3,0,0,0,0],C:[0,0,3,0,0,0],D:[0,0,0,3,1,0]},
+    Q7:{A:[3,0,0,0,0,0],B:[0,3,0,0,0,0],C:[0,0,3,0,0,0],D:[0,0,0,3,1,0]},
+    Q8:{A:[3,0,0,0,0,1],B:[0,3,0,0,0,0],C:[0,0,3,0,0,0],D:[0,0,0,3,1,1]},
+    Q9:{A:[3,0,0,0,0,2],B:[0,3,0,0,0,0],C:[0,0,3,0,0,0],D:[0,0,0,3,1,2]},
+    Q10:{A:[3,0,0,0,0,1],B:[0,3,0,0,0,0],C:[0,0,3,0,0,0],D:[0,0,0,3,1,0]}
 };
 
-const players = {
-    "デブライネ":[10,7,8,5,8,8],
-    "ヴィニシウス":[5,10,8,4,8,6],
-    "ハーランド":[4,6,10,4,7,6],
-    "ファンダイク":[5,4,4,10,7,9],
-    "カンテ":[6,5,4,10,10,7]
-};
-
-const descriptions = {
-    "デブライネ":"高い視野と正確なパスで試合を支配する司令塔タイプです。味方を活かすプレーやチャンスメイクに優れています。",
-    "ヴィニシウス":"高いドリブル能力と突破力を持つアタッカータイプです。1対1で相手を抜き、試合の流れを変える力があります。",
-    "ハーランド":"圧倒的な得点力を持つストライカータイプです。ゴール前での決定力が高く、チームの得点源として活躍できます。",
-    "ファンダイク":"守備力とリーダーシップに優れたディフェンダータイプです。冷静な判断と統率力でチームを支える存在です。",
-    "カンテ":"豊富な運動量と守備力でチームを支えるミッドフィルダータイプです。ボール奪取や献身的なプレーに優れています。"
-};
-const trainingMenus = {
-    "デブライネ":[
-        "スルーパス練習",
-        "首振りで周囲を見る練習",
-        "ロングキック練習"
-    ],
-    "ヴィニシウス":[
-        "1対1のドリブル練習",
-        "スピードに乗った突破練習",
-        "切り返し練習"
-    ],
-    "ハーランド":[
-        "シュート精度を高める練習",
-        "ゴール前のポジショニング練習",
-        "フィジカル強化"
-    ],
-    "ファンダイク":[
-        "1対1の守備練習",
-        "ヘディング・空中戦の練習",
-        "守備ラインの声かけ練習"
-    ],
-    "カンテ":[
-        "ボール奪取の練習",
-        "持久力を高める走り込み",
-        "相手の動きを予測する練習"
-    ]
-};
-
-const playerImages = {
-    "デブライネ":"debruyne.jpg.png",
-    "ヴィニシウス":"vinicius.jpg.png",
-    "ハーランド":"haaland.jpg.png",
-    "ファンダイク":"vandijk.jpg.png",
-    "カンテ":"kante.jpg.png"
-};
+const abilityNames = ["パス","ドリブル","シュート","守備","運動量","リーダーシップ"];
+const validIconClasses = ["pass-icon","dribble-icon","shoot-icon","defense-icon","stamina-icon"];
 
 let idx = 0;
 let answers = Array(questions.length).fill(null);
 let me = [0,0,0,0,0,0];
 let radarChart = null;
+let players = [];
+let csvLoadError = "";
 
-// 「診断を始める」ボタンが押されたときの処理
+// players.csvは外部データなので、画面開始前に読み込みます。
+document.addEventListener("DOMContentLoaded", () => {
+    loadPlayersCsv();
+});
+
+async function loadPlayersCsv(){
+    try{
+        const response = await fetch("players.csv", {cache:"no-store"});
+
+        if(!response.ok){
+            throw new Error("players.csv を取得できませんでした");
+        }
+
+        const csvText = await response.text();
+        players = parsePlayersCsv(csvText);
+
+        if(players.length === 0){
+            throw new Error("players.csv に有効な選手データがありません");
+        }
+
+        csvLoadError = "";
+        updateCsvStatus();
+    }catch(error){
+        players = [];
+        csvLoadError = "players.csvを読み込めませんでした。診断は進められますが、結果データを表示するにはindex.htmlと同じ階層にplayers.csvを置いてください。";
+        updateCsvStatus();
+    }
+}
+
+// カンマ入りの説明文にも対応できるよう、CSVを1文字ずつ読んで分解します。
+function parseCsv(text){
+    const rows = [];
+    let row = [];
+    let cell = "";
+    let inQuotes = false;
+
+    for(let i = 0; i < text.length; i++){
+        const char = text[i];
+        const nextChar = text[i + 1];
+
+        if(char === '"' && inQuotes && nextChar === '"'){
+            cell += '"';
+            i++;
+        }else if(char === '"'){
+            inQuotes = !inQuotes;
+        }else if(char === "," && !inQuotes){
+            row.push(cell);
+            cell = "";
+        }else if((char === "\n" || char === "\r") && !inQuotes){
+            if(char === "\r" && nextChar === "\n"){
+                i++;
+            }
+            row.push(cell);
+            if(row.some(value => value.trim() !== "")){
+                rows.push(row);
+            }
+            row = [];
+            cell = "";
+        }else{
+            cell += char;
+        }
+    }
+
+    row.push(cell);
+    if(row.some(value => value.trim() !== "")){
+        rows.push(row);
+    }
+
+    return rows;
+}
+
+// CSVの列名を使って、診断で使いやすい形のオブジェクトに変換します。
+function parsePlayersCsv(csvText){
+    const rows = parseCsv(csvText.trim());
+    const header = rows.shift() || [];
+
+    return rows.map(row => {
+        const record = {};
+        header.forEach((key, index) => {
+            record[key.trim()] = (row[index] || "").trim();
+        });
+
+        const iconClass = validIconClasses.includes(record["アイコン"]) ? record["アイコン"] : "pass-icon";
+
+        return {
+            id: record["id"],
+            typeName: record["タイプ名"],
+            referencePlayer: record["参考選手"],
+            icon: iconClass,
+            abilities: abilityNames.map(name => Number(record[name]) || 0),
+            description: record["説明文"] || ""
+        };
+    }).filter(player => player.typeName && player.abilities.some(value => value > 0));
+}
+
+function updateCsvStatus(){
+    const status = document.getElementById("csvStatus");
+
+    if(!status){
+        return;
+    }
+
+    status.innerHTML = csvLoadError ? `<div class="csv-message">${escapeHtml(csvLoadError)}</div>` : "";
+}
+
 function startDiagnosis(){
     document.getElementById("startScreen").classList.add("is-hidden");
     document.getElementById("quizArea").classList.remove("is-hidden");
@@ -1062,16 +894,13 @@ function startDiagnosis(){
     document.getElementById("confirmArea").classList.add("is-hidden");
     document.getElementById("chartBox").style.display = "none";
     document.getElementById("result").innerHTML = "";
+    updateCsvStatus();
 
-    if(radarChart !== null){
-        radarChart.destroy();
-        radarChart = null;
-    }
+    radarChart = null;
 
     render();
 }
 
-// 質問を表示する処理
 function render(){
     document.getElementById("progressArea").style.display = "block";
     document.getElementById("choices").style.display = "block";
@@ -1087,7 +916,7 @@ function render(){
     let html = "";
     const choiceKeys = ["A","B","C","D"];
 
-    choiceKeys.forEach((key,i)=>{
+    choiceKeys.forEach((key,i) => {
         const selectedClass = answers[idx] === key ? " is-selected" : "";
 
         html += `
@@ -1099,21 +928,15 @@ function render(){
     });
 
     document.getElementById("choices").innerHTML = html;
-
-    // 1問目では「前の質問に戻る」ボタンを隠す
     document.getElementById("backQuestionBtn").style.display = idx === 0 ? "none" : "block";
-
-    // 最後の質問ではボタン名を「回答を確認する」にする
     document.getElementById("nextQuestionBtn").innerText = idx === questions.length - 1 ? "回答を確認する" : "次の質問へ";
 }
 
-// 回答を選んだときの処理
 function selectChoice(choice){
     answers[idx] = choice;
     render();
 }
 
-// 次の質問へ進む処理
 function nextQuestion(){
     if(answers[idx] === null){
         alert("回答を1つ選んでください。");
@@ -1128,7 +951,6 @@ function nextQuestion(){
     }
 }
 
-// 前の質問へ戻る処理
 function backQuestion(){
     if(idx > 0){
         idx--;
@@ -1136,7 +958,6 @@ function backQuestion(){
     }
 }
 
-// 回答確認ページを表示する処理
 function showConfirmPage(){
     document.getElementById("quizCard").classList.add("is-hidden");
     document.getElementById("confirmArea").classList.remove("is-hidden");
@@ -1145,7 +966,7 @@ function showConfirmPage(){
     let html = "";
     const choiceKeys = ["A","B","C","D"];
 
-    questions.forEach((question, questionIndex)=>{
+    questions.forEach((question, questionIndex) => {
         const answerKey = answers[questionIndex];
         const answerIndex = choiceKeys.indexOf(answerKey);
         const answerText = question.c[answerIndex];
@@ -1161,90 +982,56 @@ function showConfirmPage(){
     document.getElementById("confirmList").innerHTML = html;
 }
 
-// 回答確認ページから質問画面に戻る処理
 function returnToQuestions(){
     document.getElementById("confirmArea").classList.add("is-hidden");
     document.getElementById("quizCard").classList.remove("is-hidden");
-
-    // 最初の質問に戻す。選んだ回答は残るので修正しやすい。
     idx = 0;
     render();
 }
 
-// 選んだ回答から診断用の点数を計算する処理
+// 回答ごとの点数を合計します。元の診断と同じ6能力の配列です。
 function calculateScore(){
     me = [0,0,0,0,0,0];
 
-    answers.forEach((choice, questionIndex)=>{
+    answers.forEach((choice, questionIndex) => {
         const add = scores["Q" + (questionIndex + 1)][choice];
-        me = me.map((v,i)=>v + add[i]);
+        me = me.map((value, index) => value + add[index]);
     });
 }
 
-// 「診断する」ボタンが押されたときの処理
 function finish(){
     calculateScore();
 
     document.getElementById("confirmArea").classList.add("is-hidden");
     document.getElementById("quizCard").classList.remove("is-hidden");
-
     document.getElementById("progressArea").style.display = "none";
     document.getElementById("choices").style.display = "none";
     document.getElementById("questionButtons").style.display = "none";
     document.getElementById("question").innerText = "診断結果";
+    updateCsvStatus();
 
-    let best = "";
-    let bestDist = Infinity;
-
-    for(const [name, value] of Object.entries(players)){
-        let distance = 0;
-
-        for(let i=0; i<6; i++){
-            distance += (me[i] - value[i]) ** 2;
-        }
-
-        if(distance < bestDist){
-            bestDist = distance;
-            best = name;
-        }
+    if(players.length === 0){
+        showCsvFallbackResult();
+        return;
     }
 
-    const abilityNames = ["パス","ドリブル","シュート","守備","運動量","リーダーシップ"];
-
-    const abilityHtml = abilityNames.map((name,i)=>{
-        const percent = Math.min((me[i] / 30) * 100, 100);
-
-        return `
-            <div class="ability-item">
-                <div class="ability-name">${name}：${me[i]}</div>
-                <div class="ability-bar">
-                    <div class="ability-bar-fill" style="width:${percent}%"></div>
-                </div>
-            </div>
-        `;
-    }).join("");
-
-    const trainingHtml = trainingMenus[best].map(menu => `<li>${menu}</li>`).join("");
+    const best = findBestPlayer();
+    const abilityHtml = createAbilityHtml(me, 30);
+    const playerAbilityHtml = createAbilityHtml(best.abilities, 10);
 
     document.getElementById("result").innerHTML = `
         <div class="result-hero">
             <div class="result-badge">診断結果</div>
 
             <h2 class="result-title">
-                あなたが目指すべき選手は<br>
-                <span>${best}</span>
+                あなたが目指すべき選手タイプは<br>
+                <span>${escapeHtml(best.typeName)}</span>
             </h2>
 
-            <img class="player-img" src="${playerImages[best]}" alt="${best}">
+            <div class="player-icon ${best.icon}" aria-hidden="true"></div>
 
-            <p class="result-description">${descriptions[best]}</p>
-        </div>
-
-        <div class="section-card">
-            <h3>おすすめ練習メニュー</h3>
-            <ul class="training-list">
-                ${trainingHtml}
-            </ul>
+            <p><strong>参考選手：</strong>${escapeHtml(best.referencePlayer)}</p>
+            <p class="result-description">${escapeHtml(best.description)}</p>
         </div>
 
         <div class="section-card">
@@ -1254,48 +1041,208 @@ function finish(){
             </div>
         </div>
 
+        <div class="section-card">
+            <h3>診断された選手タイプの能力</h3>
+            <div class="ability-grid">
+                ${playerAbilityHtml}
+            </div>
+        </div>
+
         <button type="button" class="restart-btn" onclick="startDiagnosis()">もう一度診断する</button>
     `;
 
+    drawRadarChart(best);
+}
+
+function findBestPlayer(){
+    let best = players[0];
+    let bestDistance = Infinity;
+
+    players.forEach(player => {
+        let distance = 0;
+
+        for(let i = 0; i < 6; i++){
+            distance += (me[i] - player.abilities[i]) ** 2;
+        }
+
+        if(distance < bestDistance){
+            bestDistance = distance;
+            best = player;
+        }
+    });
+
+    return best;
+}
+
+function createAbilityHtml(values, maxValue){
+    return abilityNames.map((name, index) => {
+        const value = values[index];
+        const percent = Math.min((value / maxValue) * 100, 100);
+
+        return `
+            <div class="ability-item">
+                <div class="ability-name">
+                    <span>${name}</span>
+                    <span>${value}</span>
+                </div>
+                <div class="ability-bar">
+                    <div class="ability-bar-fill" style="width:${percent}%"></div>
+                </div>
+            </div>
+        `;
+    }).join("");
+}
+
+function drawRadarChart(best){
     document.getElementById("chartBox").style.display = "block";
 
-    if(radarChart !== null){
-        radarChart.destroy();
+    const canvas = document.getElementById("radarChart");
+    const size = Math.min(canvas.parentElement.clientWidth - 20, 520);
+    const pixelRatio = window.devicePixelRatio || 1;
+
+    canvas.width = size * pixelRatio;
+    canvas.height = size * pixelRatio;
+    canvas.style.width = size + "px";
+    canvas.style.height = size + "px";
+
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    ctx.clearRect(0, 0, size, size);
+
+    const center = size / 2;
+    const radius = size * 0.32;
+    const maxValue = 30;
+
+    drawRadarGrid(ctx, center, radius);
+    drawRadarPolygon(ctx, me, maxValue, center, radius, "rgba(52,152,219,0.25)", "rgba(52,152,219,1)");
+    drawRadarPolygon(ctx, best.abilities, maxValue, center, radius, "rgba(231,76,60,0.25)", "rgba(231,76,60,1)");
+    drawRadarLabels(ctx, center, radius, size);
+    drawRadarLegend(ctx, best.typeName);
+
+    radarChart = true;
+}
+
+function getRadarPoint(index, value, maxValue, center, radius){
+    const angle = (Math.PI * 2 * index / abilityNames.length) - Math.PI / 2;
+    const distance = Math.min(value / maxValue, 1) * radius;
+
+    return {
+        x:center + Math.cos(angle) * distance,
+        y:center + Math.sin(angle) * distance
+    };
+}
+
+function drawRadarGrid(ctx, center, radius){
+    ctx.strokeStyle = "#d1d5db";
+    ctx.lineWidth = 1;
+
+    for(let level = 1; level <= 5; level++){
+        const levelRadius = radius * level / 5;
+        ctx.beginPath();
+
+        abilityNames.forEach((name, index) => {
+            const point = getRadarPoint(index, 30, 30, center, levelRadius);
+            if(index === 0){
+                ctx.moveTo(point.x, point.y);
+            }else{
+                ctx.lineTo(point.x, point.y);
+            }
+        });
+
+        ctx.closePath();
+        ctx.stroke();
     }
 
-    radarChart = new Chart(document.getElementById("radarChart"),{
-        type:"radar",
-        data:{
-            labels:["パス","ドリブル","シュート","守備","運動量","リーダーシップ"],
-            datasets:[
-                {
-                    label:"あなた",
-                    data:me,
-                    backgroundColor:"rgba(52,152,219,0.25)",
-                    borderColor:"rgba(52,152,219,1)",
-                    pointBackgroundColor:"rgba(52,152,219,1)"
-                },
-                {
-                    label:best,
-                    data:players[best],
-                    backgroundColor:"rgba(231,76,60,0.25)",
-                    borderColor:"rgba(231,76,60,1)",
-                    pointBackgroundColor:"rgba(231,76,60,1)"
-                }
-            ]
-        },
-        options:{
-            responsive:true,
-            scales:{
-                r:{
-                    suggestedMin:0,
-                    suggestedMax:30
-                }
-            }
-        }
+    abilityNames.forEach((name, index) => {
+        const point = getRadarPoint(index, 30, 30, center, radius);
+        ctx.beginPath();
+        ctx.moveTo(center, center);
+        ctx.lineTo(point.x, point.y);
+        ctx.stroke();
     });
 }
 
+function drawRadarPolygon(ctx, values, maxValue, center, radius, fillColor, strokeColor){
+    ctx.beginPath();
+
+    values.forEach((value, index) => {
+        const point = getRadarPoint(index, value, maxValue, center, radius);
+        if(index === 0){
+            ctx.moveTo(point.x, point.y);
+        }else{
+            ctx.lineTo(point.x, point.y);
+        }
+    });
+
+    ctx.closePath();
+    ctx.fillStyle = fillColor;
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = 3;
+    ctx.fill();
+    ctx.stroke();
+}
+
+function drawRadarLabels(ctx, center, radius, size){
+    ctx.fillStyle = "#111827";
+    ctx.font = "bold 14px Arial, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    abilityNames.forEach((name, index) => {
+        const point = getRadarPoint(index, 30, 30, center, radius + 34);
+        const x = Math.max(32, Math.min(size - 32, point.x));
+        const y = Math.max(18, Math.min(size - 18, point.y));
+        ctx.fillText(name, x, y);
+    });
+}
+
+function drawRadarLegend(ctx, playerName){
+    ctx.font = "bold 13px Arial, sans-serif";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+
+    ctx.fillStyle = "rgba(52,152,219,1)";
+    ctx.fillRect(18, 18, 14, 14);
+    ctx.fillStyle = "#111827";
+    ctx.fillText("あなた", 40, 25);
+
+    ctx.fillStyle = "rgba(231,76,60,1)";
+    ctx.fillRect(18, 42, 14, 14);
+    ctx.fillStyle = "#111827";
+    ctx.fillText(playerName, 40, 49);
+}
+
+function showCsvFallbackResult(){
+    document.getElementById("chartBox").style.display = "none";
+    document.getElementById("result").innerHTML = `
+        <div class="result-hero">
+            <div class="result-badge">診断結果</div>
+            <h2 class="result-title">結果データを読み込めませんでした</h2>
+            <p class="result-description">
+                回答は完了しています。players.csvをindex.htmlと同じ階層に置くと、診断結果の選手タイプを表示できます。
+            </p>
+        </div>
+
+        <div class="section-card">
+            <h3>あなたの能力</h3>
+            <div class="ability-grid">
+                ${createAbilityHtml(me, 30)}
+            </div>
+        </div>
+
+        <button type="button" class="restart-btn" onclick="startDiagnosis()">もう一度診断する</button>
+    `;
+}
+
+// CSVの文字がHTMLとして実行されないようにする安全対策です。
+function escapeHtml(value){
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 </script>
 
 </body>
