@@ -9,13 +9,125 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+html{
+    background:#0a1628;
+}
+
 body{
     font-family: Arial, sans-serif;
-    background: linear-gradient(135deg,#0f9b0f,#006400);
     color:white;
     text-align:center;
     padding:20px;
     min-height:100vh;
+    margin:0;
+    background:transparent;
+    overflow-x:hidden;
+}
+
+.page-content{
+    position:relative;
+    z-index:1;
+}
+
+/* 非表示用クラス */
+.is-hidden{
+    display:none !important;
+}
+
+.ambient-bg{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    overflow:hidden;
+    pointer-events:none;
+}
+
+.ambient-bg__gradient{
+    position:absolute;
+    inset:0;
+    background:
+        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(34,197,94,0.35) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 40% at 20% 80%, rgba(59,130,246,0.2) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 35% at 85% 70%, rgba(250,204,21,0.12) 0%, transparent 45%),
+        linear-gradient(165deg, #0a1628 0%, #064e3b 45%, #14532d 100%);
+    animation:bg-shift 12s ease-in-out infinite alternate;
+}
+
+.ambient-bg__pitch{
+    position:absolute;
+    inset:0;
+    opacity:0.55;
+    background:
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 48px,
+            rgba(255,255,255,0.04) 48px,
+            rgba(255,255,255,0.04) 96px
+        ),
+        radial-gradient(circle at 50% 115%, transparent 28%, rgba(255,255,255,0.07) 28.2%, rgba(255,255,255,0.07) 28.8%, transparent 29%),
+        radial-gradient(circle at 50% 115%, transparent 42%, rgba(255,255,255,0.05) 42.2%, rgba(255,255,255,0.05) 42.6%, transparent 43%);
+}
+
+.ambient-bg__glow{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(60px);
+    animation:float-glow 8s ease-in-out infinite;
+}
+
+.ambient-bg__glow--1{
+    width:320px;
+    height:320px;
+    top:-80px;
+    left:-60px;
+    background:rgba(34,197,94,0.45);
+    animation-delay:0s;
+}
+
+.ambient-bg__glow--2{
+    width:280px;
+    height:280px;
+    bottom:-40px;
+    right:-40px;
+    background:rgba(59,130,246,0.35);
+    animation-delay:-4s;
+}
+
+.ambient-bg__spotlight{
+    position:absolute;
+    top:0;
+    left:50%;
+    transform:translateX(-50%);
+    width:140%;
+    height:55%;
+    background:radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.14) 0%, transparent 65%);
+    animation:spotlight-pulse 6s ease-in-out infinite;
+}
+
+.ambient-bg__grid{
+    position:absolute;
+    inset:0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size:60px 60px;
+    mask-image:radial-gradient(ellipse 70% 60% at 50% 40%, black 20%, transparent 75%);
+}
+
+@keyframes bg-shift{
+    0%{filter:hue-rotate(0deg) brightness(1);}
+    100%{filter:hue-rotate(8deg) brightness(1.05);}
+}
+
+@keyframes float-glow{
+    0%,100%{transform:translate(0,0) scale(1);}
+    50%{transform:translate(30px,20px) scale(1.08);}
+}
+
+@keyframes spotlight-pulse{
+    0%,100%{opacity:0.7;}
+    50%{opacity:1;}
 }
 
 h1{
@@ -301,49 +413,264 @@ canvas{
     }
 }
 
-    .hero{
+/* ===== スタート画面 ===== */
+.start-screen{
+    position:relative;
     max-width:900px;
-    margin:0 auto 25px;
-    padding:30px 20px;
-    border-radius:24px;
-    background:linear-gradient(135deg,rgba(17,24,39,0.9),rgba(6,78,59,0.9));
-    box-shadow:0 12px 35px rgba(0,0,0,0.35);
-}
-
-.hero-badge{
-    display:inline-block;
-    background:#facc15;
-    color:#111827;
-    padding:7px 18px;
-    border-radius:999px;
-    font-weight:bold;
-    font-size:14px;
-    letter-spacing:1px;
-}
-
-.hero h1{
-    margin:15px 0 10px;
-    font-size:42px;
-}
-
-.hero-text{
-    font-size:18px;
-    line-height:1.8;
-    margin:10px auto 20px;
-}
-
-.hero-points{
+    margin:0 auto;
+    min-height:calc(100vh - 40px);
     display:flex;
+    align-items:center;
     justify-content:center;
-    gap:12px;
-    flex-wrap:wrap;
+    padding:32px 20px;
+    border-radius:24px;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,0.1);
+    box-shadow:0 16px 48px rgba(0,0,0,0.45);
 }
 
-.hero-points div{
-    background:rgba(255,255,255,0.15);
-    padding:10px 16px;
-    border-radius:999px;
+.start-screen__overlay{
+    position:absolute;
+    inset:0;
+    background:
+        linear-gradient(180deg, rgba(10,22,40,0.92) 0%, rgba(10,22,40,0.72) 35%, rgba(6,78,59,0.55) 65%, rgba(10,22,40,0.88) 100%);
+    z-index:1;
+}
+
+.start-screen__grass{
+    position:absolute;
+    bottom:0;
+    left:0;
+    right:0;
+    height:38%;
+    z-index:0;
+    background:
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 40px,
+            rgba(255,255,255,0.05) 40px,
+            rgba(255,255,255,0.05) 80px
+        ),
+        radial-gradient(ellipse 55% 40% at 50% 0%, rgba(34,197,94,0.45) 0%, transparent 70%),
+        linear-gradient(180deg, transparent 0%, rgba(21,128,61,0.5) 30%, rgba(22,101,52,0.75) 100%);
+}
+
+.start-screen__grass::after{
+    content:"";
+    position:absolute;
+    bottom:18%;
+    left:50%;
+    transform:translateX(-50%);
+    width:55%;
+    height:28%;
+    border:2px solid rgba(255,255,255,0.12);
+    border-radius:50%;
+    box-shadow:0 0 30px rgba(34,197,94,0.15);
+}
+
+.start-lights{
+    position:absolute;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+}
+
+.start-light{
+    position:absolute;
+    top:-30%;
+    height:90%;
+    filter:blur(2px);
+    animation:light-sway 7s ease-in-out infinite;
+}
+
+.start-light--left{
+    left:5%;
+    width:45%;
+    background:linear-gradient(158deg, rgba(255,255,255,0.18) 0%, transparent 68%);
+    transform-origin:top left;
+    animation-delay:0s;
+}
+
+.start-light--right{
+    right:5%;
+    width:45%;
+    background:linear-gradient(202deg, rgba(255,255,255,0.16) 0%, transparent 68%);
+    transform-origin:top right;
+    animation-delay:-2.5s;
+}
+
+.start-light--center{
+    left:30%;
+    width:40%;
+    background:radial-gradient(ellipse at 50% 0%, rgba(250,204,21,0.14) 0%, transparent 65%);
+    animation:spotlight-pulse 5s ease-in-out infinite;
+}
+
+@keyframes light-sway{
+    0%,100%{opacity:0.75; transform:rotate(-2deg);}
+    50%{opacity:1; transform:rotate(3deg);}
+}
+
+.start-silhouettes{
+    position:absolute;
+    inset:0;
+    z-index:2;
+    pointer-events:none;
+}
+
+.start-player{
+    position:absolute;
+    bottom:10%;
+    filter:drop-shadow(0 10px 20px rgba(0,0,0,0.55));
+    animation:player-float 5s ease-in-out infinite;
+}
+
+.start-player--left{
+    left:6%;
+    width:64px;
+    height:100px;
+    background:linear-gradient(180deg, #475569 0%, #1e293b 55%, #0f172a 100%);
+    clip-path:polygon(38% 0%,62% 0%,68% 12%,88% 38%,72% 44%,62% 32%,58% 52%,78% 100%,54% 100%,50% 58%,46% 100%,22% 100%,42% 52%,38% 32%,28% 44%,12% 38%,32% 12%);
+    opacity:0.75;
+    animation-delay:0s;
+}
+
+.start-player--center{
+    left:50%;
+    transform:translateX(-50%);
+    width:78px;
+    height:118px;
+    bottom:14%;
+    background:linear-gradient(180deg, #64748b 0%, #334155 50%, #0f172a 100%);
+    clip-path:polygon(35% 0%,65% 0%,72% 10%,95% 22%,80% 30%,68% 22%,62% 40%,90% 55%,70% 58%,58% 48%,55% 100%,45% 100%,42% 48%,30% 58%,10% 55%,38% 40%,32% 22%,20% 30%,5% 22%,28% 10%);
+    opacity:0.85;
+    animation:player-float-center 5s ease-in-out infinite;
+    animation-delay:-1.5s;
+}
+
+.start-player--right{
+    right:8%;
+    width:60px;
+    height:96px;
+    background:linear-gradient(180deg, #475569 0%, #1e293b 55%, #0f172a 100%);
+    clip-path:polygon(40% 0%,60% 0%,65% 14%,82% 42%,68% 46%,58% 34%,54% 54%,75% 100%,50% 100%,46% 56%,42% 100%,18% 100%,38% 54%,34% 34%,24% 46%,10% 42%,28% 14%);
+    opacity:0.7;
+    animation:player-float 5s ease-in-out infinite;
+    animation-delay:-3s;
+}
+
+@keyframes player-float{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-8px);}
+}
+
+@keyframes player-float-center{
+    0%,100%{transform:translateX(-50%) translateY(0);}
+    50%{transform:translateX(-50%) translateY(-8px);}
+}
+
+.start-screen__content{
+    position:relative;
+    z-index:3;
+    max-width:560px;
+    padding:20px;
+}
+
+.start-screen__icon{
+    font-size:48px;
+    margin:0 0 12px;
+    line-height:1;
+    filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+}
+
+.start-title{
+    font-size:clamp(28px, 6vw, 42px);
     font-weight:bold;
+    color:#ffffff;
+    margin:0 0 18px;
+    line-height:1.35;
+    text-shadow:0 4px 24px rgba(0,0,0,0.55), 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.start-description{
+    font-size:clamp(15px, 3.5vw, 18px);
+    line-height:1.85;
+    color:rgba(255,255,255,0.9);
+    margin:0 auto 32px;
+    max-width:480px;
+    text-shadow:0 2px 8px rgba(0,0,0,0.4);
+}
+
+.start-btn{
+    display:inline-block;
+    width:auto;
+    max-width:none;
+    margin:0;
+    padding:18px 52px;
+    font-size:20px;
+    font-weight:bold;
+    border:none;
+    border-radius:14px;
+    color:#ffffff;
+    cursor:pointer;
+    background:linear-gradient(180deg, #4ade80 0%, #22c55e 45%, #16a34a 100%);
+    box-shadow:0 6px 0 #15803d, 0 12px 28px rgba(0,0,0,0.45);
+    transition:transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.start-btn:hover{
+    transform:translateY(-3px) scale(1.04);
+    box-shadow:0 9px 0 #15803d, 0 18px 36px rgba(0,0,0,0.5);
+}
+
+.start-btn:active{
+    transform:translateY(4px);
+    box-shadow:0 2px 0 #15803d, 0 6px 16px rgba(0,0,0,0.4);
+}
+
+.quiz-area{
+    max-width:900px;
+    margin:0 auto;
+}
+
+@media(max-width:600px){
+    .start-screen{
+        min-height:calc(100vh - 24px);
+        padding:24px 16px;
+        border-radius:18px;
+    }
+
+    .start-player--left{
+        width:48px;
+        height:76px;
+        left:2%;
+        bottom:8%;
+    }
+
+    .start-player--center{
+        width:58px;
+        height:88px;
+        bottom:10%;
+    }
+
+    .start-player--right{
+        width:44px;
+        height:72px;
+        right:2%;
+        bottom:8%;
+    }
+
+    .start-screen__icon{
+        font-size:40px;
+    }
+
+    .start-btn{
+        padding:16px 36px;
+        font-size:18px;
+        width:100%;
+        max-width:320px;
+    }
 }
 
 .progress-area{
@@ -405,54 +732,158 @@ canvas{
 .choice-text{
     flex:1;
 }
-
-@media(max-width:600px){
-    .hero h1{
-        font-size:30px;
-    }
-
-    .hero-text{
-        font-size:16px;
-    }
-
-    .hero{
-        padding:24px 16px;
-    }
-}
     
+
+/* ===== 回答確認ページ・操作ボタン ===== */
+.nav-buttons{
+    margin-top:20px;
+}
+
+.nav-btn,
+.check-btn,
+.back-btn,
+.diagnose-btn,
+.restart-btn{
+    font-weight:bold;
+    box-shadow:0 5px 15px rgba(0,0,0,0.18);
+}
+
+.nav-btn{
+    background:#64748b !important;
+}
+
+.check-btn{
+    background:linear-gradient(180deg,#22c55e,#16a34a) !important;
+}
+
+.back-btn{
+    background:#64748b !important;
+}
+
+.diagnose-btn{
+    background:linear-gradient(180deg,#f59e0b,#ea580c) !important;
+}
+
+.restart-btn{
+    background:#2563eb !important;
+}
+
+.choice-btn.is-selected{
+    border-color:#16a34a;
+    background:#dcfce7 !important;
+    box-shadow:0 0 0 3px rgba(34,197,94,0.25);
+}
+
+.confirm-list{
+    text-align:left;
+    margin:20px auto;
+    padding:0;
+    list-style:none;
+}
+
+.confirm-item{
+    background:#f8fafc;
+    border-radius:14px;
+    padding:16px;
+    margin-bottom:12px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.12);
+}
+
+.confirm-question{
+    font-weight:bold;
+    margin-bottom:8px;
+    color:#111827;
+}
+
+.confirm-answer{
+    color:#166534;
+    font-weight:bold;
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="hero">
-    <div class="hero-badge">SOCCER TYPE DIAGNOSIS</div>
-    <h1>⚽ FUTURE PLAYER FINDER ⚽</h1>
-    <p class="hero-text">
-        10個の質問に答えて、あなたのプレースタイルに近い選手を診断しよう
-    </p>
-
-    <div class="hero-points">
-        <div>6能力で分析</div>
-        <div>選手画像つき</div>
-        <div>練習メニュー表示</div>
-    </div>
+<div class="ambient-bg" aria-hidden="true">
+    <div class="ambient-bg__gradient"></div>
+    <div class="ambient-bg__pitch"></div>
+    <div class="ambient-bg__grid"></div>
+    <div class="ambient-bg__glow ambient-bg__glow--1"></div>
+    <div class="ambient-bg__glow ambient-bg__glow--2"></div>
+    <div class="ambient-bg__spotlight"></div>
 </div>
-<div class="card">
-    <div class="progress-area">
-        <div id="progressText">Q1 / 10</div>
-        <div class="progress-bar">
-            <div id="progressFill"></div>
+
+<div class="page-content">
+
+<!-- スタート画面（最初に表示） -->
+<section id="startScreen" class="start-screen">
+    <div class="start-screen__overlay" aria-hidden="true"></div>
+    <div class="start-screen__grass" aria-hidden="true"></div>
+
+    <div class="start-lights" aria-hidden="true">
+        <div class="start-light start-light--left"></div>
+        <div class="start-light start-light--right"></div>
+        <div class="start-light start-light--center"></div>
+    </div>
+
+    <div class="start-silhouettes" aria-hidden="true">
+        <div class="start-player start-player--left"></div>
+        <div class="start-player start-player--center"></div>
+        <div class="start-player start-player--right"></div>
+    </div>
+
+    <div class="start-screen__content">
+        <p class="start-screen__icon">⚽</p>
+        <h1 class="start-title">あなたが目指すべき選手診断</h1>
+        <p class="start-description">
+            いくつかの質問に答えるだけで、あなたのプレースタイルに近い世界的選手を診断します。
+        </p>
+        <button type="button" id="startBtn" class="start-btn" onclick="startDiagnosis()">
+            診断を始める
+        </button>
+    </div>
+</section>
+
+<!-- 質問・確認・結果エリア（最初は非表示） -->
+<div id="quizArea" class="quiz-area is-hidden">
+
+    <!-- 質問画面 -->
+    <div class="card" id="quizCard">
+        <div class="progress-area" id="progressArea">
+            <div id="progressText">Q1 / 10</div>
+            <div class="progress-bar">
+                <div id="progressFill"></div>
+            </div>
         </div>
+
+        <h2 id="question"></h2>
+        <div id="choices"></div>
+
+        <div class="nav-buttons" id="questionButtons">
+            <button type="button" class="nav-btn" id="backQuestionBtn" onclick="backQuestion()">前の質問に戻る</button>
+            <button type="button" class="check-btn" id="nextQuestionBtn" onclick="nextQuestion()">次の質問へ</button>
+        </div>
+
+        <div id="result"></div>
     </div>
 
-    <h2 id="question"></h2>
-    <div id="choices"></div>
-    <div id="result"></div>
-</div>
+    <!-- 回答確認ページ -->
+    <div class="card is-hidden" id="confirmArea">
+        <h2>回答確認</h2>
+        <p>選んだ回答を確認してください。修正したい場合は「戻って修正する」を押してください。</p>
+        <ul class="confirm-list" id="confirmList"></ul>
 
-<div class="chart-box" id="chartBox">
-    <canvas id="radarChart"></canvas>
+        <button type="button" class="back-btn" onclick="returnToQuestions()">戻って修正する</button>
+        <button type="button" class="diagnose-btn" onclick="finish()">診断する</button>
+    </div>
+
+    <div class="chart-box" id="chartBox">
+        <canvas id="radarChart"></canvas>
+    </div>
+
+</div><!-- /quizArea -->
+
 </div>
 
 <script>
@@ -614,21 +1045,53 @@ const playerImages = {
 };
 
 let idx = 0;
+let answers = Array(questions.length).fill(null);
 let me = [0,0,0,0,0,0];
+let radarChart = null;
 
-    function render(){
+// 「診断を始める」ボタンが押されたときの処理
+function startDiagnosis(){
+    document.getElementById("startScreen").classList.add("is-hidden");
+    document.getElementById("quizArea").classList.remove("is-hidden");
+
+    idx = 0;
+    answers = Array(questions.length).fill(null);
+    me = [0,0,0,0,0,0];
+
+    document.getElementById("quizCard").classList.remove("is-hidden");
+    document.getElementById("confirmArea").classList.add("is-hidden");
+    document.getElementById("chartBox").style.display = "none";
+    document.getElementById("result").innerHTML = "";
+
+    if(radarChart !== null){
+        radarChart.destroy();
+        radarChart = null;
+    }
+
+    render();
+}
+
+// 質問を表示する処理
+function render(){
+    document.getElementById("progressArea").style.display = "block";
+    document.getElementById("choices").style.display = "block";
+    document.getElementById("questionButtons").style.display = "block";
+    document.getElementById("result").innerHTML = "";
+
     document.getElementById("question").innerText = "Q" + (idx + 1) + " " + questions[idx].q;
-
     document.getElementById("progressText").innerText = "Q" + (idx + 1) + " / " + questions.length;
 
     const progress = ((idx + 1) / questions.length) * 100;
     document.getElementById("progressFill").style.width = progress + "%";
 
     let html = "";
+    const choiceKeys = ["A","B","C","D"];
 
-    ["A","B","C","D"].forEach((key,i)=>{
+    choiceKeys.forEach((key,i)=>{
+        const selectedClass = answers[idx] === key ? " is-selected" : "";
+
         html += `
-            <button class="choice-btn" onclick="answer('${key}')">
+            <button type="button" class="choice-btn${selectedClass}" onclick="selectChoice('${key}')">
                 <span class="choice-label">${key}</span>
                 <span class="choice-text">${questions[idx].c[i]}</span>
             </button>
@@ -636,24 +1099,98 @@ let me = [0,0,0,0,0,0];
     });
 
     document.getElementById("choices").innerHTML = html;
+
+    // 1問目では「前の質問に戻る」ボタンを隠す
+    document.getElementById("backQuestionBtn").style.display = idx === 0 ? "none" : "block";
+
+    // 最後の質問ではボタン名を「回答を確認する」にする
+    document.getElementById("nextQuestionBtn").innerText = idx === questions.length - 1 ? "回答を確認する" : "次の質問へ";
 }
 
-function answer(choice){
-    const add = scores["Q" + (idx + 1)][choice];
+// 回答を選んだときの処理
+function selectChoice(choice){
+    answers[idx] = choice;
+    render();
+}
 
-    me = me.map((v,i)=>v + add[i]);
+// 次の質問へ進む処理
+function nextQuestion(){
+    if(answers[idx] === null){
+        alert("回答を1つ選んでください。");
+        return;
+    }
 
-    idx++;
-
-    if(idx < questions.length){
+    if(idx < questions.length - 1){
+        idx++;
         render();
     }else{
-        finish();
+        showConfirmPage();
     }
 }
 
+// 前の質問へ戻る処理
+function backQuestion(){
+    if(idx > 0){
+        idx--;
+        render();
+    }
+}
+
+// 回答確認ページを表示する処理
+function showConfirmPage(){
+    document.getElementById("quizCard").classList.add("is-hidden");
+    document.getElementById("confirmArea").classList.remove("is-hidden");
+    document.getElementById("chartBox").style.display = "none";
+
+    let html = "";
+    const choiceKeys = ["A","B","C","D"];
+
+    questions.forEach((question, questionIndex)=>{
+        const answerKey = answers[questionIndex];
+        const answerIndex = choiceKeys.indexOf(answerKey);
+        const answerText = question.c[answerIndex];
+
+        html += `
+            <li class="confirm-item">
+                <div class="confirm-question">Q${questionIndex + 1}. ${question.q}</div>
+                <div class="confirm-answer">${answerKey}. ${answerText}</div>
+            </li>
+        `;
+    });
+
+    document.getElementById("confirmList").innerHTML = html;
+}
+
+// 回答確認ページから質問画面に戻る処理
+function returnToQuestions(){
+    document.getElementById("confirmArea").classList.add("is-hidden");
+    document.getElementById("quizCard").classList.remove("is-hidden");
+
+    // 最初の質問に戻す。選んだ回答は残るので修正しやすい。
+    idx = 0;
+    render();
+}
+
+// 選んだ回答から診断用の点数を計算する処理
+function calculateScore(){
+    me = [0,0,0,0,0,0];
+
+    answers.forEach((choice, questionIndex)=>{
+        const add = scores["Q" + (questionIndex + 1)][choice];
+        me = me.map((v,i)=>v + add[i]);
+    });
+}
+
+// 「診断する」ボタンが押されたときの処理
 function finish(){
-    document.getElementById("choices").innerHTML = "";
+    calculateScore();
+
+    document.getElementById("confirmArea").classList.add("is-hidden");
+    document.getElementById("quizCard").classList.remove("is-hidden");
+
+    document.getElementById("progressArea").style.display = "none";
+    document.getElementById("choices").style.display = "none";
+    document.getElementById("questionButtons").style.display = "none";
     document.getElementById("question").innerText = "診断結果";
 
     let best = "";
@@ -672,55 +1209,61 @@ function finish(){
         }
     }
 
-const abilityNames = ["パス","ドリブル","シュート","守備","運動量","リーダーシップ"];
+    const abilityNames = ["パス","ドリブル","シュート","守備","運動量","リーダーシップ"];
 
-const abilityHtml = abilityNames.map((name,i)=>{
-    const percent = Math.min((me[i] / 30) * 100, 100);
+    const abilityHtml = abilityNames.map((name,i)=>{
+        const percent = Math.min((me[i] / 30) * 100, 100);
 
-    return `
-        <div class="ability-item">
-            <div class="ability-name">${name}：${me[i]}</div>
-            <div class="ability-bar">
-                <div class="ability-bar-fill" style="width:${percent}%"></div>
+        return `
+            <div class="ability-item">
+                <div class="ability-name">${name}：${me[i]}</div>
+                <div class="ability-bar">
+                    <div class="ability-bar-fill" style="width:${percent}%"></div>
+                </div>
+            </div>
+        `;
+    }).join("");
+
+    const trainingHtml = trainingMenus[best].map(menu => `<li>${menu}</li>`).join("");
+
+    document.getElementById("result").innerHTML = `
+        <div class="result-hero">
+            <div class="result-badge">診断結果</div>
+
+            <h2 class="result-title">
+                あなたが目指すべき選手は<br>
+                <span>${best}</span>
+            </h2>
+
+            <img class="player-img" src="${playerImages[best]}" alt="${best}">
+
+            <p class="result-description">${descriptions[best]}</p>
+        </div>
+
+        <div class="section-card">
+            <h3>おすすめ練習メニュー</h3>
+            <ul class="training-list">
+                ${trainingHtml}
+            </ul>
+        </div>
+
+        <div class="section-card">
+            <h3>あなたの能力</h3>
+            <div class="ability-grid">
+                ${abilityHtml}
             </div>
         </div>
+
+        <button type="button" class="restart-btn" onclick="startDiagnosis()">もう一度診断する</button>
     `;
-}).join("");
-
-const trainingHtml = trainingMenus[best].map(menu => `<li>${menu}</li>`).join("");
-
-document.getElementById("result").innerHTML = `
-    <div class="result-hero">
-        <div class="result-badge">診断結果</div>
-
-        <h2 class="result-title">
-            あなたが目指すべき選手は<br>
-            <span>${best}</span>
-        </h2>
-
-        <img class="player-img" src="${playerImages[best]}" alt="${best}">
-
-        <p class="result-description">${descriptions[best]}</p>
-    </div>
-
-    <div class="section-card">
-        <h3>おすすめ練習メニュー</h3>
-        <ul class="training-list">
-            ${trainingHtml}
-        </ul>
-    </div>
-
-    <div class="section-card">
-        <h3>あなたの能力</h3>
-        <div class="ability-grid">
-            ${abilityHtml}
-        </div>
-    </div>
-`;
 
     document.getElementById("chartBox").style.display = "block";
 
-    new Chart(document.getElementById("radarChart"),{
+    if(radarChart !== null){
+        radarChart.destroy();
+    }
+
+    radarChart = new Chart(document.getElementById("radarChart"),{
         type:"radar",
         data:{
             labels:["パス","ドリブル","シュート","守備","運動量","リーダーシップ"],
@@ -753,7 +1296,6 @@ document.getElementById("result").innerHTML = `
     });
 }
 
-render();
 </script>
 
 </body>
