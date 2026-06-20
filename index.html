@@ -27,7 +27,6 @@ body{
     z-index:1;
 }
 
-/* 画面を一時的に隠すための共通クラスです */
 .is-hidden{
     display:none !important;
 }
@@ -56,13 +55,7 @@ body{
     inset:0;
     opacity:0.55;
     background:
-        repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 48px,
-            rgba(255,255,255,0.04) 48px,
-            rgba(255,255,255,0.04) 96px
-        ),
+        repeating-linear-gradient(0deg, transparent, transparent 48px, rgba(255,255,255,0.04) 48px, rgba(255,255,255,0.04) 96px),
         radial-gradient(circle at 50% 115%, transparent 28%, rgba(255,255,255,0.07) 28.2%, rgba(255,255,255,0.07) 28.8%, transparent 29%),
         radial-gradient(circle at 50% 115%, transparent 42%, rgba(255,255,255,0.05) 42.2%, rgba(255,255,255,0.05) 42.6%, transparent 43%);
 }
@@ -257,7 +250,6 @@ button:hover{
     height:100%;
 }
 
-/* players.csvの「アイコン」列に合わせて色とマークを切り替えるCSS製アイコンです */
 .player-icon{
     --icon-main:#22c55e;
     --icon-accent:#facc15;
@@ -651,7 +643,7 @@ canvas{
             <p class="start-screen__icon">⚽</p>
             <h1 class="start-title">あなたが目指すべき選手診断</h1>
             <p class="start-description">
-                いくつかの質問に答えるだけで、あなたのプレースタイルに近い選手タイプを診断します。
+                質問に答えると、あなたのプレースタイルに近い選手タイプを診断します。
             </p>
             <div id="questionStatus"></div>
             <button type="button" id="startBtn" class="start-btn" onclick="startDiagnosis()">
@@ -697,33 +689,53 @@ canvas{
 </div>
 
 <script>
-let questions = [];
-let questionLoadError = "";
+const fineAbilityNames = [
+    "オフェンスセンス",
+    "決定力",
+    "フリーキック",
+    "カーブ",
+    "ボールコントロール",
+    "ドリブル",
+    "ボールキープ",
+    "グランダーパス",
+    "フライパス",
+    "ディフェンスセンス",
+    "ボール奪取",
+    "アグレッシブネス",
+    "守備意識",
+    "フィジカル",
+    "体力",
+    "キック力",
+    "ヘディング",
+    "ジャンプ力",
+    "スピード",
+    "瞬発力"
+];
 
-const scores = {
-    Q1:{A:[3,0,0,0,0,1],B:[0,3,0,0,0,0],C:[0,0,3,0,0,0],D:[0,0,0,3,1,0]},
-    Q2:{A:[3,0,0,0,0,2],B:[0,3,0,0,0,0],C:[0,0,3,0,0,1],D:[0,0,0,3,1,2]},
-    Q3:{A:[3,0,0,0,0,1],B:[0,3,0,0,0,0],C:[0,0,3,0,0,0],D:[0,0,0,3,1,0]},
-    Q4:{A:[2,0,0,0,0,2],B:[0,3,0,0,0,0],C:[0,0,3,0,0,0],D:[0,0,0,3,1,1]},
-    Q5:{A:[3,0,0,0,0,1],B:[0,3,0,0,0,0],C:[0,0,3,0,0,0],D:[0,0,0,2,1,1]},
-    Q6:{A:[2,0,0,0,0,2],B:[0,3,0,0,0,0],C:[0,0,3,0,0,0],D:[0,0,0,3,1,0]},
-    Q7:{A:[3,0,0,0,0,0],B:[0,3,0,0,0,0],C:[0,0,3,0,0,0],D:[0,0,0,3,1,0]},
-    Q8:{A:[3,0,0,0,0,1],B:[0,3,0,0,0,0],C:[0,0,3,0,0,0],D:[0,0,0,3,1,1]},
-    Q9:{A:[3,0,0,0,0,2],B:[0,3,0,0,0,0],C:[0,0,3,0,0,0],D:[0,0,0,3,1,2]},
-    Q10:{A:[3,0,0,0,0,1],B:[0,3,0,0,0,0],C:[0,0,3,0,0,0],D:[0,0,0,3,1,0]}
-};
+const radarGroups = [
+    {name:"オフェンス", abilities:["オフェンスセンス"]},
+    {name:"シュート", abilities:["決定力","フリーキック","カーブ"]},
+    {name:"ドリブル", abilities:["ボールコントロール","ドリブル","ボールキープ"]},
+    {name:"パス", abilities:["グランダーパス","フライパス"]},
+    {name:"ディフェンス", abilities:["ディフェンスセンス","ボール奪取","アグレッシブネス","守備意識"]},
+    {name:"フィジカル", abilities:["フィジカル","体力","キック力"]},
+    {name:"空中戦", abilities:["ヘディング","ジャンプ力"]},
+    {name:"スピード", abilities:["スピード","瞬発力"]}
+];
 
-const abilityNames = ["パス","ドリブル","シュート","守備","運動量","リーダーシップ"];
+const radarAbilityNames = radarGroups.map(group => group.name);
 const validIconClasses = ["pass-icon","dribble-icon","shoot-icon","defense-icon","stamina-icon"];
 
+let questions = [];
+let questionLoadError = "";
 let idx = 0;
 let answers = [];
-let me = [0,0,0,0,0,0];
+let userFineScores = createEmptyFineScores();
+let userRadarScores = createEmptyRadarScores();
 let radarChart = null;
 let players = [];
 let csvLoadError = "";
 
-// ページ読み込み時に、質問CSVと結果用CSVをそれぞれ読み込みます。
 document.addEventListener("DOMContentLoaded", () => {
     loadQuestionsCsv();
     loadPlayersCsv();
@@ -734,14 +746,14 @@ async function loadQuestionsCsv(){
         const response = await fetch("questions.csv", {cache:"no-store"});
 
         if(!response.ok){
-            throw new Error("questions.csv を取得できませんでした");
+            throw new Error("questions.csvを読み込めませんでした");
         }
 
         const csvText = await response.text();
         questions = parseQuestionsCsv(csvText);
 
         if(questions.length === 0){
-            throw new Error("questions.csv に有効な質問データがありません");
+            throw new Error("questions.csvに有効な質問データがありません");
         }
 
         questionLoadError = "";
@@ -750,7 +762,7 @@ async function loadQuestionsCsv(){
     }catch(error){
         questions = [];
         answers = [];
-        questionLoadError = "questions.csvを読み込めませんでした。index.htmlと同じ階層にquestions.csvを置いてください。";
+        questionLoadError = "questions.csvを読み込めませんでした";
         updateCsvStatus();
     }
 }
@@ -760,26 +772,25 @@ async function loadPlayersCsv(){
         const response = await fetch("players.csv", {cache:"no-store"});
 
         if(!response.ok){
-            throw new Error("players.csv を取得できませんでした");
+            throw new Error("players.csvを読み込めませんでした");
         }
 
         const csvText = await response.text();
         players = parsePlayersCsv(csvText);
 
         if(players.length === 0){
-            throw new Error("players.csv に有効な選手データがありません");
+            throw new Error("players.csvに有効な選手データがありません");
         }
 
         csvLoadError = "";
         updateCsvStatus();
     }catch(error){
         players = [];
-        csvLoadError = "players.csvを読み込めませんでした。診断は進められますが、結果データを表示するにはindex.htmlと同じ階層にplayers.csvを置いてください。";
+        csvLoadError = "players.csvを読み込めませんでした";
         updateCsvStatus();
     }
 }
 
-// カンマ入りの文章にも対応できるよう、CSVを1文字ずつ読んで分解します。
 function parseCsv(text){
     const rows = [];
     let row = [];
@@ -821,26 +832,70 @@ function parseCsv(text){
     return rows;
 }
 
-// questions.csvの列名を使って、診断で使う質問データに変換します。
 function parseQuestionsCsv(csvText){
     const rows = parseCsv(csvText.trim());
-    const header = rows.shift() || [];
+    const majorHeader = rows.shift() || [];
+    const abilityHeader = rows.shift() || [];
+    const abilityColumns = getQuestionAbilityColumns(majorHeader, abilityHeader);
+    const groupedQuestions = new Map();
 
-    return rows.map(row => {
-        const record = {};
-        header.forEach((key, index) => {
-            record[key.trim()] = (row[index] || "").trim();
+    rows.forEach(row => {
+        const questionId = (row[0] || "").trim();
+        const questionText = (row[1] || "").trim();
+        const choice = (row[2] || "").trim();
+        const choiceText = (row[3] || "").trim();
+
+        if(!questionId || !questionText || !choice || !choiceText){
+            return;
+        }
+
+        if(!groupedQuestions.has(questionId)){
+            groupedQuestions.set(questionId, {
+                id: questionId,
+                q: questionText,
+                choices: []
+            });
+        }
+
+        const scores = createEmptyFineScores();
+        abilityColumns.forEach(column => {
+            scores[column.name] = Number(row[column.index]) || 0;
         });
 
-        return {
-            id: record["id"],
-            q: record["question"],
-            c: [record["A"], record["B"], record["C"], record["D"]]
-        };
-    }).filter(question => question.id && question.q && question.c.every(choice => choice));
+        groupedQuestions.get(questionId).choices.push({
+            key: choice,
+            text: choiceText,
+            scores
+        });
+    });
+
+    return Array.from(groupedQuestions.values()).filter(question => question.choices.length > 0);
 }
 
-// players.csvの列名を使って、診断結果で使う選手タイプデータに変換します。
+function getQuestionAbilityColumns(majorHeader, abilityHeader){
+    const columns = [];
+
+    abilityHeader.forEach((name, index) => {
+        const abilityName = (name || "").trim();
+        if(fineAbilityNames.includes(abilityName)){
+            columns.push({name: abilityName, index});
+        }
+    });
+
+    if(columns.length > 0){
+        return columns;
+    }
+
+    majorHeader.forEach((name, index) => {
+        const abilityName = (name || "").trim();
+        if(fineAbilityNames.includes(abilityName)){
+            columns.push({name: abilityName, index});
+        }
+    });
+
+    return columns;
+}
+
 function parsePlayersCsv(csvText){
     const rows = parseCsv(csvText.trim());
     const header = rows.shift() || [];
@@ -851,6 +906,11 @@ function parsePlayersCsv(csvText){
             record[key.trim()] = (row[index] || "").trim();
         });
 
+        const fineScores = createEmptyFineScores();
+        fineAbilityNames.forEach(name => {
+            fineScores[name] = Number(record[name]) || 0;
+        });
+
         const iconClass = validIconClasses.includes(record["アイコン"]) ? record["アイコン"] : "pass-icon";
 
         return {
@@ -858,10 +918,32 @@ function parsePlayersCsv(csvText){
             typeName: record["タイプ名"],
             referencePlayer: record["参考選手"],
             icon: iconClass,
-            abilities: abilityNames.map(name => Number(record[name]) || 0),
-            description: record["説明文"] || ""
+            fineScores,
+            radarScores: fineToRadarScores(fineScores)
         };
-    }).filter(player => player.typeName && player.abilities.some(value => value > 0));
+    }).filter(player => player.typeName && player.referencePlayer);
+}
+
+function createEmptyFineScores(){
+    return fineAbilityNames.reduce((scores, name) => {
+        scores[name] = 0;
+        return scores;
+    }, {});
+}
+
+function createEmptyRadarScores(){
+    return radarAbilityNames.reduce((scores, name) => {
+        scores[name] = 0;
+        return scores;
+    }, {});
+}
+
+function fineToRadarScores(fineScores){
+    return radarGroups.reduce((scores, group) => {
+        const total = group.abilities.reduce((sum, abilityName) => sum + (Number(fineScores[abilityName]) || 0), 0);
+        scores[group.name] = total / group.abilities.length;
+        return scores;
+    }, {});
 }
 
 function updateCsvStatus(){
@@ -869,7 +951,6 @@ function updateCsvStatus(){
         document.getElementById("questionStatus"),
         document.getElementById("csvStatus")
     ].filter(Boolean);
-
     const messages = [];
 
     if(questionLoadError){
@@ -896,7 +977,8 @@ function startDiagnosis(){
 
     idx = 0;
     answers = Array(questions.length).fill(null);
-    me = [0,0,0,0,0,0];
+    userFineScores = createEmptyFineScores();
+    userRadarScores = createEmptyRadarScores();
 
     document.getElementById("quizCard").classList.remove("is-hidden");
     document.getElementById("confirmArea").classList.add("is-hidden");
@@ -915,34 +997,31 @@ function render(){
     document.getElementById("questionButtons").style.display = "block";
     document.getElementById("result").innerHTML = "";
 
-    const questionId = questions[idx].id || "Q" + (idx + 1);
+    const question = questions[idx];
 
-    document.getElementById("question").innerText = questionId + " " + questions[idx].q;
-    document.getElementById("progressText").innerText = "Q" + (idx + 1) + " / " + questions.length;
+    document.getElementById("question").innerText = `${question.id} ${question.q}`;
+    document.getElementById("progressText").innerText = `Q${idx + 1} / ${questions.length}`;
 
     const progress = ((idx + 1) / questions.length) * 100;
     document.getElementById("progressFill").style.width = progress + "%";
 
-    let html = "";
-    const choiceKeys = ["A","B","C","D"];
+    const choicesHtml = question.choices.map(choice => {
+        const selectedClass = answers[idx] === choice.key ? " is-selected" : "";
 
-    choiceKeys.forEach((key,i) => {
-        const selectedClass = answers[idx] === key ? " is-selected" : "";
-
-        html += `
-            <button type="button" class="choice-btn${selectedClass}" onclick="selectChoice('${key}')">
-                <span class="choice-label">${key}</span>
-                <span class="choice-text">${escapeHtml(questions[idx].c[i])}</span>
+        return `
+            <button type="button" class="choice-btn${selectedClass}" onclick="selectChoice('${escapeAttribute(choice.key)}')">
+                <span class="choice-label">${escapeHtml(choice.key)}</span>
+                <span class="choice-text">${escapeHtml(choice.text)}</span>
             </button>
         `;
-    });
+    }).join("");
 
-    document.getElementById("choices").innerHTML = html;
+    document.getElementById("choices").innerHTML = choicesHtml;
     document.getElementById("backQuestionBtn").style.display = idx === 0 ? "none" : "block";
 }
 
-function selectChoice(choice){
-    answers[idx] = choice;
+function selectChoice(choiceKey){
+    answers[idx] = choiceKey;
 
     if(idx < questions.length - 1){
         idx++;
@@ -964,21 +1043,18 @@ function showConfirmPage(){
     document.getElementById("confirmArea").classList.remove("is-hidden");
     document.getElementById("chartBox").style.display = "none";
 
-    let html = "";
-    const choiceKeys = ["A","B","C","D"];
-
-    questions.forEach((question, questionIndex) => {
+    const html = questions.map((question, questionIndex) => {
         const answerKey = answers[questionIndex];
-        const answerIndex = choiceKeys.indexOf(answerKey);
-        const answerText = question.c[answerIndex] || "";
+        const selectedChoice = question.choices.find(choice => choice.key === answerKey);
+        const answerText = selectedChoice ? selectedChoice.text : "";
 
-        html += `
+        return `
             <li class="confirm-item">
-                <div class="confirm-question">${escapeHtml(question.id || "Q" + (questionIndex + 1))}. ${escapeHtml(question.q)}</div>
+                <div class="confirm-question">${escapeHtml(question.id)}. ${escapeHtml(question.q)}</div>
                 <div class="confirm-answer">${escapeHtml(answerKey)}. ${escapeHtml(answerText)}</div>
             </li>
         `;
-    });
+    }).join("");
 
     document.getElementById("confirmList").innerHTML = html;
 }
@@ -990,15 +1066,23 @@ function returnToQuestions(){
     render();
 }
 
-// 回答ごとの点数を合計します。スコア表にない追加質問は0点として扱います。
 function calculateScore(){
-    me = [0,0,0,0,0,0];
+    userFineScores = createEmptyFineScores();
 
-    answers.forEach((choice, questionIndex) => {
-        const questionId = questions[questionIndex]?.id || "Q" + (questionIndex + 1);
-        const add = scores[questionId]?.[choice] || scores["Q" + (questionIndex + 1)]?.[choice] || [0,0,0,0,0,0];
-        me = me.map((value, index) => value + add[index]);
+    answers.forEach((answerKey, questionIndex) => {
+        const question = questions[questionIndex];
+        const selectedChoice = question.choices.find(choice => choice.key === answerKey);
+
+        if(!selectedChoice){
+            return;
+        }
+
+        fineAbilityNames.forEach(name => {
+            userFineScores[name] += Number(selectedChoice.scores[name]) || 0;
+        });
     });
+
+    userRadarScores = fineToRadarScores(userFineScores);
 }
 
 function finish(){
@@ -1018,8 +1102,8 @@ function finish(){
     }
 
     const best = findBestPlayer();
-    const abilityHtml = createAbilityHtml(me, 30);
-    const playerAbilityHtml = createAbilityHtml(best.abilities, 10);
+    const abilityHtml = createAbilityHtml(userRadarScores);
+    const playerAbilityHtml = createAbilityHtml(best.radarScores);
 
     document.getElementById("result").innerHTML = `
         <div class="result-hero">
@@ -1033,7 +1117,6 @@ function finish(){
             <div class="player-icon ${best.icon}" aria-hidden="true"></div>
 
             <p><strong>参考選手：</strong>${escapeHtml(best.referencePlayer)}</p>
-            <p class="result-description">${escapeHtml(best.description)}</p>
         </div>
 
         <div class="section-card">
@@ -1063,9 +1146,9 @@ function findBestPlayer(){
     players.forEach(player => {
         let distance = 0;
 
-        for(let i = 0; i < 6; i++){
-            distance += (me[i] - player.abilities[i]) ** 2;
-        }
+        radarAbilityNames.forEach(name => {
+            distance += (capScore(userRadarScores[name]) - capScore(player.radarScores[name])) ** 2;
+        });
 
         if(distance < bestDistance){
             bestDistance = distance;
@@ -1076,19 +1159,19 @@ function findBestPlayer(){
     return best;
 }
 
-function createAbilityHtml(values, maxValue){
-    return abilityNames.map((name, index) => {
-        const value = values[index];
-        const percent = Math.min((value / maxValue) * 100, 100);
+function createAbilityHtml(values){
+    return radarAbilityNames.map(name => {
+        const value = capScore(values[name]);
+        const displayValue = Math.round(value);
 
         return `
             <div class="ability-item">
                 <div class="ability-name">
                     <span>${name}</span>
-                    <span>${value}</span>
+                    <span>${displayValue}</span>
                 </div>
                 <div class="ability-bar">
-                    <div class="ability-bar-fill" style="width:${percent}%"></div>
+                    <div class="ability-bar-fill" style="width:${value}%"></div>
                 </div>
             </div>
         `;
@@ -1113,11 +1196,11 @@ function drawRadarChart(best){
 
     const center = size / 2;
     const radius = size * 0.32;
-    const maxValue = 30;
+    const maxValue = 100;
 
     drawRadarGrid(ctx, center, radius);
-    drawRadarPolygon(ctx, me, maxValue, center, radius, "rgba(52,152,219,0.25)", "rgba(52,152,219,1)");
-    drawRadarPolygon(ctx, best.abilities, maxValue, center, radius, "rgba(231,76,60,0.25)", "rgba(231,76,60,1)");
+    drawRadarPolygon(ctx, userRadarScores, maxValue, center, radius, "rgba(52,152,219,0.25)", "rgba(52,152,219,1)");
+    drawRadarPolygon(ctx, best.radarScores, maxValue, center, radius, "rgba(231,76,60,0.25)", "rgba(231,76,60,1)");
     drawRadarLabels(ctx, center, radius, size);
     drawRadarLegend(ctx, best.typeName);
 
@@ -1125,7 +1208,7 @@ function drawRadarChart(best){
 }
 
 function getRadarPoint(index, value, maxValue, center, radius){
-    const angle = (Math.PI * 2 * index / abilityNames.length) - Math.PI / 2;
+    const angle = (Math.PI * 2 * index / radarAbilityNames.length) - Math.PI / 2;
     const distance = Math.min(value / maxValue, 1) * radius;
 
     return {
@@ -1142,8 +1225,8 @@ function drawRadarGrid(ctx, center, radius){
         const levelRadius = radius * level / 5;
         ctx.beginPath();
 
-        abilityNames.forEach((name, index) => {
-            const point = getRadarPoint(index, 30, 30, center, levelRadius);
+        radarAbilityNames.forEach((name, index) => {
+            const point = getRadarPoint(index, 100, 100, center, levelRadius);
             if(index === 0){
                 ctx.moveTo(point.x, point.y);
             }else{
@@ -1155,8 +1238,8 @@ function drawRadarGrid(ctx, center, radius){
         ctx.stroke();
     }
 
-    abilityNames.forEach((name, index) => {
-        const point = getRadarPoint(index, 30, 30, center, radius);
+    radarAbilityNames.forEach((name, index) => {
+        const point = getRadarPoint(index, 100, 100, center, radius);
         ctx.beginPath();
         ctx.moveTo(center, center);
         ctx.lineTo(point.x, point.y);
@@ -1167,8 +1250,8 @@ function drawRadarGrid(ctx, center, radius){
 function drawRadarPolygon(ctx, values, maxValue, center, radius, fillColor, strokeColor){
     ctx.beginPath();
 
-    values.forEach((value, index) => {
-        const point = getRadarPoint(index, value, maxValue, center, radius);
+    radarAbilityNames.forEach((name, index) => {
+        const point = getRadarPoint(index, capScore(values[name]), maxValue, center, radius);
         if(index === 0){
             ctx.moveTo(point.x, point.y);
         }else{
@@ -1186,13 +1269,13 @@ function drawRadarPolygon(ctx, values, maxValue, center, radius, fillColor, stro
 
 function drawRadarLabels(ctx, center, radius, size){
     ctx.fillStyle = "#111827";
-    ctx.font = "bold 14px Arial, sans-serif";
+    ctx.font = "bold 13px Arial, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-    abilityNames.forEach((name, index) => {
-        const point = getRadarPoint(index, 30, 30, center, radius + 34);
-        const x = Math.max(32, Math.min(size - 32, point.x));
+    radarAbilityNames.forEach((name, index) => {
+        const point = getRadarPoint(index, 100, 100, center, radius + 34);
+        const x = Math.max(38, Math.min(size - 38, point.x));
         const y = Math.max(18, Math.min(size - 18, point.y));
         ctx.fillText(name, x, y);
     });
@@ -1228,7 +1311,7 @@ function showCsvFallbackResult(){
         <div class="section-card">
             <h3>あなたの能力</h3>
             <div class="ability-grid">
-                ${createAbilityHtml(me, 30)}
+                ${createAbilityHtml(userRadarScores)}
             </div>
         </div>
 
@@ -1236,14 +1319,21 @@ function showCsvFallbackResult(){
     `;
 }
 
-// CSVの文字がHTMLとして実行されないようにする安全対策です。
+function capScore(value){
+    return Math.min(Number(value) || 0, 100);
+}
+
 function escapeHtml(value){
-    return String(value)
+    return String(value ?? "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+}
+
+function escapeAttribute(value){
+    return escapeHtml(value).replace(/`/g, "&#096;");
 }
 </script>
 
