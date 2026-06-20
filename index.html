@@ -689,7 +689,6 @@ canvas{
 
             <div class="nav-buttons" id="questionButtons">
                 <button type="button" class="nav-btn" id="backQuestionBtn" onclick="backQuestion()">前の質問に戻る</button>
-                <button type="button" class="check-btn" id="nextQuestionBtn" onclick="nextQuestion()">次の質問へ</button>
             </div>
 
             <div id="result"></div>
@@ -929,19 +928,10 @@ function render(){
 
     document.getElementById("choices").innerHTML = html;
     document.getElementById("backQuestionBtn").style.display = idx === 0 ? "none" : "block";
-    document.getElementById("nextQuestionBtn").innerText = idx === questions.length - 1 ? "回答を確認する" : "次の質問へ";
 }
 
 function selectChoice(choice){
     answers[idx] = choice;
-    render();
-}
-
-function nextQuestion(){
-    if(answers[idx] === null){
-        alert("回答を1つ選んでください。");
-        return;
-    }
 
     if(idx < questions.length - 1){
         idx++;
