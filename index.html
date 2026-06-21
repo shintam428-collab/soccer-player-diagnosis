@@ -276,53 +276,53 @@ canvas{max-width:100%;}
 </div>
 
 <script>
-const fineAbilityNames = [
-    "オフェンスセンス",
-    "決定力",
-    "フリーキック",
-    "カーブ",
-    "ボールコントロール",
-    "ドリブル",
-    "ボールキープ",
-    "グランダーパス",
-    "フライパス",
-    "ディフェンスセンス",
-    "ボール奪取",
-    "アグレッシブネス",
-    "守備意識",
+const scoreItemNames = [
+    "セービング",
+    "反応",
+    "空中戦",
     "フィジカル",
-    "体力",
+    "パス",
     "キック力",
-    "ヘディング",
-    "ジャンプ力",
+    "守備意識",
+    "安定感",
+    "ディフェンス",
+    "対人守備",
+    "ボール奪取",
     "スピード",
-    "瞬発力"
+    "スタミナ",
+    "ドリブル",
+    "クロス",
+    "攻撃参加",
+    "展開力",
+    "判断力",
+    "ボールキープ",
+    "オフェンス",
+    "シュート",
+    "決定力"
 ];
 
-const radarGroups = [
-    {name:"オフェンス", abilities:["オフェンスセンス"]},
-    {name:"シュート", abilities:["決定力","フリーキック","カーブ"]},
-    {name:"ドリブル", abilities:["ボールコントロール","ドリブル","ボールキープ"]},
-    {name:"パス", abilities:["グランダーパス","フライパス"]},
-    {name:"ディフェンス", abilities:["ディフェンスセンス","ボール奪取","アグレッシブネス","守備意識"]},
-    {name:"フィジカル", abilities:["フィジカル","体力","キック力"]},
-    {name:"空中戦", abilities:["ヘディング","ジャンプ力"]},
-    {name:"スピード", abilities:["スピード","瞬発力"]}
-];
+const groupRadarItems = {
+    GK:["セービング","反応","空中戦","フィジカル","パス","キック力","守備意識","安定感"],
+    DEFENSE:["ディフェンス","対人守備","ボール奪取","守備意識","空中戦","フィジカル","パス","スピード"],
+    SIDE:["スピード","スタミナ","ドリブル","クロス","パス","攻撃参加","ディフェンス","フィジカル"],
+    MIDFIELD:["パス","展開力","判断力","ボールキープ","ドリブル","オフェンス","ディフェンス","キック力"],
+    ATTACK:["オフェンス","シュート","決定力","ドリブル","スピード","フィジカル","空中戦","キック力"]
+};
 
-const radarAbilityNames = radarGroups.map(group => group.name);
 const validIconClasses = ["pass-icon","dribble-icon","shoot-icon","defense-icon","stamina-icon"];
 
+let allQuestions = [];
 let questions = [];
 let questionLoadError = "";
 let idx = 0;
 let answers = [];
-let userFineScores = createEmptyFineScores();
-let userRadarScores = createEmptyRadarScores();
+let selectedGroup = "";
+let userScores = createEmptyScores();
 let radarChart = null;
 let players = [];
 let csvLoadError = "";
 
+// CSVはUTF-8として、index.htmlと同じ階層から読み込みます。
 document.addEventListener("DOMContentLoaded", () => {
     loadQuestionsCsv();
     loadPlayersCsv();
@@ -337,7 +337,8 @@ async function loadQuestionsCsv(){
         }
 
         const csvText = await response.text();
-        questions = parseQuestionsCsv(csvText);
+        allQuestions = parseQuestionsCsv(csvText);
+        questions = buildInitialQuestions();
 
         if(questions.length === 0){
             throw new Error("questions.csvに有効な質問データがありません");
@@ -347,6 +348,7 @@ async function loadQuestionsCsv(){
         answers = Array(questions.length).fill(null);
         updateCsvStatus();
     }catch(error){
+        allQuestions = [];
         questions = [];
         answers = [];
         questionLoadError = "questions.csvを読み込めませんでした";
@@ -419,122 +421,110 @@ function parseCsv(text){
     return rows;
 }
 
+function rowToRecord(header, row){
+    const record = {};
+    header.forEach((key, index) => {
+        record[(key || "").trim()] = (row[index] || "").trim();
+    });
+    return record;
+}
+
+function normalizeHeader(header){
+    return header.map(key => (key || "").replace(/^\uFEFF/, "").trim());
+}
+
 function parseQuestionsCsv(csvText){
     const rows = parseCsv(csvText.trim());
-    const majorHeader = rows.shift() || [];
-    const abilityHeader = rows.shift() || [];
-    const abilityColumns = getAbilityColumns(majorHeader, abilityHeader);
+    const header = normalizeHeader(rows.shift() || []);
     const groupedQuestions = new Map();
 
     rows.forEach(row => {
-        const questionId = (row[0] || "").trim();
-        const questionText = (row[1] || "").trim();
-        const choice = (row[2] || "").trim();
-        const choiceText = (row[3] || "").trim();
+        const record = rowToRecord(header, row);
+        const routeGroup = record["route_group"];
+        const questionId = record["question_id"];
+        const questionText = record["question"];
+        const choice = record["choice"];
+        const choiceText = record["choice_text"];
 
-        if(!questionId || !questionText || !choice || !choiceText){
+        if(!routeGroup || !questionId || !choice || !choiceText){
             return;
         }
 
-        if(!groupedQuestions.has(questionId)){
-            groupedQuestions.set(questionId, {
+        const key = `${routeGroup}::${questionId}`;
+        if(!groupedQuestions.has(key)){
+            groupedQuestions.set(key, {
+                routeGroup,
                 id: questionId,
-                q: questionText,
+                q: questionText || questionId,
                 choices: []
             });
         }
 
-        const scores = createEmptyFineScores();
-        abilityColumns.forEach(column => {
-            scores[column.name] = Number(row[column.index]) || 0;
+        if(questionText && groupedQuestions.get(key).q === questionId){
+            groupedQuestions.get(key).q = questionText;
+        }
+
+        const scores = createEmptyScores();
+        scoreItemNames.forEach(name => {
+            scores[name] = Number(record[name]) || 0;
         });
 
-        groupedQuestions.get(questionId).choices.push({
+        groupedQuestions.get(key).choices.push({
             key: choice,
             text: choiceText,
+            selectedGroup: record["selected_group"] || "",
+            mainRadarItem: record["main_radar_item"] || "",
             scores
         });
     });
 
-    return Array.from(groupedQuestions.values()).filter(question => question.choices.length > 0);
-}
-
-function getAbilityColumns(majorHeader, abilityHeader){
-    const columns = [];
-
-    abilityHeader.forEach((name, index) => {
-        const abilityName = (name || "").trim();
-        if(fineAbilityNames.includes(abilityName)){
-            columns.push({name: abilityName, index});
-        }
-    });
-
-    if(columns.length > 0){
-        return columns;
-    }
-
-    majorHeader.forEach((name, index) => {
-        const abilityName = (name || "").trim();
-        if(fineAbilityNames.includes(abilityName)){
-            columns.push({name: abilityName, index});
-        }
-    });
-
-    return columns;
+    return Array.from(groupedQuestions.values());
 }
 
 function parsePlayersCsv(csvText){
     const rows = parseCsv(csvText.trim());
-    rows.shift();
-    const abilityHeader = rows.shift() || [];
+    const header = normalizeHeader(rows.shift() || []);
 
     return rows.map(row => {
-        const fineScores = createEmptyFineScores();
+        const record = rowToRecord(header, row);
+        const scores = createEmptyScores();
 
-        abilityHeader.forEach((name, index) => {
-            const abilityName = (name || "").trim();
-
-            if(index >= 4 && fineAbilityNames.includes(abilityName)){
-                fineScores[abilityName] = clampPlayerScore(row[index]);
-            }
+        scoreItemNames.forEach(name => {
+            scores[name] = clampScore(record[name]);
         });
 
-        const icon = (row[3] || "").trim();
-        const iconClass = validIconClasses.includes(icon) ? icon : "pass-icon";
+        const icon = record["アイコン"] || "";
+        const iconClass = validIconClasses.includes(icon) ? icon : iconFromGroup(record["group"]);
 
         return {
-            id: (row[0] || "").trim(),
-            typeName: (row[1] || "").trim(),
-            referencePlayer: (row[2] || "").trim(),
+            id: record["id"],
+            group: record["group"],
+            position: record["position"],
+            typeName: record["タイプ名"],
+            referencePlayer: record["参考選手"],
             icon: iconClass,
-            fineScores,
-            radarScores: fineToRadarScores(fineScores)
+            description: record["説明文"] || "",
+            scores
         };
-    }).filter(player => player.typeName && player.referencePlayer);
+    }).filter(player => player.group && player.typeName && player.referencePlayer);
 }
 
-function clampPlayerScore(value){
-    return Math.max(0, Math.min(Number(value) || 0, 100));
+function iconFromGroup(group){
+    if(group === "GK" || group === "DEFENSE"){
+        return "defense-icon";
+    }
+    if(group === "SIDE"){
+        return "stamina-icon";
+    }
+    if(group === "MIDFIELD"){
+        return "pass-icon";
+    }
+    return "shoot-icon";
 }
 
-function createEmptyFineScores(){
-    return fineAbilityNames.reduce((scores, name) => {
+function createEmptyScores(){
+    return scoreItemNames.reduce((scores, name) => {
         scores[name] = 0;
-        return scores;
-    }, {});
-}
-
-function createEmptyRadarScores(){
-    return radarAbilityNames.reduce((scores, name) => {
-        scores[name] = 0;
-        return scores;
-    }, {});
-}
-
-function fineToRadarScores(fineScores){
-    return radarGroups.reduce((scores, group) => {
-        const total = group.abilities.reduce((sum, abilityName) => sum + (Number(fineScores[abilityName]) || 0), 0);
-        scores[group.name] = total / group.abilities.length;
         return scores;
     }, {});
 }
@@ -559,20 +549,39 @@ function updateCsvStatus(){
     });
 }
 
+function buildInitialQuestions(){
+    return allQuestions.filter(question => question.routeGroup === "common");
+}
+
+function buildQuestionsForGroup(group){
+    return allQuestions.filter(question => question.routeGroup === "common" || question.routeGroup === group);
+}
+
+function getEstimatedTotalQuestions(){
+    if(selectedGroup){
+        return questions.length;
+    }
+
+    const commonCount = allQuestions.filter(question => question.routeGroup === "common").length;
+    const groupCounts = Object.keys(groupRadarItems).map(group => allQuestions.filter(question => question.routeGroup === group).length);
+    const maxGroupCount = Math.max(0, ...groupCounts);
+    return commonCount + maxGroupCount;
+}
+
 function startDiagnosis(){
-    if(questions.length === 0){
+    if(allQuestions.length === 0){
         updateCsvStatus();
         return;
     }
 
-    document.getElementById("startScreen").classList.add("is-hidden");
-    document.getElementById("quizArea").classList.remove("is-hidden");
-
+    selectedGroup = "";
+    questions = buildInitialQuestions();
     idx = 0;
     answers = Array(questions.length).fill(null);
-    userFineScores = createEmptyFineScores();
-    userRadarScores = createEmptyRadarScores();
+    userScores = createEmptyScores();
 
+    document.getElementById("startScreen").classList.add("is-hidden");
+    document.getElementById("quizArea").classList.remove("is-hidden");
     document.getElementById("quizCard").classList.remove("is-hidden");
     document.getElementById("confirmArea").classList.add("is-hidden");
     document.getElementById("chartBox").style.display = "none";
@@ -589,20 +598,22 @@ function render(){
     document.getElementById("result").innerHTML = "";
 
     const question = questions[idx];
+    const totalQuestions = getEstimatedTotalQuestions();
 
-    document.getElementById("question").innerText = `${question.id} ${question.q}`;
-    document.getElementById("progressText").innerText = `Q${idx + 1} / ${questions.length}`;
+    document.getElementById("question").innerText = question.q;
+    document.getElementById("progressText").innerText = `Q${idx + 1} / ${totalQuestions}`;
 
-    const progress = ((idx + 1) / questions.length) * 100;
+    const progress = ((idx + 1) / totalQuestions) * 100;
     document.getElementById("progressFill").style.width = progress + "%";
 
     const choicesHtml = question.choices.map(choice => {
         const selectedClass = answers[idx] === choice.key ? " is-selected" : "";
+        const choiceLabel = `${choice.key}. ${choice.text}`;
 
         return `
             <button type="button" class="choice-btn${selectedClass}" onclick="selectChoice('${escapeAttribute(choice.key)}')">
                 <span class="choice-label">${escapeHtml(choice.key)}</span>
-                <span class="choice-text">${escapeHtml(choice.text)}</span>
+                <span class="choice-text">${escapeHtml(choiceLabel)}</span>
             </button>
         `;
     }).join("");
@@ -612,7 +623,19 @@ function render(){
 }
 
 function selectChoice(choiceKey){
+    const question = questions[idx];
+    const selectedChoice = question.choices.find(choice => choice.key === choiceKey);
     answers[idx] = choiceKey;
+
+    if(question.routeGroup === "common" && selectedChoice?.selectedGroup){
+        selectedGroup = selectedChoice.selectedGroup;
+        const previousAnswers = answers.slice(0, idx + 1);
+        questions = buildQuestionsForGroup(selectedGroup);
+        answers = Array(questions.length).fill(null);
+        previousAnswers.forEach((answer, index) => {
+            answers[index] = answer;
+        });
+    }
 
     if(idx < questions.length - 1){
         idx++;
@@ -641,7 +664,7 @@ function showConfirmPage(){
 
         return `
             <li class="confirm-item">
-                <div class="confirm-question">${escapeHtml(question.id)}. ${escapeHtml(question.q)}</div>
+                <div class="confirm-question">${escapeHtml(question.q)}</div>
                 <div class="confirm-answer">${escapeHtml(answerKey)}. ${escapeHtml(answerText)}</div>
             </li>
         `;
@@ -658,22 +681,20 @@ function returnToQuestions(){
 }
 
 function calculateScore(){
-    userFineScores = createEmptyFineScores();
+    userScores = createEmptyScores();
 
     answers.forEach((answerKey, questionIndex) => {
         const question = questions[questionIndex];
         const selectedChoice = question.choices.find(choice => choice.key === answerKey);
 
-        if(!selectedChoice){
+        if(!selectedChoice || question.routeGroup === "common"){
             return;
         }
 
-        fineAbilityNames.forEach(name => {
-            userFineScores[name] += Number(selectedChoice.scores[name]) || 0;
+        scoreItemNames.forEach(name => {
+            userScores[name] += Number(selectedChoice.scores[name]) || 0;
         });
     });
-
-    userRadarScores = fineToRadarScores(userFineScores);
 }
 
 function finish(){
@@ -693,8 +714,8 @@ function finish(){
     }
 
     const best = findBestPlayer();
-    const abilityHtml = createAbilityHtml(userRadarScores);
-    const playerAbilityHtml = createAbilityHtml(best.radarScores);
+    const abilityHtml = createAbilityHtml(userScores);
+    const playerAbilityHtml = createAbilityHtml(best.scores);
 
     document.getElementById("result").innerHTML = `
         <div class="result-hero">
@@ -705,6 +726,8 @@ function finish(){
             </h2>
             <div class="player-icon ${best.icon}" aria-hidden="true"></div>
             <p><strong>参考選手：</strong>${escapeHtml(best.referencePlayer)}</p>
+            <p><strong>ポジション：</strong>${escapeHtml(best.position)}</p>
+            <p class="result-description">${escapeHtml(best.description)}</p>
         </div>
 
         <div class="section-card">
@@ -713,7 +736,7 @@ function finish(){
         </div>
 
         <div class="section-card">
-            <h3>診断された選手タイプの能力</h3>
+            <h3>参考選手の能力</h3>
             <div class="ability-grid">${playerAbilityHtml}</div>
         </div>
 
@@ -723,15 +746,25 @@ function finish(){
     drawRadarChart(best);
 }
 
+function getActiveRadarItems(){
+    return groupRadarItems[selectedGroup] || groupRadarItems.ATTACK;
+}
+
+function getCandidatePlayers(){
+    const matchedPlayers = players.filter(player => player.group === selectedGroup);
+    return matchedPlayers.length > 0 ? matchedPlayers : players;
+}
+
 function findBestPlayer(){
-    let best = players[0];
+    const candidates = getCandidatePlayers();
+    const radarItems = getActiveRadarItems();
+    let best = candidates[0];
     let bestDistance = Infinity;
 
-    players.forEach(player => {
+    candidates.forEach(player => {
         let distance = 0;
-
-        radarAbilityNames.forEach(name => {
-            distance += (capScore(userRadarScores[name]) - capScore(player.radarScores[name])) ** 2;
+        radarItems.forEach(name => {
+            distance += (capScore(userScores[name]) - capScore(player.scores[name])) ** 2;
         });
 
         if(distance < bestDistance){
@@ -744,14 +777,14 @@ function findBestPlayer(){
 }
 
 function createAbilityHtml(values){
-    return radarAbilityNames.map(name => {
+    return getActiveRadarItems().map(name => {
         const value = capScore(values[name]);
         const displayValue = Math.round(value);
 
         return `
             <div class="ability-item">
                 <div class="ability-name">
-                    <span>${name}</span>
+                    <span>${escapeHtml(name)}</span>
                     <span>${displayValue}</span>
                 </div>
                 <div class="ability-bar">
@@ -783,15 +816,16 @@ function drawRadarChart(best){
     const maxValue = 100;
 
     drawRadarGrid(ctx, center, radius);
-    drawRadarPolygon(ctx, userRadarScores, maxValue, center, radius, "rgba(52,152,219,0.25)", "rgba(52,152,219,1)");
-    drawRadarPolygon(ctx, best.radarScores, maxValue, center, radius, "rgba(231,76,60,0.25)", "rgba(231,76,60,1)");
+    drawRadarPolygon(ctx, userScores, maxValue, center, radius, "rgba(52,152,219,0.25)", "rgba(52,152,219,1)");
+    drawRadarPolygon(ctx, best.scores, maxValue, center, radius, "rgba(231,76,60,0.25)", "rgba(231,76,60,1)");
     drawRadarLabels(ctx, center, radius, size);
-    drawRadarLegend(ctx, best.typeName);
+    drawRadarLegend(ctx, best.referencePlayer);
     radarChart = true;
 }
 
 function getRadarPoint(index, value, maxValue, center, radius){
-    const angle = (Math.PI * 2 * index / radarAbilityNames.length) - Math.PI / 2;
+    const radarItems = getActiveRadarItems();
+    const angle = (Math.PI * 2 * index / radarItems.length) - Math.PI / 2;
     const distance = Math.min(value / maxValue, 1) * radius;
     return {
         x:center + Math.cos(angle) * distance,
@@ -800,6 +834,7 @@ function getRadarPoint(index, value, maxValue, center, radius){
 }
 
 function drawRadarGrid(ctx, center, radius){
+    const radarItems = getActiveRadarItems();
     ctx.strokeStyle = "#d1d5db";
     ctx.lineWidth = 1;
 
@@ -807,7 +842,7 @@ function drawRadarGrid(ctx, center, radius){
         const levelRadius = radius * level / 5;
         ctx.beginPath();
 
-        radarAbilityNames.forEach((name, index) => {
+        radarItems.forEach((name, index) => {
             const point = getRadarPoint(index, 100, 100, center, levelRadius);
             if(index === 0){
                 ctx.moveTo(point.x, point.y);
@@ -820,7 +855,7 @@ function drawRadarGrid(ctx, center, radius){
         ctx.stroke();
     }
 
-    radarAbilityNames.forEach((name, index) => {
+    radarItems.forEach((name, index) => {
         const point = getRadarPoint(index, 100, 100, center, radius);
         ctx.beginPath();
         ctx.moveTo(center, center);
@@ -830,9 +865,10 @@ function drawRadarGrid(ctx, center, radius){
 }
 
 function drawRadarPolygon(ctx, values, maxValue, center, radius, fillColor, strokeColor){
+    const radarItems = getActiveRadarItems();
     ctx.beginPath();
 
-    radarAbilityNames.forEach((name, index) => {
+    radarItems.forEach((name, index) => {
         const point = getRadarPoint(index, capScore(values[name]), maxValue, center, radius);
         if(index === 0){
             ctx.moveTo(point.x, point.y);
@@ -850,12 +886,13 @@ function drawRadarPolygon(ctx, values, maxValue, center, radius, fillColor, stro
 }
 
 function drawRadarLabels(ctx, center, radius, size){
+    const radarItems = getActiveRadarItems();
     ctx.fillStyle = "#111827";
     ctx.font = "bold 13px Arial, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-    radarAbilityNames.forEach((name, index) => {
+    radarItems.forEach((name, index) => {
         const point = getRadarPoint(index, 100, 100, center, radius + 34);
         const x = Math.max(38, Math.min(size - 38, point.x));
         const y = Math.max(18, Math.min(size - 18, point.y));
@@ -891,10 +928,14 @@ function showCsvFallbackResult(){
         </div>
         <div class="section-card">
             <h3>あなたの能力</h3>
-            <div class="ability-grid">${createAbilityHtml(userRadarScores)}</div>
+            <div class="ability-grid">${createAbilityHtml(userScores)}</div>
         </div>
         <button type="button" class="restart-btn" onclick="startDiagnosis()">もう一度診断する</button>
     `;
+}
+
+function clampScore(value){
+    return Math.max(0, Math.min(Number(value) || 0, 100));
 }
 
 function capScore(value){
@@ -916,3 +957,5 @@ function escapeAttribute(value){
 </script>
 </body>
 </html>
+
+
