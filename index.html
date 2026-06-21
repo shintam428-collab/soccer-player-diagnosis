@@ -277,37 +277,28 @@ canvas{max-width:100%;}
 
 <script>
 const scoreItemNames = [
-    "セービング",
-    "反応",
-    "空中戦",
+    "オフェンスセンス",
+    "決定力",
+    "フリーキック",
+    "カーブ",
+    "グランダーパス",
+    "フライパス",
     "フィジカル",
-    "パス",
-    "キック力",
-    "守備意識",
-    "安定感",
-    "ディフェンス",
-    "対人守備",
+    "体力",
+    "ディフェンスセンス",
     "ボール奪取",
+    "アグレッシブネス",
+    "守備意識",
+    "ヘディング",
+    "ジャンプ力",
     "スピード",
-    "スタミナ",
+    "瞬発力",
+    "ボールコントロール",
     "ドリブル",
-    "クロス",
-    "攻撃参加",
-    "展開力",
-    "判断力",
-    "ボールキープ",
-    "オフェンス",
-    "シュート",
-    "決定力"
+    "ボールキープ"
 ];
 
-const groupRadarItems = {
-    GK:["セービング","反応","空中戦","フィジカル","パス","キック力","守備意識","安定感"],
-    DEFENSE:["ディフェンス","対人守備","ボール奪取","守備意識","空中戦","フィジカル","パス","スピード"],
-    SIDE:["スピード","スタミナ","ドリブル","クロス","パス","攻撃参加","ディフェンス","フィジカル"],
-    MIDFIELD:["パス","展開力","判断力","ボールキープ","ドリブル","オフェンス","ディフェンス","キック力"],
-    ATTACK:["オフェンス","シュート","決定力","ドリブル","スピード","フィジカル","空中戦","キック力"]
-};
+const branchGroups = ["GK", "DEFENSE", "SIDE", "MIDFIELD", "CF"];
 
 const validIconClasses = ["pass-icon","dribble-icon","shoot-icon","defense-icon","stamina-icon"];
 
@@ -330,7 +321,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function loadQuestionsCsv(){
     try{
-        const response = await fetch("questions.csv", {cache:"no-store"});
+        const response = await fetch('./questions.csv');
 
         if(!response.ok){
             throw new Error("questions.csvを読み込めませんでした");
@@ -358,7 +349,7 @@ async function loadQuestionsCsv(){
 
 async function loadPlayersCsv(){
     try{
-        const response = await fetch("players.csv", {cache:"no-store"});
+        const response = await fetch('./players.csv');
 
         if(!response.ok){
             throw new Error("players.csvを読み込めませんでした");
@@ -433,13 +424,56 @@ function normalizeHeader(header){
     return header.map(key => (key || "").replace(/^\uFEFF/, "").trim());
 }
 
+function shouldUseSecondHeader(row){
+    return row.some(cell => scoreItemNames.includes((cell || "").replace(/^\uFEFF/, "").trim()));
+}
+
+function buildCsvColumns(firstHeader, secondHeader){
+    const length = Math.max(firstHeader.length, secondHeader.length);
+    const columns = [];
+
+    for(let index = 0; index < length; index++){
+        const primaryKey = firstHeader[index] || "";
+        const abilityKey = scoreItemNames.includes(secondHeader[index]) ? secondHeader[index] : "";
+        const fallbackAbilityKey = scoreItemNames.includes(primaryKey) ? primaryKey : "";
+
+        columns.push({
+            primaryKey,
+            abilityKey: abilityKey || fallbackAbilityKey
+        });
+    }
+
+    return columns;
+}
+
+function rowToCsvRecord(columns, row){
+    const record = {};
+    const scores = createEmptyScores();
+
+    columns.forEach((column, index) => {
+        const value = (row[index] || "").trim();
+
+        if(column.primaryKey){
+            record[column.primaryKey] = value;
+        }
+
+        if(column.abilityKey){
+            scores[column.abilityKey] = Number(value) || 0;
+        }
+    });
+
+    return {record, scores};
+}
+
 function parseQuestionsCsv(csvText){
     const rows = parseCsv(csvText.trim());
-    const header = normalizeHeader(rows.shift() || []);
+    const firstHeader = normalizeHeader(rows.shift() || []);
+    const secondHeader = rows.length > 0 && shouldUseSecondHeader(rows[0]) ? normalizeHeader(rows.shift()) : [];
+    const columns = buildCsvColumns(firstHeader, secondHeader);
     const groupedQuestions = new Map();
 
     rows.forEach(row => {
-        const record = rowToRecord(header, row);
+        const {record, scores} = rowToCsvRecord(columns, row);
         const routeGroup = record["route_group"];
         const questionId = record["question_id"];
         const questionText = record["question"];
@@ -464,11 +498,6 @@ function parseQuestionsCsv(csvText){
             groupedQuestions.get(key).q = questionText;
         }
 
-        const scores = createEmptyScores();
-        scoreItemNames.forEach(name => {
-            scores[name] = Number(record[name]) || 0;
-        });
-
         groupedQuestions.get(key).choices.push({
             key: choice,
             text: choiceText,
@@ -483,14 +512,15 @@ function parseQuestionsCsv(csvText){
 
 function parsePlayersCsv(csvText){
     const rows = parseCsv(csvText.trim());
-    const header = normalizeHeader(rows.shift() || []);
+    const firstHeader = normalizeHeader(rows.shift() || []);
+    const secondHeader = rows.length > 0 && shouldUseSecondHeader(rows[0]) ? normalizeHeader(rows.shift()) : [];
+    const columns = buildCsvColumns(firstHeader, secondHeader);
 
     return rows.map(row => {
-        const record = rowToRecord(header, row);
+        const {record, scores: rawScores} = rowToCsvRecord(columns, row);
         const scores = createEmptyScores();
-
         scoreItemNames.forEach(name => {
-            scores[name] = clampScore(record[name]);
+            scores[name] = clampScore(rawScores[name]);
         });
 
         const icon = record["アイコン"] || "";
@@ -563,7 +593,7 @@ function getEstimatedTotalQuestions(){
     }
 
     const commonCount = allQuestions.filter(question => question.routeGroup === "common").length;
-    const groupCounts = Object.keys(groupRadarItems).map(group => allQuestions.filter(question => question.routeGroup === group).length);
+    const groupCounts = branchGroups.map(group => allQuestions.filter(question => question.routeGroup === group).length);
     const maxGroupCount = Math.max(0, ...groupCounts);
     return commonCount + maxGroupCount;
 }
@@ -692,7 +722,7 @@ function calculateScore(){
         }
 
         scoreItemNames.forEach(name => {
-            userScores[name] += Number(selectedChoice.scores[name]) || 0;
+            userScores[name] = capScore(userScores[name] + (Number(selectedChoice.scores[name]) || 0));
         });
     });
 }
@@ -747,7 +777,7 @@ function finish(){
 }
 
 function getActiveRadarItems(){
-    return groupRadarItems[selectedGroup] || groupRadarItems.ATTACK;
+    return scoreItemNames;
 }
 
 function getCandidatePlayers(){
