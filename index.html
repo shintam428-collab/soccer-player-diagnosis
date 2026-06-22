@@ -311,6 +311,21 @@ const radarItemGroups = {
 
 const branchGroups = ["GK", "DEFENSE", "SIDE", "MIDFIELD", "CF"];
 
+const q1PositionMap = {
+    "ゴールキーパー":["GK"],
+    "センターバック":["CB"],
+    "守備型サイドバック":["LSB","RSB"],
+    "アンカー":["DMF"],
+    "攻撃型サイドバック":["LSB","RSB"],
+    "右サイド":["RWG","RMF","RSB"],
+    "左サイド":["LMF","LSB"],
+    "ウィングバック":["WB"],
+    "WG":["RWG","LMF"],
+    "ボランチ":["CMF","DMF"],
+    "トップ下":["OMF"],
+    "CF":["CF"]
+};
+
 const validIconClasses = ["pass-icon","dribble-icon","shoot-icon","defense-icon","stamina-icon"];
 
 let allQuestions = [];
@@ -319,6 +334,7 @@ let questionLoadError = "";
 let idx = 0;
 let answers = [];
 let selectedGroup = "";
+let selectedPositions = [];
 let userScores = createEmptyScores();
 let radarChart = null;
 let players = [];
@@ -768,6 +784,7 @@ function startDiagnosis(){
     }
 
     selectedGroup = "";
+    selectedPositions = [];
     questions = buildInitialQuestions();
     idx = 0;
     answers = Array(questions.length).fill(null);
@@ -822,6 +839,7 @@ function selectChoice(choiceKey){
 
     if(question.routeGroup === "common" && selectedChoice?.selectedGroup){
         selectedGroup = selectedChoice.selectedGroup;
+        selectedPositions = getPositionsForQ1Choice(selectedChoice.text);
         const previousAnswers = answers.slice(0, idx + 1);
         questions = buildQuestionsForGroup(selectedGroup);
         answers = Array(questions.length).fill(null);
@@ -958,8 +976,13 @@ function convertToRadarScores(scores){
     return radarScores;
 }
 
+function getPositionsForQ1Choice(choiceText){
+    const normalizedChoiceText = String(choiceText || "").trim();
+    return q1PositionMap[normalizedChoiceText] || [];
+}
+
 function getCandidatePlayers(){
-    const matchedPlayers = players.filter(player => player.group === selectedGroup);
+    const matchedPlayers = players.filter(player => selectedPositions.includes(player.position));
     return matchedPlayers.length > 0 ? matchedPlayers : players;
 }
 
