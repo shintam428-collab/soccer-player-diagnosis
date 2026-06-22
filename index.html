@@ -298,6 +298,17 @@ const scoreItemNames = [
     "ボールキープ"
 ];
 
+const radarItemGroups = {
+    "オフェンス":["オフェンスセンス"],
+    "シュート":["決定力","フリーキック","カーブ"],
+    "パス":["グランダーパス","フライパス"],
+    "フィジカル":["フィジカル","体力"],
+    "ディフェンス":["ディフェンスセンス","ボール奪取","アグレッシブネス","守備意識"],
+    "ヘディング":["ヘディング","ジャンプ力"],
+    "スピード":["スピード","瞬発力"],
+    "ドリブル":["ボールコントロール","ドリブル","ボールキープ"]
+};
+
 const branchGroups = ["GK", "DEFENSE", "SIDE", "MIDFIELD", "CF"];
 
 const validIconClasses = ["pass-icon","dribble-icon","shoot-icon","defense-icon","stamina-icon"];
@@ -929,7 +940,22 @@ function finish(){
 }
 
 function getActiveRadarItems(){
-    return scoreItemNames;
+    return Object.keys(radarItemGroups);
+}
+
+function convertToRadarScores(scores){
+    const radarScores = {};
+
+    getActiveRadarItems().forEach(radarName => {
+        const sourceItems = radarItemGroups[radarName];
+        const total = sourceItems.reduce((sum, itemName) => {
+            return sum + (Number(scores[itemName]) || 0);
+        }, 0);
+        const average = sourceItems.length > 0 ? total / sourceItems.length : 0;
+        radarScores[radarName] = capScore(average);
+    });
+
+    return radarScores;
 }
 
 function getCandidatePlayers(){
@@ -940,13 +966,15 @@ function getCandidatePlayers(){
 function findBestPlayer(){
     const candidates = getCandidatePlayers();
     const radarItems = getActiveRadarItems();
+    const userRadarScores = convertToRadarScores(userScores);
     let best = candidates[0];
     let bestDistance = Infinity;
 
     candidates.forEach(player => {
+        const playerRadarScores = convertToRadarScores(player.scores);
         let distance = 0;
         radarItems.forEach(name => {
-            distance += (capScore(userScores[name]) - capScore(player.scores[name])) ** 2;
+            distance += (userRadarScores[name] - playerRadarScores[name]) ** 2;
         });
 
         if(distance < bestDistance){
@@ -959,8 +987,10 @@ function findBestPlayer(){
 }
 
 function createAbilityHtml(values){
+    const radarScores = convertToRadarScores(values);
+
     return getActiveRadarItems().map(name => {
-        const value = capScore(values[name]);
+        const value = radarScores[name];
         const displayValue = Math.round(value);
 
         return `
@@ -998,8 +1028,8 @@ function drawRadarChart(best){
     const maxValue = 100;
 
     drawRadarGrid(ctx, center, radius);
-    drawRadarPolygon(ctx, userScores, maxValue, center, radius, "rgba(52,152,219,0.25)", "rgba(52,152,219,1)");
-    drawRadarPolygon(ctx, best.scores, maxValue, center, radius, "rgba(231,76,60,0.25)", "rgba(231,76,60,1)");
+    drawRadarPolygon(ctx, convertToRadarScores(userScores), maxValue, center, radius, "rgba(52,152,219,0.25)", "rgba(52,152,219,1)");
+    drawRadarPolygon(ctx, convertToRadarScores(best.scores), maxValue, center, radius, "rgba(231,76,60,0.25)", "rgba(231,76,60,1)");
     drawRadarLabels(ctx, center, radius, size);
     drawRadarLegend(ctx, best.referencePlayer);
     radarChart = true;
