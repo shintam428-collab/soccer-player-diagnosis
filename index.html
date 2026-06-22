@@ -336,11 +336,23 @@ async function loadQuestionsCsv(){
         }
 
         const csvText = await response.text();
-        allQuestions = parseQuestionsCsv(csvText);
-        questions = buildInitialQuestions();
+        console.log(`questions.csv fetch成功: ${csvUrl}`);
 
-        if(questions.length === 0){
-            throw new Error("questions.csvに有効な質問データがありません");
+        try{
+            allQuestions = parseQuestionsCsv(csvText);
+            questions = buildInitialQuestions();
+
+            if(questions.length === 0){
+                throw new Error("questions.csvに有効な質問データがありません");
+            }
+        }catch(parseError){
+            console.log("questions.csv 解析失敗", parseError);
+            questionLoadError = "CSVの形式を解析できませんでした";
+            allQuestions = [];
+            questions = [];
+            answers = [];
+            updateCsvStatus();
+            return;
         }
 
         questionLoadError = "";
@@ -369,10 +381,20 @@ async function loadPlayersCsv(){
         }
 
         const csvText = await response.text();
-        players = parsePlayersCsv(csvText);
+        console.log(`players.csv fetch成功: ${csvUrl}`);
 
-        if(players.length === 0){
-            throw new Error("players.csvに有効な選手データがありません");
+        try{
+            players = parsePlayersCsv(csvText);
+
+            if(players.length === 0){
+                throw new Error("players.csvに有効な選手データがありません");
+            }
+        }catch(parseError){
+            console.log("players.csv 解析失敗", parseError);
+            players = [];
+            csvLoadError = "CSVの形式を解析できませんでした";
+            updateCsvStatus();
+            return;
         }
 
         csvLoadError = "";
@@ -461,6 +483,13 @@ function buildCsvColumns(firstHeader, secondHeader){
     return columns;
 }
 
+function getAbilityItemsFromColumns(columns){
+    const abilityItems = columns
+        .map(column => column.abilityKey)
+        .filter(Boolean);
+    return [...new Set(abilityItems)];
+}
+
 function rowToCsvRecord(columns, row){
     const record = {};
     const scores = createEmptyScores();
@@ -484,12 +513,24 @@ function parseQuestionsCsv(csvText){
     const rows = parseCsv(csvText.trim());
     const firstHeader = normalizeHeader(rows.shift() || []);
 
+    if(firstHeader.includes("route_group")){
+        return parseRouteQuestionsCsv(firstHeader, rows);
+    }
+
+    if(isShiftedRouteQuestionsCsv(firstHeader, rows)){
+        return parseShiftedRouteQuestionsCsv(firstHeader, rows);
+    }
+
     if(!firstHeader.includes("route_group")){
         return parseSimpleQuestionsCsv(firstHeader, rows);
     }
+}
 
+function parseRouteQuestionsCsv(firstHeader, rows){
     const secondHeader = rows.length > 0 && shouldUseSecondHeader(rows[0]) ? normalizeHeader(rows.shift()) : [];
     const columns = buildCsvColumns(firstHeader, secondHeader);
+    console.log("questions.csv 行数:", rows.length + 1 + (secondHeader.length ? 1 : 0));
+    console.log("questions.csv 能力項目:", getAbilityItemsFromColumns(columns));
     const groupedQuestions = new Map();
 
     rows.forEach(row => {
@@ -530,8 +571,54 @@ function parseQuestionsCsv(csvText){
     return Array.from(groupedQuestions.values());
 }
 
+function isShiftedRouteQuestionsCsv(firstHeader, rows){
+    if(!firstHeader.includes("question_id") || !firstHeader.includes("question") || !firstHeader.includes("choice_text")){
+        return false;
+    }
+
+    const firstDataRow = rows.find(row => {
+        const firstCell = (row[0] || "").trim();
+        const secondCell = (row[1] || "").trim();
+        return firstCell === "common" || branchGroups.includes(firstCell) || /^Q\d+/i.test(secondCell);
+    });
+
+    if(!firstDataRow){
+        return false;
+    }
+
+    const firstCell = (firstDataRow[0] || "").trim();
+    const secondCell = (firstDataRow[1] || "").trim();
+    return branchGroups.includes(firstCell) || firstCell === "common" || /^Q\d+/i.test(secondCell);
+}
+
+function parseShiftedRouteQuestionsCsv(firstHeader, rows){
+    const secondHeader = rows.length > 0 && shouldUseSecondHeader(rows[0]) ? normalizeHeader(rows.shift()) : [];
+    const shiftedHeader = [
+        "route_group",
+        "question_id",
+        "question",
+        "choice",
+        "choice_text",
+        "selected_group",
+        ...firstHeader.slice(6)
+    ];
+    const shiftedSecondHeader = [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ...secondHeader.slice(6)
+    ];
+
+    return parseRouteQuestionsCsv(shiftedHeader, [shiftedSecondHeader, ...rows]);
+}
+
 function parseSimpleQuestionsCsv(header, rows){
     const choiceColumns = header.filter(key => /^[A-Z]$/.test(key));
+    console.log("questions.csv 行数:", rows.length + 1);
+    console.log("questions.csv 能力項目:", []);
 
     return rows.map(row => {
         const record = rowToRecord(header, row);
