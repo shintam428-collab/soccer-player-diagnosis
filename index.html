@@ -319,12 +319,20 @@ document.addEventListener("DOMContentLoaded", () => {
     loadPlayersCsv();
 });
 
+function createCsvUrl(fileName){
+    // GitHub Pagesでもリポジトリ配下から読めるよう、絶対パスではなく相対パスを使います。
+    return `./${fileName}?v=${Date.now()}`;
+}
+
 async function loadQuestionsCsv(){
+    const csvUrl = createCsvUrl("questions.csv");
+
     try{
-        const response = await fetch('./questions.csv');
+        console.log(`questions.csv 読み込み開始: ${csvUrl}`);
+        const response = await fetch(csvUrl);
 
         if(!response.ok){
-            throw new Error("questions.csvを読み込めませんでした");
+            throw new Error(`questions.csvを読み込めませんでした: ${response.status} ${response.statusText}`);
         }
 
         const csvText = await response.text();
@@ -337,8 +345,10 @@ async function loadQuestionsCsv(){
 
         questionLoadError = "";
         answers = Array(questions.length).fill(null);
+        console.log(`questions.csv 読み込み成功: ${csvUrl} / ${allQuestions.length}問`);
         updateCsvStatus();
     }catch(error){
+        console.log(`questions.csv 読み込み失敗: ${csvUrl}`, error);
         allQuestions = [];
         questions = [];
         answers = [];
@@ -348,11 +358,14 @@ async function loadQuestionsCsv(){
 }
 
 async function loadPlayersCsv(){
+    const csvUrl = createCsvUrl("players.csv");
+
     try{
-        const response = await fetch('./players.csv');
+        console.log(`players.csv 読み込み開始: ${csvUrl}`);
+        const response = await fetch(csvUrl);
 
         if(!response.ok){
-            throw new Error("players.csvを読み込めませんでした");
+            throw new Error(`players.csvを読み込めませんでした: ${response.status} ${response.statusText}`);
         }
 
         const csvText = await response.text();
@@ -363,8 +376,10 @@ async function loadPlayersCsv(){
         }
 
         csvLoadError = "";
+        console.log(`players.csv 読み込み成功: ${csvUrl} / ${players.length}件`);
         updateCsvStatus();
     }catch(error){
+        console.log(`players.csv 読み込み失敗: ${csvUrl}`, error);
         players = [];
         csvLoadError = "players.csvを読み込めませんでした";
         updateCsvStatus();
@@ -468,6 +483,11 @@ function rowToCsvRecord(columns, row){
 function parseQuestionsCsv(csvText){
     const rows = parseCsv(csvText.trim());
     const firstHeader = normalizeHeader(rows.shift() || []);
+
+    if(!firstHeader.includes("route_group")){
+        return parseSimpleQuestionsCsv(firstHeader, rows);
+    }
+
     const secondHeader = rows.length > 0 && shouldUseSecondHeader(rows[0]) ? normalizeHeader(rows.shift()) : [];
     const columns = buildCsvColumns(firstHeader, secondHeader);
     const groupedQuestions = new Map();
@@ -510,9 +530,37 @@ function parseQuestionsCsv(csvText){
     return Array.from(groupedQuestions.values());
 }
 
+function parseSimpleQuestionsCsv(header, rows){
+    const choiceColumns = header.filter(key => /^[A-Z]$/.test(key));
+
+    return rows.map(row => {
+        const record = rowToRecord(header, row);
+
+        return {
+            routeGroup: "common",
+            id: record["id"],
+            q: record["question"],
+            choices: choiceColumns
+                .filter(key => record[key])
+                .map(key => ({
+                    key,
+                    text: record[key],
+                    selectedGroup: "",
+                    mainRadarItem: "",
+                    scores: createEmptyScores()
+                }))
+        };
+    }).filter(question => question.id && question.q && question.choices.length > 0);
+}
+
 function parsePlayersCsv(csvText){
     const rows = parseCsv(csvText.trim());
     const firstHeader = normalizeHeader(rows.shift() || []);
+
+    if(!firstHeader.includes("group")){
+        return parseSimplePlayersCsv(firstHeader, rows);
+    }
+
     const secondHeader = rows.length > 0 && shouldUseSecondHeader(rows[0]) ? normalizeHeader(rows.shift()) : [];
     const columns = buildCsvColumns(firstHeader, secondHeader);
 
@@ -536,7 +584,24 @@ function parsePlayersCsv(csvText){
             description: record["説明文"] || "",
             scores
         };
-    }).filter(player => player.group && player.typeName && player.referencePlayer);
+    }).filter(player => player.typeName && player.referencePlayer);
+}
+
+function parseSimplePlayersCsv(header, rows){
+    return rows.map(row => {
+        const record = rowToRecord(header, row);
+
+        return {
+            id: record["id"],
+            group: "GENERAL",
+            position: record["position"] || "",
+            typeName: record["タイプ名"],
+            referencePlayer: record["参考選手"],
+            icon: validIconClasses.includes(record["アイコン"]) ? record["アイコン"] : "pass-icon",
+            description: record["説明文"] || "",
+            scores: createEmptyScores()
+        };
+    }).filter(player => player.typeName && player.referencePlayer);
 }
 
 function iconFromGroup(group){
