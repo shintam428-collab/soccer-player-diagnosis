@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>あなたが目指すべき選手診断</title>
+<title>あなたのサッカー性格診断</title>
 
 <style>
 html{background:#0a1628;}
@@ -206,6 +206,10 @@ canvas{max-width:100%;}
 .nav-btn,.back-btn{background:#64748b!important;}
 .diagnose-btn{background:linear-gradient(180deg,#f59e0b,#ea580c)!important;}
 .restart-btn{background:#2563eb!important;}
+.character-result-image{display:block;width:min(280px,78vw);height:auto;margin:22px auto;border-radius:18px;box-shadow:0 18px 40px rgba(15,23,42,0.2);background:#f8fafc;}
+.axis-summary{display:grid;gap:10px;margin:18px 0 8px;}
+.axis-pill{display:flex;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:12px;background:rgba(37,99,235,0.08);color:#1e293b;font-size:.92rem;}
+.axis-pill strong{color:#2563eb;white-space:nowrap;}
 .confirm-list{text-align:left;margin:20px auto;padding:0;list-style:none;}
 .confirm-item{background:#f8fafc;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 4px 12px rgba(0,0,0,0.12);}
 .confirm-question{font-weight:bold;margin-bottom:8px;color:#111827;}
@@ -239,8 +243,8 @@ canvas{max-width:100%;}
         <div class="start-screen__grass" aria-hidden="true"></div>
         <div class="start-screen__content">
             <p class="start-screen__icon">⚽</p>
-            <h1 class="start-title">あなたが目指すべき選手診断</h1>
-            <p class="start-description">質問に答えると、あなたのプレースタイルに近い選手タイプを診断します。</p>
+            <h1 class="start-title">あなたのサッカー性格診断</h1>
+            <p class="start-description">8つの質問に答えると、あなたに近いキャラクタータイプを診断します。</p>
             <div id="questionStatus"></div>
             <button type="button" id="startBtn" class="start-btn" onclick="startDiagnosis()">診断を始める</button>
         </div>
@@ -275,922 +279,414 @@ canvas{max-width:100%;}
     </div>
 </div>
 
+<script type="text/plain" id="legacy-player-diagnosis">
+古い選手診断スクリプトは、性格診断への変更により使用しません。
+</script>
 <script>
-const scoreItemNames = [
-    "オフェンスセンス",
-    "決定力",
-    "フリーキック",
-    "カーブ",
-    "グランダーパス",
-    "フライパス",
-    "フィジカル",
-    "体力",
-    "ディフェンスセンス",
-    "ボール奪取",
-    "アグレッシブネス",
-    "守備意識",
-    "ヘディング",
-    "ジャンプ力",
-    "スピード",
-    "瞬発力",
-    "ボールコントロール",
-    "ドリブル",
-    "ボールキープ"
-];
+(() => {
+    const questionFile = "./personality_questions.csv";
+    const typeFile = "./personality_types.csv";
+    const axisOrder = [
+        "攻める / 支える",
+        "直感 / 冷静",
+        "スピード技術 / フィジカル守備",
+        "自由 / リーダー"
+    ];
+    const fallbackTieQuestions = {
+        "攻める / 支える": "Q2",
+        "直感 / 冷静": "Q4",
+        "スピード技術 / フィジカル守備": "Q6",
+        "自由 / リーダー": "Q8"
+    };
 
-const radarItemGroups = {
-    "オフェンス":["オフェンスセンス"],
-    "シュート":["決定力","フリーキック","カーブ"],
-    "パス":["グランダーパス","フライパス"],
-    "フィジカル":["フィジカル","体力"],
-    "ディフェンス":["ディフェンスセンス","ボール奪取","アグレッシブネス","守備意識"],
-    "ヘディング":["ヘディング","ジャンプ力"],
-    "スピード":["スピード","瞬発力"],
-    "ドリブル":["ボールコントロール","ドリブル","ボールキープ"]
-};
+    let personalityQuestions = [];
+    let personalityTypes = [];
+    let currentIndex = 0;
+    let answers = {};
+    let loadErrors = [];
 
-const branchGroups = ["GK", "DEFENSE", "SIDE", "MIDFIELD", "CF"];
+    const $ = (id) => document.getElementById(id);
 
-const q1PositionMap = {
-    "ゴールキーパー":["GK"],
-    "センターバック":["CB"],
-    "守備型サイドバック":["LSB","RSB"],
-    "アンカー":["DMF"],
-    "攻撃型サイドバック":["LSB","RSB"],
-    "右サイド":["RWG","RMF","RSB"],
-    "左サイド":["LMF","LSB"],
-    "ウィングバック":["WB"],
-    "WG":["RWG","LMF"],
-    "ボランチ":["CMF","DMF"],
-    "トップ下":["OMF"],
-    "CF":["CF"]
-};
+    document.addEventListener("DOMContentLoaded", initializePersonalityDiagnosis);
 
-const validIconClasses = ["pass-icon","dribble-icon","shoot-icon","defense-icon","stamina-icon"];
+    async function initializePersonalityDiagnosis() {
+        $("chartBox").style.display = "none";
+        $("result").innerHTML = "";
+        $("startBtn").disabled = true;
+        $("startBtn").textContent = "読み込み中...";
 
-let allQuestions = [];
-let questions = [];
-let questionLoadError = "";
-let idx = 0;
-let answers = [];
-let selectedGroup = "";
-let selectedPositions = [];
-let userScores = createEmptyScores();
-let radarChart = null;
-let players = [];
-let csvLoadError = "";
+        try {
+            const [questions, types] = await Promise.all([
+                loadPersonalityQuestions(),
+                loadPersonalityTypes()
+            ]);
 
-// CSVはUTF-8として、index.htmlと同じ階層から読み込みます。
-document.addEventListener("DOMContentLoaded", () => {
-    loadQuestionsCsv();
-    loadPlayersCsv();
-});
-
-function createCsvUrl(fileName){
-    // GitHub Pagesでもリポジトリ配下から読めるよう、絶対パスではなく相対パスを使います。
-    return `./${fileName}?v=${Date.now()}`;
-}
-
-async function loadQuestionsCsv(){
-    const csvUrl = createCsvUrl("questions.csv");
-
-    try{
-        console.log(`questions.csv 読み込み開始: ${csvUrl}`);
-        const response = await fetch(csvUrl);
-
-        if(!response.ok){
-            throw new Error(`questions.csvを読み込めませんでした: ${response.status} ${response.statusText}`);
+            personalityQuestions = questions;
+            personalityTypes = types;
+            $("startBtn").disabled = false;
+            $("startBtn").textContent = "診断を始める";
+            updateStatus("");
+            console.log("personality_questions.csv 読み込み成功:", personalityQuestions.length, "問");
+            console.log("personality_types.csv 読み込み成功:", personalityTypes.length, "件");
+        } catch (error) {
+            console.log("性格診断CSVの読み込みに失敗しました", error);
+            updateStatus(loadErrors.join("<br>") || "診断データを読み込めませんでした");
+            $("startBtn").disabled = true;
+            $("startBtn").textContent = "読み込みエラー";
         }
-
-        const csvText = await response.text();
-        console.log(`questions.csv fetch成功: ${csvUrl}`);
-
-        try{
-            allQuestions = parseQuestionsCsv(csvText);
-            questions = buildInitialQuestions();
-
-            if(questions.length === 0){
-                throw new Error("questions.csvに有効な質問データがありません");
-            }
-        }catch(parseError){
-            console.log("questions.csv 解析失敗", parseError);
-            questionLoadError = "CSVの形式を解析できませんでした";
-            allQuestions = [];
-            questions = [];
-            answers = [];
-            updateCsvStatus();
-            return;
-        }
-
-        questionLoadError = "";
-        answers = Array(questions.length).fill(null);
-        console.log(`questions.csv 読み込み成功: ${csvUrl} / ${allQuestions.length}問`);
-        updateCsvStatus();
-    }catch(error){
-        console.log(`questions.csv 読み込み失敗: ${csvUrl}`, error);
-        allQuestions = [];
-        questions = [];
-        answers = [];
-        questionLoadError = "questions.csvを読み込めませんでした";
-        updateCsvStatus();
     }
-}
 
-async function loadPlayersCsv(){
-    const csvUrl = createCsvUrl("players.csv");
+    async function loadPersonalityQuestions() {
+        const rows = await fetchCsvRows(questionFile, "personality_questions.csvを読み込めませんでした");
+        const headerIndex = findHeaderRow(rows, ["question_id", "question", "choice_a_text", "choice_b_text"]);
 
-    try{
-        console.log(`players.csv 読み込み開始: ${csvUrl}`);
-        const response = await fetch(csvUrl);
-
-        if(!response.ok){
-            throw new Error(`players.csvを読み込めませんでした: ${response.status} ${response.statusText}`);
+        if (headerIndex < 0) {
+            loadErrors.push("personality_questions.csvの形式を解析できませんでした");
+            throw new Error("personality_questions.csv header not found");
         }
 
-        const csvText = await response.text();
-        console.log(`players.csv fetch成功: ${csvUrl}`);
+        const headers = rows[headerIndex].map(normalizeCell);
+        const dataRows = rows.slice(headerIndex + 1);
 
-        try{
-            players = parsePlayersCsv(csvText);
-
-            if(players.length === 0){
-                throw new Error("players.csvに有効な選手データがありません");
-            }
-        }catch(parseError){
-            console.log("players.csv 解析失敗", parseError);
-            players = [];
-            csvLoadError = "CSVの形式を解析できませんでした";
-            updateCsvStatus();
-            return;
-        }
-
-        csvLoadError = "";
-        console.log(`players.csv 読み込み成功: ${csvUrl} / ${players.length}件`);
-        updateCsvStatus();
-    }catch(error){
-        console.log(`players.csv 読み込み失敗: ${csvUrl}`, error);
-        players = [];
-        csvLoadError = "players.csvを読み込めませんでした";
-        updateCsvStatus();
+        // Excelの上部タイトル行を避け、ヘッダー下の有効な質問だけを取り込みます。
+        return dataRows
+            .map((row) => rowToObject(headers, row))
+            .filter((row) => row.question_id && row.question && row.choice_a_text && row.choice_b_text)
+            .map((row) => ({
+                id: row.question_id,
+                axis: row.axis,
+                question: row.question,
+                tieBreakQuestion: row.tie_break_question,
+                choices: [
+                    {
+                        key: row.choice_a || "A",
+                        text: row.choice_a_text,
+                        value: row.choice_a_value
+                    },
+                    {
+                        key: row.choice_b || "B",
+                        text: row.choice_b_text,
+                        value: row.choice_b_value
+                    }
+                ]
+            }));
     }
-}
 
-function parseCsv(text){
-    const rows = [];
-    let row = [];
-    let cell = "";
-    let inQuotes = false;
+    async function loadPersonalityTypes() {
+        const rows = await fetchCsvRows(typeFile, "personality_types.csvを読み込めませんでした");
+        const headerIndex = findHeaderRow(rows, ["type_name", "personality_key", "image_path", "description"]);
 
-    for(let i = 0; i < text.length; i++){
-        const char = text[i];
-        const nextChar = text[i + 1];
+        if (headerIndex < 0) {
+            loadErrors.push("personality_types.csvの形式を解析できませんでした");
+            throw new Error("personality_types.csv header not found");
+        }
 
-        if(char === '"' && inQuotes && nextChar === '"'){
-            cell += '"';
-            i++;
-        }else if(char === '"'){
-            inQuotes = !inQuotes;
-        }else if(char === "," && !inQuotes){
-            row.push(cell);
-            cell = "";
-        }else if((char === "\n" || char === "\r") && !inQuotes){
-            if(char === "\r" && nextChar === "\n"){
+        const headers = rows[headerIndex].map(normalizeCell);
+        const dataRows = rows.slice(headerIndex + 1);
+
+        return dataRows
+            .map((row) => rowToObject(headers, row))
+            .filter((row) => row.personality_key && row.type_name)
+            .map((row) => ({
+                id: row.type_id,
+                typeName: row.type_name,
+                key: row.personality_key,
+                imagePath: row.image_path,
+                description: row.description,
+                axes: [
+                    row.axis_attack_support,
+                    row.axis_intuition_calm,
+                    row.axis_speed_physical,
+                    row.axis_free_leader
+                ]
+            }));
+    }
+
+    async function fetchCsvRows(path, errorMessage) {
+        const url = `${path}?v=${Date.now()}`;
+        console.log("CSV読み込み開始:", url);
+
+        try {
+            const response = await fetch(url);
+            console.log("CSV fetch結果:", url, response.status, response.ok);
+
+            if (!response.ok) {
+                throw new Error(`${response.status} ${response.statusText}`);
+            }
+
+            const text = await response.text();
+            const rows = parseCsv(text.replace(/^\uFEFF/, ""));
+            console.log("CSV行数:", path, rows.length);
+            return rows;
+        } catch (error) {
+            loadErrors.push(errorMessage);
+            throw error;
+        }
+    }
+
+    function parseCsv(text) {
+        const rows = [];
+        let row = [];
+        let cell = "";
+        let inQuotes = false;
+
+        for (let i = 0; i < text.length; i++) {
+            const char = text[i];
+            const next = text[i + 1];
+
+            if (char === '"' && inQuotes && next === '"') {
+                cell += '"';
                 i++;
+                continue;
             }
-            row.push(cell);
-            if(row.some(value => value.trim() !== "")){
+
+            if (char === '"') {
+                inQuotes = !inQuotes;
+                continue;
+            }
+
+            if (char === "," && !inQuotes) {
+                row.push(cell);
+                cell = "";
+                continue;
+            }
+
+            if ((char === "\n" || char === "\r") && !inQuotes) {
+                if (char === "\r" && next === "\n") i++;
+                row.push(cell);
                 rows.push(row);
+                row = [];
+                cell = "";
+                continue;
             }
-            row = [];
-            cell = "";
-        }else{
+
             cell += char;
         }
+
+        if (cell !== "" || row.length) {
+            row.push(cell);
+            rows.push(row);
+        }
+
+        return rows.filter((items) => items.some((item) => normalizeCell(item) !== ""));
     }
 
-    row.push(cell);
-    if(row.some(value => value.trim() !== "")){
-        rows.push(row);
-    }
-
-    return rows;
-}
-
-function rowToRecord(header, row){
-    const record = {};
-    header.forEach((key, index) => {
-        record[(key || "").trim()] = (row[index] || "").trim();
-    });
-    return record;
-}
-
-function normalizeHeader(header){
-    return header.map(key => (key || "").replace(/^\uFEFF/, "").trim());
-}
-
-function shouldUseSecondHeader(row){
-    return row.some(cell => scoreItemNames.includes((cell || "").replace(/^\uFEFF/, "").trim()));
-}
-
-function buildCsvColumns(firstHeader, secondHeader){
-    const length = Math.max(firstHeader.length, secondHeader.length);
-    const columns = [];
-
-    for(let index = 0; index < length; index++){
-        const primaryKey = firstHeader[index] || "";
-        const abilityKey = scoreItemNames.includes(secondHeader[index]) ? secondHeader[index] : "";
-        const fallbackAbilityKey = scoreItemNames.includes(primaryKey) ? primaryKey : "";
-
-        columns.push({
-            primaryKey,
-            abilityKey: abilityKey || fallbackAbilityKey
+    function findHeaderRow(rows, requiredColumns) {
+        return rows.findIndex((row) => {
+            const normalized = row.map(normalizeCell);
+            return requiredColumns.every((column) => normalized.includes(column));
         });
     }
 
-    return columns;
-}
-
-function getAbilityItemsFromColumns(columns){
-    const abilityItems = columns
-        .map(column => column.abilityKey)
-        .filter(Boolean);
-    return [...new Set(abilityItems)];
-}
-
-function rowToCsvRecord(columns, row){
-    const record = {};
-    const scores = createEmptyScores();
-
-    columns.forEach((column, index) => {
-        const value = (row[index] || "").trim();
-
-        if(column.primaryKey){
-            record[column.primaryKey] = value;
-        }
-
-        if(column.abilityKey){
-            scores[column.abilityKey] = Number(value) || 0;
-        }
-    });
-
-    return {record, scores};
-}
-
-function parseQuestionsCsv(csvText){
-    const rows = parseCsv(csvText.trim());
-    const firstHeader = normalizeHeader(rows.shift() || []);
-
-    if(firstHeader.includes("route_group")){
-        return parseRouteQuestionsCsv(firstHeader, rows);
+    function rowToObject(headers, row) {
+        const object = {};
+        headers.forEach((header, index) => {
+            if (header) object[header] = normalizeCell(row[index] || "");
+        });
+        return object;
     }
 
-    if(isShiftedRouteQuestionsCsv(firstHeader, rows)){
-        return parseShiftedRouteQuestionsCsv(firstHeader, rows);
+    function normalizeCell(value) {
+        return String(value ?? "").replace(/^\uFEFF/, "").trim();
     }
 
-    if(!firstHeader.includes("route_group")){
-        return parseSimpleQuestionsCsv(firstHeader, rows);
+    function updateStatus(message) {
+        $("csvStatus").innerHTML = message ? `<p class="error-message">${message}</p>` : "";
+        $("questionStatus").innerHTML = message ? `<p class="error-message">${message}</p>` : "";
     }
-}
 
-function parseRouteQuestionsCsv(firstHeader, rows){
-    const secondHeader = rows.length > 0 && shouldUseSecondHeader(rows[0]) ? normalizeHeader(rows.shift()) : [];
-    const columns = buildCsvColumns(firstHeader, secondHeader);
-    console.log("questions.csv 行数:", rows.length + 1 + (secondHeader.length ? 1 : 0));
-    console.log("questions.csv 能力項目:", getAbilityItemsFromColumns(columns));
-    const groupedQuestions = new Map();
-
-    rows.forEach(row => {
-        const {record, scores} = rowToCsvRecord(columns, row);
-        const routeGroup = record["route_group"];
-        const questionId = record["question_id"];
-        const questionText = record["question"];
-        const choice = record["choice"];
-        const choiceText = record["choice_text"];
-
-        if(!routeGroup || !questionId || !choice || !choiceText){
+    function startPersonalityDiagnosis() {
+        if (!personalityQuestions.length || !personalityTypes.length) {
+            updateStatus("診断データを読み込めませんでした");
             return;
         }
 
-        const key = `${routeGroup}::${questionId}`;
-        if(!groupedQuestions.has(key)){
-            groupedQuestions.set(key, {
-                routeGroup,
-                id: questionId,
-                q: questionText || questionId,
-                choices: []
-            });
+        currentIndex = 0;
+        answers = {};
+        $("startScreen").classList.add("is-hidden");
+        $("quizArea").classList.remove("is-hidden");
+        $("quizCard").classList.remove("is-hidden");
+        $("confirmArea").classList.add("is-hidden");
+        $("progressArea").style.display = "block";
+        $("chartBox").style.display = "none";
+        $("result").innerHTML = "";
+        updateStatus("");
+        showQuestion();
+    }
+
+    function showQuestion() {
+        const question = personalityQuestions[currentIndex];
+        const total = personalityQuestions.length;
+
+        $("progressText").textContent = `${question.id} / ${total}`;
+        $("progressFill").style.width = `${((currentIndex + 1) / total) * 100}%`;
+        $("question").textContent = question.question;
+        $("choices").innerHTML = "";
+        $("result").innerHTML = "";
+        $("questionButtons").style.display = "block";
+        $("backQuestionBtn").style.display = currentIndex === 0 ? "none" : "inline-block";
+
+        question.choices.forEach((choice) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "choice-btn";
+            if (answers[question.id] === choice.key) button.classList.add("is-selected");
+            button.innerHTML = `<span class="choice-label">${escapeHtml(choice.key)}.</span> ${escapeHtml(choice.text)}`;
+            button.addEventListener("click", () => selectPersonalityChoice(choice.key));
+            $("choices").appendChild(button);
+        });
+    }
+
+    function selectPersonalityChoice(choiceKey) {
+        const question = personalityQuestions[currentIndex];
+        answers[question.id] = choiceKey;
+
+        if (currentIndex < personalityQuestions.length - 1) {
+            currentIndex++;
+            showQuestion();
+        } else {
+            showConfirm();
         }
-
-        if(questionText && groupedQuestions.get(key).q === questionId){
-            groupedQuestions.get(key).q = questionText;
-        }
-
-        groupedQuestions.get(key).choices.push({
-            key: choice,
-            text: choiceText,
-            selectedGroup: record["selected_group"] || "",
-            mainRadarItem: record["main_radar_item"] || "",
-            scores
-        });
-    });
-
-    return Array.from(groupedQuestions.values());
-}
-
-function isShiftedRouteQuestionsCsv(firstHeader, rows){
-    if(!firstHeader.includes("question_id") || !firstHeader.includes("question") || !firstHeader.includes("choice_text")){
-        return false;
     }
 
-    const firstDataRow = rows.find(row => {
-        const firstCell = (row[0] || "").trim();
-        const secondCell = (row[1] || "").trim();
-        return firstCell === "common" || branchGroups.includes(firstCell) || /^Q\d+/i.test(secondCell);
-    });
-
-    if(!firstDataRow){
-        return false;
+    function backPersonalityQuestion() {
+        if (currentIndex <= 0) return;
+        currentIndex--;
+        showQuestion();
     }
 
-    const firstCell = (firstDataRow[0] || "").trim();
-    const secondCell = (firstDataRow[1] || "").trim();
-    return branchGroups.includes(firstCell) || firstCell === "common" || /^Q\d+/i.test(secondCell);
-}
-
-function parseShiftedRouteQuestionsCsv(firstHeader, rows){
-    const secondHeader = rows.length > 0 && shouldUseSecondHeader(rows[0]) ? normalizeHeader(rows.shift()) : [];
-    const shiftedHeader = [
-        "route_group",
-        "question_id",
-        "question",
-        "choice",
-        "choice_text",
-        "selected_group",
-        ...firstHeader.slice(6)
-    ];
-    const shiftedSecondHeader = [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ...secondHeader.slice(6)
-    ];
-
-    return parseRouteQuestionsCsv(shiftedHeader, [shiftedSecondHeader, ...rows]);
-}
-
-function parseSimpleQuestionsCsv(header, rows){
-    const choiceColumns = header.filter(key => /^[A-Z]$/.test(key));
-    console.log("questions.csv 行数:", rows.length + 1);
-    console.log("questions.csv 能力項目:", []);
-
-    return rows.map(row => {
-        const record = rowToRecord(header, row);
-
-        return {
-            routeGroup: "common",
-            id: record["id"],
-            q: record["question"],
-            choices: choiceColumns
-                .filter(key => record[key])
-                .map(key => ({
-                    key,
-                    text: record[key],
-                    selectedGroup: "",
-                    mainRadarItem: "",
-                    scores: createEmptyScores()
-                }))
-        };
-    }).filter(question => question.id && question.q && question.choices.length > 0);
-}
-
-function parsePlayersCsv(csvText){
-    const rows = parseCsv(csvText.trim());
-    const firstHeader = normalizeHeader(rows.shift() || []);
-
-    if(!firstHeader.includes("group")){
-        return parseSimplePlayersCsv(firstHeader, rows);
+    function showConfirm() {
+        $("quizCard").classList.add("is-hidden");
+        $("confirmArea").classList.remove("is-hidden");
+        $("chartBox").style.display = "none";
+        $("confirmList").innerHTML = personalityQuestions.map((question) => {
+            const selected = question.choices.find((choice) => choice.key === answers[question.id]);
+            return `
+                <li class="confirm-item">
+                    <strong>${escapeHtml(question.id)}. ${escapeHtml(question.question)}</strong><br>
+                    ${selected ? `${escapeHtml(selected.key)}. ${escapeHtml(selected.text)}` : "未回答"}
+                </li>
+            `;
+        }).join("");
     }
 
-    const secondHeader = rows.length > 0 && shouldUseSecondHeader(rows[0]) ? normalizeHeader(rows.shift()) : [];
-    const columns = buildCsvColumns(firstHeader, secondHeader);
-
-    return rows.map(row => {
-        const {record, scores: rawScores} = rowToCsvRecord(columns, row);
-        const scores = createEmptyScores();
-        scoreItemNames.forEach(name => {
-            scores[name] = clampScore(rawScores[name]);
-        });
-
-        const icon = record["アイコン"] || "";
-        const iconClass = validIconClasses.includes(icon) ? icon : iconFromGroup(record["group"]);
-
-        return {
-            id: record["id"],
-            group: record["group"],
-            position: record["position"],
-            typeName: record["タイプ名"],
-            referencePlayer: record["参考選手"],
-            icon: iconClass,
-            description: record["説明文"] || "",
-            scores
-        };
-    }).filter(player => player.typeName && player.referencePlayer);
-}
-
-function parseSimplePlayersCsv(header, rows){
-    return rows.map(row => {
-        const record = rowToRecord(header, row);
-
-        return {
-            id: record["id"],
-            group: "GENERAL",
-            position: record["position"] || "",
-            typeName: record["タイプ名"],
-            referencePlayer: record["参考選手"],
-            icon: validIconClasses.includes(record["アイコン"]) ? record["アイコン"] : "pass-icon",
-            description: record["説明文"] || "",
-            scores: createEmptyScores()
-        };
-    }).filter(player => player.typeName && player.referencePlayer);
-}
-
-function iconFromGroup(group){
-    if(group === "GK" || group === "DEFENSE"){
-        return "defense-icon";
-    }
-    if(group === "SIDE"){
-        return "stamina-icon";
-    }
-    if(group === "MIDFIELD"){
-        return "pass-icon";
-    }
-    return "shoot-icon";
-}
-
-function createEmptyScores(){
-    return scoreItemNames.reduce((scores, name) => {
-        scores[name] = 0;
-        return scores;
-    }, {});
-}
-
-function updateCsvStatus(){
-    const statusAreas = [
-        document.getElementById("questionStatus"),
-        document.getElementById("csvStatus")
-    ].filter(Boolean);
-    const messages = [];
-
-    if(questionLoadError){
-        messages.push(questionLoadError);
+    function returnToPersonalityQuestions() {
+        $("confirmArea").classList.add("is-hidden");
+        $("quizCard").classList.remove("is-hidden");
+        currentIndex = Math.max(0, personalityQuestions.length - 1);
+        showQuestion();
     }
 
-    if(csvLoadError){
-        messages.push(csvLoadError);
-    }
+    function finishPersonalityDiagnosis() {
+        const diagnosis = judgePersonality();
+        const resultType = findPersonalityType(diagnosis.key);
 
-    statusAreas.forEach(status => {
-        status.innerHTML = messages.map(message => `<div class="csv-message">${escapeHtml(message)}</div>`).join("");
-    });
-}
+        $("confirmArea").classList.add("is-hidden");
+        $("quizCard").classList.remove("is-hidden");
+        $("progressArea").style.display = "none";
+        $("choices").innerHTML = "";
+        $("questionButtons").style.display = "none";
+        $("question").textContent = "診断結果";
+        $("chartBox").style.display = "none";
 
-function buildInitialQuestions(){
-    return allQuestions.filter(question => question.routeGroup === "common");
-}
-
-function buildQuestionsForGroup(group){
-    return allQuestions.filter(question => question.routeGroup === "common" || question.routeGroup === group);
-}
-
-function getEstimatedTotalQuestions(){
-    if(selectedGroup){
-        return questions.length;
-    }
-
-    const commonCount = allQuestions.filter(question => question.routeGroup === "common").length;
-    const groupCounts = branchGroups.map(group => allQuestions.filter(question => question.routeGroup === group).length);
-    const maxGroupCount = Math.max(0, ...groupCounts);
-    return commonCount + maxGroupCount;
-}
-
-function startDiagnosis(){
-    if(allQuestions.length === 0){
-        updateCsvStatus();
-        return;
-    }
-
-    selectedGroup = "";
-    selectedPositions = [];
-    questions = buildInitialQuestions();
-    idx = 0;
-    answers = Array(questions.length).fill(null);
-    userScores = createEmptyScores();
-
-    document.getElementById("startScreen").classList.add("is-hidden");
-    document.getElementById("quizArea").classList.remove("is-hidden");
-    document.getElementById("quizCard").classList.remove("is-hidden");
-    document.getElementById("confirmArea").classList.add("is-hidden");
-    document.getElementById("chartBox").style.display = "none";
-    document.getElementById("result").innerHTML = "";
-    updateCsvStatus();
-    radarChart = null;
-    render();
-}
-
-function render(){
-    document.getElementById("progressArea").style.display = "block";
-    document.getElementById("choices").style.display = "block";
-    document.getElementById("questionButtons").style.display = "block";
-    document.getElementById("result").innerHTML = "";
-
-    const question = questions[idx];
-    const totalQuestions = getEstimatedTotalQuestions();
-
-    document.getElementById("question").innerText = question.q;
-    document.getElementById("progressText").innerText = `Q${idx + 1} / ${totalQuestions}`;
-
-    const progress = ((idx + 1) / totalQuestions) * 100;
-    document.getElementById("progressFill").style.width = progress + "%";
-
-    const choicesHtml = question.choices.map(choice => {
-        const selectedClass = answers[idx] === choice.key ? " is-selected" : "";
-        const choiceLabel = `${choice.key}. ${choice.text}`;
-
-        return `
-            <button type="button" class="choice-btn${selectedClass}" onclick="selectChoice('${escapeAttribute(choice.key)}')">
-                <span class="choice-label">${escapeHtml(choice.key)}</span>
-                <span class="choice-text">${escapeHtml(choiceLabel)}</span>
-            </button>
-        `;
-    }).join("");
-
-    document.getElementById("choices").innerHTML = choicesHtml;
-    document.getElementById("backQuestionBtn").style.display = idx === 0 ? "none" : "block";
-}
-
-function selectChoice(choiceKey){
-    const question = questions[idx];
-    const selectedChoice = question.choices.find(choice => choice.key === choiceKey);
-    answers[idx] = choiceKey;
-
-    if(question.routeGroup === "common" && selectedChoice?.selectedGroup){
-        selectedGroup = selectedChoice.selectedGroup;
-        selectedPositions = getPositionsForQ1Choice(selectedChoice.text);
-        const previousAnswers = answers.slice(0, idx + 1);
-        questions = buildQuestionsForGroup(selectedGroup);
-        answers = Array(questions.length).fill(null);
-        previousAnswers.forEach((answer, index) => {
-            answers[index] = answer;
-        });
-    }
-
-    if(idx < questions.length - 1){
-        idx++;
-        render();
-    }else{
-        showConfirmPage();
-    }
-}
-
-function backQuestion(){
-    if(idx > 0){
-        idx--;
-        render();
-    }
-}
-
-function showConfirmPage(){
-    document.getElementById("quizCard").classList.add("is-hidden");
-    document.getElementById("confirmArea").classList.remove("is-hidden");
-    document.getElementById("chartBox").style.display = "none";
-
-    const html = questions.map((question, questionIndex) => {
-        const answerKey = answers[questionIndex];
-        const selectedChoice = question.choices.find(choice => choice.key === answerKey);
-        const answerText = selectedChoice ? selectedChoice.text : "";
-
-        return `
-            <li class="confirm-item">
-                <div class="confirm-question">${escapeHtml(question.q)}</div>
-                <div class="confirm-answer">${escapeHtml(answerKey)}. ${escapeHtml(answerText)}</div>
-            </li>
-        `;
-    }).join("");
-
-    document.getElementById("confirmList").innerHTML = html;
-}
-
-function returnToQuestions(){
-    document.getElementById("confirmArea").classList.add("is-hidden");
-    document.getElementById("quizCard").classList.remove("is-hidden");
-    idx = 0;
-    render();
-}
-
-function calculateScore(){
-    userScores = createEmptyScores();
-
-    answers.forEach((answerKey, questionIndex) => {
-        const question = questions[questionIndex];
-        const selectedChoice = question.choices.find(choice => choice.key === answerKey);
-
-        if(!selectedChoice || question.routeGroup === "common"){
-            return;
-        }
-
-        scoreItemNames.forEach(name => {
-            userScores[name] = capScore(userScores[name] + (Number(selectedChoice.scores[name]) || 0));
-        });
-    });
-}
-
-function finish(){
-    calculateScore();
-
-    document.getElementById("confirmArea").classList.add("is-hidden");
-    document.getElementById("quizCard").classList.remove("is-hidden");
-    document.getElementById("progressArea").style.display = "none";
-    document.getElementById("choices").style.display = "none";
-    document.getElementById("questionButtons").style.display = "none";
-    document.getElementById("question").innerText = "診断結果";
-    updateCsvStatus();
-
-    if(players.length === 0){
-        showCsvFallbackResult();
-        return;
-    }
-
-    const best = findBestPlayer();
-    const abilityHtml = createAbilityHtml(userScores);
-    const playerAbilityHtml = createAbilityHtml(best.scores);
-
-    document.getElementById("result").innerHTML = `
-        <div class="result-hero">
-            <div class="result-badge">診断結果</div>
-            <h2 class="result-title">
-                あなたが目指すべき選手タイプは<br>
-                <span>${escapeHtml(best.typeName)}</span>
-            </h2>
-            <div class="player-icon ${best.icon}" aria-hidden="true"></div>
-            <p><strong>参考選手：</strong>${escapeHtml(best.referencePlayer)}</p>
-            <p><strong>ポジション：</strong>${escapeHtml(best.position)}</p>
-            <p class="result-description">${escapeHtml(best.description)}</p>
-        </div>
-
-        <div class="section-card">
-            <h3>あなたの能力</h3>
-            <div class="ability-grid">${abilityHtml}</div>
-        </div>
-
-        <div class="section-card">
-            <h3>参考選手の能力</h3>
-            <div class="ability-grid">${playerAbilityHtml}</div>
-        </div>
-
-        <button type="button" class="restart-btn" onclick="startDiagnosis()">もう一度診断する</button>
-    `;
-
-    drawRadarChart(best);
-}
-
-function getActiveRadarItems(){
-    return Object.keys(radarItemGroups);
-}
-
-function convertToRadarScores(scores){
-    const radarScores = {};
-
-    getActiveRadarItems().forEach(radarName => {
-        const sourceItems = radarItemGroups[radarName];
-        const total = sourceItems.reduce((sum, itemName) => {
-            return sum + (Number(scores[itemName]) || 0);
-        }, 0);
-        const average = sourceItems.length > 0 ? total / sourceItems.length : 0;
-        radarScores[radarName] = capScore(average);
-    });
-
-    return radarScores;
-}
-
-function getPositionsForQ1Choice(choiceText){
-    const normalizedChoiceText = String(choiceText || "").trim();
-    return q1PositionMap[normalizedChoiceText] || [];
-}
-
-function getCandidatePlayers(){
-    const matchedPlayers = players.filter(player => selectedPositions.includes(player.position));
-    return matchedPlayers.length > 0 ? matchedPlayers : players;
-}
-
-function findBestPlayer(){
-    const candidates = getCandidatePlayers();
-    const radarItems = getActiveRadarItems();
-    const userRadarScores = convertToRadarScores(userScores);
-    let best = candidates[0];
-    let bestDistance = Infinity;
-
-    candidates.forEach(player => {
-        const playerRadarScores = convertToRadarScores(player.scores);
-        let distance = 0;
-        radarItems.forEach(name => {
-            distance += (userRadarScores[name] - playerRadarScores[name]) ** 2;
-        });
-
-        if(distance < bestDistance){
-            bestDistance = distance;
-            best = player;
-        }
-    });
-
-    return best;
-}
-
-function createAbilityHtml(values){
-    const radarScores = convertToRadarScores(values);
-
-    return getActiveRadarItems().map(name => {
-        const value = radarScores[name];
-        const displayValue = Math.round(value);
-
-        return `
-            <div class="ability-item">
-                <div class="ability-name">
-                    <span>${escapeHtml(name)}</span>
-                    <span>${displayValue}</span>
+        if (!resultType) {
+            $("result").innerHTML = `
+                <div class="result-hero">
+                    <div class="result-badge">診断結果</div>
+                    <h2 class="result-title">タイプを判定できませんでした</h2>
+                    <p class="result-description">personality_types.csvに「${escapeHtml(diagnosis.key)}」の行があるか確認してください。</p>
                 </div>
-                <div class="ability-bar">
-                    <div class="ability-bar-fill" style="width:${value}%"></div>
+                <button type="button" class="restart-btn" onclick="startDiagnosis()">もう一度診断する</button>
+            `;
+            return;
+        }
+
+        $("result").innerHTML = `
+            <div class="result-hero">
+                <div class="result-badge">診断結果</div>
+                <h2 class="result-title">あなたのタイプは<br><span>${escapeHtml(resultType.typeName)}</span></h2>
+                ${resultType.imagePath ? `<img class="character-result-image" src="${escapeAttribute(resultType.imagePath)}" alt="${escapeAttribute(resultType.typeName)}">` : ""}
+                <p class="result-description">${escapeHtml(resultType.description)}</p>
+            </div>
+
+            <div class="section-card">
+                <h3>あなたの性格軸</h3>
+                <div class="axis-summary">
+                    ${diagnosis.axes.map((axis) => `
+                        <div class="axis-pill">
+                            <span>${escapeHtml(axis.label)}</span>
+                            <strong>${escapeHtml(axis.value)}</strong>
+                        </div>
+                    `).join("")}
                 </div>
             </div>
+
+            <button type="button" class="restart-btn" onclick="startDiagnosis()">もう一度診断する</button>
         `;
-    }).join("");
-}
-
-function drawRadarChart(best){
-    document.getElementById("chartBox").style.display = "block";
-
-    const canvas = document.getElementById("radarChart");
-    const size = Math.min(canvas.parentElement.clientWidth - 20, 520);
-    const pixelRatio = window.devicePixelRatio || 1;
-
-    canvas.width = size * pixelRatio;
-    canvas.height = size * pixelRatio;
-    canvas.style.width = size + "px";
-    canvas.style.height = size + "px";
-
-    const ctx = canvas.getContext("2d");
-    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-    ctx.clearRect(0, 0, size, size);
-
-    const center = size / 2;
-    const radius = size * 0.32;
-    const maxValue = 100;
-
-    drawRadarGrid(ctx, center, radius);
-    drawRadarPolygon(ctx, convertToRadarScores(userScores), maxValue, center, radius, "rgba(52,152,219,0.25)", "rgba(52,152,219,1)");
-    drawRadarPolygon(ctx, convertToRadarScores(best.scores), maxValue, center, radius, "rgba(231,76,60,0.25)", "rgba(231,76,60,1)");
-    drawRadarLabels(ctx, center, radius, size);
-    drawRadarLegend(ctx, best.referencePlayer);
-    radarChart = true;
-}
-
-function getRadarPoint(index, value, maxValue, center, radius){
-    const radarItems = getActiveRadarItems();
-    const angle = (Math.PI * 2 * index / radarItems.length) - Math.PI / 2;
-    const distance = Math.min(value / maxValue, 1) * radius;
-    return {
-        x:center + Math.cos(angle) * distance,
-        y:center + Math.sin(angle) * distance
-    };
-}
-
-function drawRadarGrid(ctx, center, radius){
-    const radarItems = getActiveRadarItems();
-    ctx.strokeStyle = "#d1d5db";
-    ctx.lineWidth = 1;
-
-    for(let level = 1; level <= 5; level++){
-        const levelRadius = radius * level / 5;
-        ctx.beginPath();
-
-        radarItems.forEach((name, index) => {
-            const point = getRadarPoint(index, 100, 100, center, levelRadius);
-            if(index === 0){
-                ctx.moveTo(point.x, point.y);
-            }else{
-                ctx.lineTo(point.x, point.y);
-            }
-        });
-
-        ctx.closePath();
-        ctx.stroke();
     }
 
-    radarItems.forEach((name, index) => {
-        const point = getRadarPoint(index, 100, 100, center, radius);
-        ctx.beginPath();
-        ctx.moveTo(center, center);
-        ctx.lineTo(point.x, point.y);
-        ctx.stroke();
-    });
-}
+    function judgePersonality() {
+        const axes = axisOrder.map((axisLabel) => {
+            const axisQuestions = personalityQuestions.filter((question) => question.axis === axisLabel);
+            const counts = {};
 
-function drawRadarPolygon(ctx, values, maxValue, center, radius, fillColor, strokeColor){
-    const radarItems = getActiveRadarItems();
-    ctx.beginPath();
+            axisQuestions.forEach((question) => {
+                const selected = question.choices.find((choice) => choice.key === answers[question.id]);
+                if (!selected) return;
+                counts[selected.value] = (counts[selected.value] || 0) + 1;
+            });
 
-    radarItems.forEach((name, index) => {
-        const point = getRadarPoint(index, capScore(values[name]), maxValue, center, radius);
-        if(index === 0){
-            ctx.moveTo(point.x, point.y);
-        }else{
-            ctx.lineTo(point.x, point.y);
-        }
-    });
+            const values = [...new Set(axisQuestions.flatMap((question) => question.choices.map((choice) => choice.value)).filter(Boolean))];
+            const first = values[0] || "";
+            const second = values[1] || "";
+            let value = first;
 
-    ctx.closePath();
-    ctx.fillStyle = fillColor;
-    ctx.strokeStyle = strokeColor;
-    ctx.lineWidth = 3;
-    ctx.fill();
-    ctx.stroke();
-}
+            if ((counts[first] || 0) > (counts[second] || 0)) {
+                value = first;
+            } else if ((counts[first] || 0) < (counts[second] || 0)) {
+                value = second;
+            } else {
+                const tieQuestionId = axisQuestions.find((question) => question.tieBreakQuestion)?.tieBreakQuestion || fallbackTieQuestions[axisLabel];
+                const tieQuestion = personalityQuestions.find((question) => question.id === tieQuestionId);
+                const selected = tieQuestion?.choices.find((choice) => choice.key === answers[tieQuestion.id]);
+                value = selected?.value || first;
+            }
 
-function drawRadarLabels(ctx, center, radius, size){
-    const radarItems = getActiveRadarItems();
-    ctx.fillStyle = "#111827";
-    ctx.font = "bold 13px Arial, sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
+            return { label: axisLabel, value };
+        });
 
-    radarItems.forEach((name, index) => {
-        const point = getRadarPoint(index, 100, 100, center, radius + 34);
-        const x = Math.max(38, Math.min(size - 38, point.x));
-        const y = Math.max(18, Math.min(size - 18, point.y));
-        ctx.fillText(name, x, y);
-    });
-}
+        return {
+            axes,
+            key: axes.map((axis) => axis.value).join(" × ")
+        };
+    }
 
-function drawRadarLegend(ctx, playerName){
-    ctx.font = "bold 13px Arial, sans-serif";
-    ctx.textAlign = "left";
-    ctx.textBaseline = "middle";
+    function findPersonalityType(key) {
+        return personalityTypes.find((type) => type.key === key) ||
+            personalityTypes.find((type) => type.axes.join(" × ") === key) ||
+            null;
+    }
 
-    ctx.fillStyle = "rgba(52,152,219,1)";
-    ctx.fillRect(18, 18, 14, 14);
-    ctx.fillStyle = "#111827";
-    ctx.fillText("あなた", 40, 25);
+    function escapeHtml(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
 
-    ctx.fillStyle = "rgba(231,76,60,1)";
-    ctx.fillRect(18, 42, 14, 14);
-    ctx.fillStyle = "#111827";
-    ctx.fillText(playerName, 40, 49);
-}
+    function escapeAttribute(value) {
+        return escapeHtml(value).replace(/`/g, "&#96;");
+    }
 
-function showCsvFallbackResult(){
-    document.getElementById("chartBox").style.display = "none";
-    document.getElementById("result").innerHTML = `
-        <div class="result-hero">
-            <div class="result-badge">診断結果</div>
-            <h2 class="result-title">結果データを読み込めませんでした</h2>
-            <p class="result-description">
-                回答は完了しています。players.csvをindex.htmlと同じ階層に置くと、診断結果の選手タイプを表示できます。
-            </p>
-        </div>
-        <div class="section-card">
-            <h3>あなたの能力</h3>
-            <div class="ability-grid">${createAbilityHtml(userScores)}</div>
-        </div>
-        <button type="button" class="restart-btn" onclick="startDiagnosis()">もう一度診断する</button>
-    `;
-}
-
-function clampScore(value){
-    return Math.max(0, Math.min(Number(value) || 0, 100));
-}
-
-function capScore(value){
-    return Math.min(Number(value) || 0, 100);
-}
-
-function escapeHtml(value){
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-function escapeAttribute(value){
-    return escapeHtml(value).replace(/`/g, "&#096;");
-}
+    window.startDiagnosis = startPersonalityDiagnosis;
+    window.selectChoice = selectPersonalityChoice;
+    window.backQuestion = backPersonalityQuestion;
+    window.returnToQuestions = returnToPersonalityQuestions;
+    window.finish = finishPersonalityDiagnosis;
+})();
 </script>
 </body>
 </html>
-
 
