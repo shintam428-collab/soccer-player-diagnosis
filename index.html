@@ -207,6 +207,7 @@ canvas{max-width:100%;}
 .diagnose-btn{background:linear-gradient(180deg,#f59e0b,#ea580c)!important;}
 .restart-btn{background:#2563eb!important;}
 .character-result-image{display:block;width:min(280px,78vw);height:auto;margin:22px auto;border-radius:18px;box-shadow:0 18px 40px rgba(15,23,42,0.2);background:#f8fafc;}
+.image-error-message{display:none;margin:12px auto 0;padding:12px 14px;border-radius:12px;background:#fee2e2;color:#991b1b;font-size:.92rem;line-height:1.6;word-break:break-all;}
 .axis-summary{display:grid;gap:10px;margin:18px 0 8px;}
 .axis-pill{display:flex;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:12px;background:rgba(37,99,235,0.08);color:#1e293b;font-size:.92rem;}
 .axis-pill strong{color:#2563eb;white-space:nowrap;}
@@ -601,11 +602,21 @@ canvas{max-width:100%;}
             return;
         }
 
+        const imagePath = normalizeImagePath(resultType.imagePath);
+
         $("result").innerHTML = `
             <div class="result-hero">
                 <div class="result-badge">診断結果</div>
                 <h2 class="result-title">あなたのタイプは<br><span>${escapeHtml(resultType.typeName)}</span></h2>
-                ${resultType.imagePath ? `<img class="character-result-image" src="${escapeAttribute(resultType.imagePath)}" alt="${escapeAttribute(resultType.typeName)}">` : ""}
+                ${imagePath ? `
+                    <img
+                        class="character-result-image"
+                        src="${escapeAttribute(imagePath)}"
+                        alt="${escapeAttribute(resultType.typeName)}"
+                        onerror="handleCharacterImageError(this, '${escapeAttribute(imagePath)}')"
+                    >
+                    <p class="image-error-message" id="imageErrorMessage"></p>
+                ` : `<p class="image-error-message" style="display:block;">personality_types.csv の image_path が空です。</p>`}
                 <p class="result-description">${escapeHtml(resultType.description)}</p>
             </div>
 
@@ -667,6 +678,22 @@ canvas{max-width:100%;}
             null;
     }
 
+    function normalizeImagePath(path) {
+        // GitHub Pagesでリポジトリ配下から読めるように、CSVの先頭スラッシュだけ外します。
+        return normalizeCell(path).replace(/^\/+/, "");
+    }
+
+    function handleCharacterImageError(imageElement, imagePath) {
+        console.log(`画像を読み込めませんでした: ${imagePath}`);
+        imageElement.style.display = "none";
+
+        const message = $("imageErrorMessage");
+        if (message) {
+            message.style.display = "block";
+            message.textContent = `画像を読み込めませんでした: ${imagePath}`;
+        }
+    }
+
     function escapeHtml(value) {
         return String(value ?? "")
             .replace(/&/g, "&amp;")
@@ -685,6 +712,7 @@ canvas{max-width:100%;}
     window.backQuestion = backPersonalityQuestion;
     window.returnToQuestions = returnToPersonalityQuestions;
     window.finish = finishPersonalityDiagnosis;
+    window.handleCharacterImageError = handleCharacterImageError;
 })();
 </script>
 </body>
