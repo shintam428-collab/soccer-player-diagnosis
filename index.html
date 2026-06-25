@@ -198,14 +198,25 @@ canvas{max-width:100%;}
 }
 .choice-btn:active{background:white!important;}
 @media (hover:none){
-    .choice-btn:hover{
-        border-color:#e5e7eb;
-        background:white!important;
+    .choice-btn:hover,
+    .choice-button:hover,
+    .answer-button:hover,
+    .option-button:hover{
+        background:inherit;
+        border-color:inherit;
+        box-shadow:none;
+    }
+    .choice-btn.is-selected:hover,
+    .choice-btn.selected:hover{
+        border-color:#16a34a;
+        background:#dcfce7!important;
+        box-shadow:0 0 0 3px rgba(34,197,94,0.25);
     }
 }
 .choice-label{background:#16a34a;color:white;width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:bold;flex-shrink:0;}
 .choice-text{flex:1;}
-.choice-btn.is-selected{border-color:#16a34a;background:#dcfce7!important;box-shadow:0 0 0 3px rgba(34,197,94,0.25);}
+.choice-btn.is-selected,
+.choice-btn.selected{border-color:#16a34a;background:#dcfce7!important;box-shadow:0 0 0 3px rgba(34,197,94,0.25);}
 .nav-buttons{margin-top:20px;}
 .nav-btn,.back-btn,.diagnose-btn,.restart-btn{font-weight:bold;box-shadow:0 5px 15px rgba(0,0,0,0.18);}
 .nav-btn,.back-btn{background:#64748b!important;}
@@ -336,7 +347,6 @@ canvas{max-width:100%;}
 <script type="text/plain" id="legacy-player-diagnosis">
 古い選手診断スクリプトは、性格診断への変更により使用しません。
 </script>
-
 
 <script>
 (() => {
@@ -676,6 +686,7 @@ canvas{max-width:100%;}
     function showQuestion() {
         const question = activeQuestions[currentIndex];
         const sectionLabel = question.section === "personality" ? text.personality : text.ability;
+        blurActiveButton();
         clearChoiceButtonStates();
         $("progressText").textContent = `${sectionLabel} ${currentIndex + 1} / ${activeQuestions.length}`;
         $("progressFill").style.width = `${((currentIndex + 1) / activeQuestions.length) * 100}%`;
@@ -689,22 +700,23 @@ canvas{max-width:100%;}
             const selectedKey = question.section === "personality" ? personalityAnswers[question.id] : abilityAnswers[getAbilityAnswerKey(question)];
             const button = document.createElement("button");
             button.type = "button";
-            button.className = "choice-btn";
-            if (selectedKey === choice.key) button.classList.add("is-selected");
+            button.className = "choice-btn choice-button answer-button option-button";
             button.innerHTML = `<span class="choice-label">${escapeHtml(choice.key)}.</span> ${escapeHtml(choice.text)}`;
-            button.addEventListener("click", () => {
-                button.blur();
-                selectChoiceForCurrentQuestion(choice.key);
+            if (selectedKey && selectedKey === choice.key) {
+                button.classList.add("is-selected", "selected");
+            }
+            button.addEventListener("click", (event) => {
+                event.currentTarget.blur();
+                selectChoiceForCurrentQuestion(choice.key, event.currentTarget);
             });
             $("choices").appendChild(button);
         });
-        clearChoiceButtonStates();
     }
 
-    function selectChoiceForCurrentQuestion(choiceKey) {
-        if (document.activeElement && typeof document.activeElement.blur === "function") {
-            document.activeElement.blur();
-        }
+    function selectChoiceForCurrentQuestion(choiceKey, clickedButton) {
+        if (clickedButton && typeof clickedButton.blur === "function") clickedButton.blur();
+        blurActiveButton();
+        clearChoiceButtonStates();
         const question = activeQuestions[currentIndex];
         if (question.section === "personality") {
             personalityAnswers[question.id] = choiceKey;
@@ -716,18 +728,27 @@ canvas{max-width:100%;}
                 appendAbilityGroupQuestions(selected?.selectedGroup || "");
             }
         }
+        blurActiveButton();
         if (currentIndex < activeQuestions.length - 1) { currentIndex++; showQuestion(); }
         else showConfirm();
+        blurActiveButton();
     }
 
     function clearChoiceButtonStates() {
         document.querySelectorAll(".choice-btn, .answer-button, .choice-button, .option-button").forEach((button) => {
-            button.classList.remove("selected", "active", "focus");
-            if (!button.classList.contains("is-selected")) {
-                button.classList.remove("is-selected");
-            }
+            button.classList.remove("selected", "active", "focus", "is-selected");
             if (typeof button.blur === "function") button.blur();
         });
+    }
+
+    function blurActiveButton() {
+        const activeElement = document.activeElement;
+        if (!activeElement) return;
+        if (typeof HTMLElement !== "undefined" && activeElement instanceof HTMLElement) {
+            activeElement.blur();
+            return;
+        }
+        if (typeof activeElement.blur === "function") activeElement.blur();
     }
 
     function appendAbilityStartQuestion() {
