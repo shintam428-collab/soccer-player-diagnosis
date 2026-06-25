@@ -211,6 +211,9 @@ canvas{max-width:100%;}
 .axis-summary{display:grid;gap:10px;margin:18px 0 8px;}
 .axis-pill{display:flex;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:12px;background:rgba(37,99,235,0.08);color:#1e293b;font-size:.92rem;}
 .axis-pill strong{color:#2563eb;white-space:nowrap;}
+.detail-toggle-btn{display:inline-block;margin:18px auto 0;padding:12px 28px;border-radius:12px;background:#0f766e!important;color:white;font-size:16px;font-weight:bold;box-shadow:0 5px 15px rgba(0,0,0,0.18);}
+.detail-ability-area{display:none;margin-top:18px;}
+.detail-ability-area.is-open{display:block;}
 .confirm-list{text-align:left;margin:20px auto;padding:0;list-style:none;}
 .confirm-item{background:#f8fafc;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 4px 12px rgba(0,0,0,0.12);}
 .confirm-question{font-weight:bold;margin-bottom:8px;color:#111827;}
@@ -305,6 +308,9 @@ canvas{max-width:100%;}
         typePrefix: "\u3042\u306a\u305f\u306e\u30bf\u30a4\u30d7\u306f",
         axisTitle: "\u3042\u306a\u305f\u306e\u6027\u683c\u8ef8",
         abilityTitle: "\u3042\u306a\u305f\u306e\u80fd\u529b\u5024",
+        detailOpen: "\u8a73\u7d30\u3092\u898b\u308b",
+        detailClose: "\u8a73\u7d30\u3092\u9589\u3058\u308b",
+        detailTitle: "19\u9805\u76ee\u306e\u8a73\u7d30\u80fd\u529b\u5024",
         restart: "\u3082\u3046\u4e00\u5ea6\u8a3a\u65ad\u3059\u308b",
         you: "\u3042\u306a\u305f",
         imageEmpty: "personality_types.csv \u306e image_path \u304c\u7a7a\u3067\u3059\u3002",
@@ -617,7 +623,8 @@ canvas{max-width:100%;}
     function finishDiagnosisFlow() {
         const personality = judgePersonality();
         const resultType = findPersonalityType(personality.key);
-        const radarScores = convertToRadarScores(calculateAbilityScores());
+        const detailScores = calculateAbilityScores();
+        const radarScores = convertToRadarScores(detailScores);
         $("confirmArea").classList.add("is-hidden");
         $("quizCard").classList.remove("is-hidden");
         $("progressArea").style.display = "none";
@@ -641,7 +648,15 @@ canvas{max-width:100%;}
                 <p class="result-description">${escapeHtml(resultType.description)}</p>
             </div>
             <div class="section-card"><h3>${text.axisTitle}</h3><div class="axis-summary">${personality.axes.map((axis) => `<div class="axis-pill"><span>${escapeHtml(axis.label)}</span><strong>${escapeHtml(axis.value)}</strong></div>`).join("")}</div></div>
-            <div class="section-card"><h3>${text.abilityTitle}</h3><div class="ability-grid">${createAbilityHtml(radarScores)}</div></div>
+            <div class="section-card">
+                <h3>${text.abilityTitle}</h3>
+                <div class="ability-grid">${createAbilityHtml(radarScores)}</div>
+                <button type="button" id="detailToggleBtn" class="detail-toggle-btn" onclick="toggleDetailAbilities()">${text.detailOpen}</button>
+                <div id="detailAbilityArea" class="detail-ability-area">
+                    <h3>${text.detailTitle}</h3>
+                    <div class="ability-grid">${createAbilityHtml(createOrderedDetailScores(detailScores))}</div>
+                </div>
+            </div>
             <button type="button" class="restart-btn" onclick="startDiagnosis()">${text.restart}</button>
         `;
         attachCharacterImageError(imagePath, displayImagePath);
@@ -767,6 +782,27 @@ canvas{max-width:100%;}
         }).join("");
     }
 
+    function createOrderedDetailScores(scores) {
+        const orderedScores = {};
+        scoreItems.forEach((item) => orderedScores[item] = clamp(scores[item] || 0));
+        return orderedScores;
+    }
+
+    function toggleDetailAbilities() {
+        const detailArea = $("detailAbilityArea");
+        const toggleButton = $("detailToggleBtn");
+        if (!detailArea || !toggleButton) return;
+
+        const isOpen = detailArea.classList.contains("is-open");
+        if (isOpen) {
+            detailArea.classList.remove("is-open");
+            toggleButton.textContent = text.detailOpen;
+        } else {
+            detailArea.classList.add("is-open");
+            toggleButton.textContent = text.detailClose;
+        }
+    }
+
     function findPersonalityType(key) {
         return personalityTypes.find((type) => type.key === key) || personalityTypes.find((type) => type.axes.join(" \u00d7 ") === key) || null;
     }
@@ -808,6 +844,7 @@ canvas{max-width:100%;}
     window.backQuestion = backQuestionFlow;
     window.returnToQuestions = returnToQuestionsFlow;
     window.finish = finishDiagnosisFlow;
+    window.toggleDetailAbilities = toggleDetailAbilities;
 })();
 </script>
 
