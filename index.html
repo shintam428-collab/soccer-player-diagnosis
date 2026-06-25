@@ -31,7 +31,7 @@ body{
     background-repeat:no-repeat;
 }
 .ambient-bg__gradient{display:none;}
-.ambient-bg__pitch{position:absolute;inset:0;background:rgba(255,255,255,0.58);}
+.ambient-bg__pitch{position:absolute;inset:0;background:rgba(255,255,255,0.35);}
 .ambient-bg__glow{display:none;}
 .ambient-bg__glow--1{width:320px;height:320px;top:-80px;left:-60px;background:rgba(34,197,94,0.45);}
 .ambient-bg__glow--2{width:280px;height:280px;bottom:-40px;right:-40px;background:rgba(59,130,246,0.35);animation-delay:-4s;}
@@ -204,8 +204,10 @@ canvas{max-width:100%;}
     justify-content:center;
     padding:56px 28px;
     border:1px solid #e2e8f0;
-    background:rgba(255,255,255,0.76);
-    box-shadow:0 12px 32px rgba(15,23,42,0.08);
+    background:rgba(255,255,255,0.72);
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
+    box-shadow:0 8px 22px rgba(15,23,42,0.06);
 }
 .start-screen__overlay,.start-screen__grass{display:none;}
 .start-screen__content{width:100%;max-width:1120px;padding:20px;}
