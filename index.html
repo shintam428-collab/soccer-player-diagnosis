@@ -6,10 +6,10 @@
 <title>あなたのサッカー性格診断</title>
 
 <style>
-html{background:#0a1628;}
+html{background:#f4f7fb;}
 body{
     font-family:Arial,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
-    color:white;
+    color:#0f172a;
     text-align:center;
     padding:20px;
     min-height:100vh;
@@ -20,43 +20,17 @@ body{
 .page-content{position:relative;z-index:1;}
 .is-hidden{display:none!important;}
 .ambient-bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
-.ambient-bg__gradient{
-    position:absolute;
-    inset:0;
-    background:
-        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(34,197,94,0.35) 0%, transparent 55%),
-        radial-gradient(ellipse 60% 40% at 20% 80%, rgba(59,130,246,0.2) 0%, transparent 50%),
-        radial-gradient(ellipse 50% 35% at 85% 70%, rgba(250,204,21,0.12) 0%, transparent 45%),
-        linear-gradient(165deg,#0a1628 0%,#064e3b 45%,#14532d 100%);
-    animation:bg-shift 12s ease-in-out infinite alternate;
-}
-.ambient-bg__pitch{
-    position:absolute;
-    inset:0;
-    opacity:0.55;
-    background:
-        repeating-linear-gradient(0deg,transparent,transparent 48px,rgba(255,255,255,0.04) 48px,rgba(255,255,255,0.04) 96px),
-        radial-gradient(circle at 50% 115%,transparent 28%,rgba(255,255,255,0.07) 28.2%,rgba(255,255,255,0.07) 28.8%,transparent 29%);
-}
-.ambient-bg__glow{position:absolute;border-radius:50%;filter:blur(60px);animation:float-glow 8s ease-in-out infinite;}
+.ambient-bg__gradient{position:absolute;inset:0;background:#f4f7fb;}
+.ambient-bg__pitch{position:absolute;inset:0;background:linear-gradient(180deg,#f7f8fc 0%,#eef6f5 100%);}
+.ambient-bg__glow{display:none;}
 .ambient-bg__glow--1{width:320px;height:320px;top:-80px;left:-60px;background:rgba(34,197,94,0.45);}
 .ambient-bg__glow--2{width:280px;height:280px;bottom:-40px;right:-40px;background:rgba(59,130,246,0.35);animation-delay:-4s;}
-.ambient-bg__spotlight{
-    position:absolute;
-    top:0;
-    left:50%;
-    transform:translateX(-50%);
-    width:140%;
-    height:55%;
-    background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,0.14) 0%,transparent 65%);
-    animation:spotlight-pulse 6s ease-in-out infinite;
-}
+.ambient-bg__spotlight{display:none;}
 .ambient-bg__grid{
     position:absolute;
     inset:0;
-    background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);
-    background-size:60px 60px;
-    mask-image:radial-gradient(ellipse 70% 60% at 50% 40%,black 20%,transparent 75%);
+    background-image:linear-gradient(rgba(30,41,59,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(30,41,59,0.04) 1px,transparent 1px);
+    background-size:56px 56px;
 }
 @keyframes bg-shift{0%{filter:hue-rotate(0deg) brightness(1);}100%{filter:hue-rotate(8deg) brightness(1.05);}}
 @keyframes float-glow{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(30px,20px) scale(1.08);}}
@@ -186,25 +160,11 @@ canvas{max-width:100%;}
 }
 .start-screen__overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,22,40,0.92) 0%,rgba(10,22,40,0.72) 35%,rgba(6,78,59,0.55) 65%,rgba(10,22,40,0.88) 100%);z-index:1;}
 .start-screen__grass{position:absolute;bottom:0;left:0;right:0;height:38%;z-index:0;background:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(255,255,255,0.05) 40px,rgba(255,255,255,0.05) 80px),radial-gradient(ellipse 55% 40% at 50% 0%,rgba(34,197,94,0.45) 0%,transparent 70%),linear-gradient(180deg,transparent 0%,rgba(21,128,61,0.5) 30%,rgba(22,101,52,0.75) 100%);}
-.start-screen__content{position:relative;z-index:3;width:100%;max-width:1120px;padding:20px;}
+.start-screen__content{position:relative;z-index:3;max-width:560px;padding:20px;}
 .start-screen__icon{font-size:48px;margin:0 0 12px;line-height:1;}
 .start-title{font-size:clamp(28px,6vw,42px);font-weight:bold;color:#fff;margin:0 0 18px;line-height:1.35;text-shadow:0 4px 24px rgba(0,0,0,0.55),0 2px 4px rgba(0,0,0,0.3);}
 .start-description{font-size:clamp(15px,3.5vw,18px);line-height:1.85;color:rgba(255,255,255,0.9);margin:0 auto 24px;max-width:480px;text-shadow:0 2px 8px rgba(0,0,0,0.4);}
-.start-btn{display:inline-block;width:auto;max-width:none;margin:24px 0 0;padding:18px 52px;font-size:20px;font-weight:bold;border-radius:14px;background:linear-gradient(180deg,#4ade80 0%,#22c55e 45%,#16a34a 100%);box-shadow:0 6px 0 #15803d,0 12px 28px rgba(0,0,0,0.45);}
-.type-showcase{margin:28px auto 0;width:100%;}
-.type-showcase__title{margin:0 0 16px;color:#fff;font-size:clamp(20px,4vw,28px);text-shadow:0 3px 16px rgba(0,0,0,0.5);}
-.type-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;}
-.type-card{appearance:none;border:1px solid rgba(255,255,255,0.22);border-radius:16px;padding:12px;background:rgba(255,255,255,0.12);backdrop-filter:blur(10px);color:#fff;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,0.25);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease;}
-.type-card:hover,.type-card:focus-visible{transform:translateY(-4px) scale(1.03);border-color:rgba(74,222,128,0.85);background:rgba(255,255,255,0.2);box-shadow:0 14px 34px rgba(0,0,0,0.34);outline:none;}
-.type-card__image{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px;background:#f8fafc;display:block;}
-.type-card__name{display:block;margin-top:10px;font-weight:bold;font-size:14px;line-height:1.45;text-shadow:0 2px 8px rgba(0,0,0,0.5);}
-.type-detail-card{display:none;margin:18px auto 0;padding:18px;border-radius:18px;background:rgba(248,250,252,0.96);color:#0f172a;text-align:left;box-shadow:0 16px 36px rgba(0,0,0,0.34);}
-.type-detail-card.is-open{display:grid;grid-template-columns:140px 1fr;gap:18px;align-items:center;}
-.type-detail-card__image{width:140px;aspect-ratio:1/1;object-fit:cover;border-radius:14px;background:#f8fafc;}
-.type-detail-card__body h3{margin:0 0 8px;font-size:24px;color:#0f172a;}
-.type-detail-card__key{margin:0 0 10px;color:#2563eb;font-weight:bold;line-height:1.6;}
-.type-detail-card__description{margin:0;color:#334155;line-height:1.8;}
-.type-detail-card__close{margin-top:14px;padding:10px 18px;border-radius:10px;background:#334155!important;color:#fff;font-size:14px;}
+.start-btn{display:inline-block;width:auto;max-width:none;margin:0;padding:18px 52px;font-size:20px;font-weight:bold;border-radius:14px;background:linear-gradient(180deg,#4ade80 0%,#22c55e 45%,#16a34a 100%);box-shadow:0 6px 0 #15803d,0 12px 28px rgba(0,0,0,0.45);}
 .quiz-area{max-width:900px;margin:0 auto;}
 .progress-area{margin-bottom:20px;}
 #progressText{text-align:left;font-weight:bold;color:#166534;margin-bottom:8px;}
@@ -225,13 +185,45 @@ canvas{max-width:100%;}
 .axis-summary{display:grid;gap:10px;margin:18px 0 8px;}
 .axis-pill{display:flex;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:12px;background:rgba(37,99,235,0.08);color:#1e293b;font-size:.92rem;}
 .axis-pill strong{color:#2563eb;white-space:nowrap;}
-.detail-toggle-btn{display:inline-block;margin:18px auto 0;padding:12px 28px;border-radius:12px;background:#0f766e!important;color:white;font-size:16px;font-weight:bold;box-shadow:0 5px 15px rgba(0,0,0,0.18);}
+.detail-toggle-btn{display:inline-block;margin:18px auto 0;padding:12px 28px;border-radius:12px;background:#0f766e!important;color:white;font-size:16px;font-weight:bold;box-shadow:0 5px 15px rgba(0,0,0,0.18);width:auto;}
 .detail-ability-area{display:none;margin-top:18px;}
 .detail-ability-area.is-open{display:block;}
 .confirm-list{text-align:left;margin:20px auto;padding:0;list-style:none;}
 .confirm-item{background:#f8fafc;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 4px 12px rgba(0,0,0,0.12);}
 .confirm-question{font-weight:bold;margin-bottom:8px;color:#111827;}
 .confirm-answer{color:#166534;font-weight:bold;}
+
+/* Home screen: bright MBTI-style type list */
+.start-screen{
+    align-items:flex-start;
+    justify-content:center;
+    padding:56px 28px;
+    border:1px solid #e2e8f0;
+    background:rgba(255,255,255,0.76);
+    box-shadow:0 12px 32px rgba(15,23,42,0.08);
+}
+.start-screen__overlay,.start-screen__grass{display:none;}
+.start-screen__content{width:100%;max-width:1120px;padding:20px;}
+.start-screen__icon{font-size:42px;margin:0 0 10px;}
+.start-title{font-size:clamp(32px,6vw,52px);font-weight:800;color:#0f172a;margin:0 0 12px;line-height:1.25;text-shadow:none;letter-spacing:0;}
+.start-description{font-size:clamp(15px,3.5vw,18px);line-height:1.8;color:#475569;margin:0 auto 30px;max-width:560px;text-shadow:none;}
+.start-btn{display:inline-block;width:auto;max-width:none;margin:30px 0 0;padding:17px 56px;font-size:19px;font-weight:bold;border-radius:14px;background:#2563eb!important;color:white;box-shadow:0 10px 22px rgba(37,99,235,0.24);}
+.start-btn:hover{background:#1d4ed8!important;transform:translateY(-2px);}
+.type-showcase{margin:30px auto 0;width:100%;}
+.type-showcase__title{margin:0 0 22px;color:#1e293b;font-size:clamp(22px,4vw,30px);text-shadow:none;}
+.type-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px;}
+.type-card{--accent:#2563eb;appearance:none;border:1px solid color-mix(in srgb,var(--accent) 34%,#e2e8f0);border-top:5px solid var(--accent);border-radius:12px;padding:14px;background:#fff;color:#0f172a;cursor:pointer;box-shadow:0 8px 20px rgba(15,23,42,0.08);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;width:100%;max-width:none;margin:0;text-align:left;}
+.type-card:hover,.type-card:focus-visible{transform:translateY(-5px) scale(1.015);box-shadow:0 14px 28px rgba(15,23,42,0.14);outline:none;}
+.type-card__image{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px;background:#f8fafc;display:block;}
+.type-card__name{display:block;margin-top:12px;font-weight:800;font-size:15px;line-height:1.45;color:var(--accent);}
+.type-card__summary{display:block;margin-top:6px;color:#64748b;font-size:12px;line-height:1.55;}
+.type-detail-card{display:none;margin:26px auto 0;padding:22px;border-radius:16px;background:#fff;color:#0f172a;text-align:left;border:1px solid #e2e8f0;box-shadow:0 12px 28px rgba(15,23,42,0.1);}
+.type-detail-card.is-open{display:grid;grid-template-columns:140px 1fr;gap:18px;align-items:center;}
+.type-detail-card__image{width:140px;aspect-ratio:1/1;object-fit:cover;border-radius:14px;background:#f8fafc;}
+.type-detail-card__body h3{margin:0 0 8px;font-size:24px;color:#0f172a;}
+.type-detail-card__key{margin:0 0 10px;color:#2563eb;font-weight:bold;line-height:1.6;}
+.type-detail-card__description{margin:0;color:#334155;line-height:1.8;}
+.type-detail-card__close{margin-top:14px;padding:10px 18px;border-radius:10px;background:#334155!important;color:#fff;font-size:14px;width:auto;}
 @media(max-width:600px){
     body{padding:12px;}
     #question{font-size:20px;}
@@ -241,8 +233,8 @@ canvas{max-width:100%;}
     .start-screen{min-height:calc(100vh - 24px);padding:24px 16px;border-radius:18px;}
     .start-screen__icon{font-size:40px;}
     .start-btn{padding:16px 36px;font-size:18px;width:100%;max-width:320px;}
-    .type-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
-    .type-card{padding:10px;border-radius:14px;}
+    .type-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+    .type-card{padding:10px;}
     .type-card__name{font-size:13px;}
     .type-detail-card.is-open{display:block;}
     .type-detail-card__image{width:120px;margin:0 auto 14px;display:block;}
@@ -268,7 +260,7 @@ canvas{max-width:100%;}
         <div class="start-screen__content">
             <p class="start-screen__icon">⚽</p>
             <h1 class="start-title">あなたのサッカー性格診断</h1>
-            <p class="start-description">性格診断と能力値診断に答えると、あなたのキャラクタータイプと能力値を診断します。</p>
+            <p class="start-description">16タイプから自分のプレースタイルを見つけよう</p>
             <div id="questionStatus"></div>
             <div class="type-showcase" aria-label="16タイプ一覧">
                 <h2 class="type-showcase__title">16タイプ一覧</h2>
@@ -373,6 +365,8 @@ canvas{max-width:100%;}
         "守備職人": "一対一や守備対応に強いタイプ。派手さは少ないが、冷静に相手の動きを読み、ピンチを防ぐ。",
         "鉄壁の統率者": "守備全体をまとめる頼れるタイプ。冷静な指示と強い守備力で、チームの後ろを安定させる。"
     };
+
+    const typeAccents = ["#f97316","#eab308","#ef4444","#dc2626","#0ea5e9","#2563eb","#b45309","#7c3aed","#14b8a6","#8b5cf6","#22c55e","#16a34a","#06b6d4","#4f46e5","#15803d","#0f766e"];
 
     const $ = (id) => document.getElementById(id);
 
@@ -565,22 +559,28 @@ canvas{max-width:100%;}
         const grid = $("homeTypeGrid");
         if (!grid) return;
 
-        homeTypeCards = personalityTypes.map((type) => {
+        homeTypeCards = personalityTypes.map((type, index) => {
             const imagePath = normalizeImagePath(type.imagePath);
             return {
                 ...type,
                 imagePath,
                 imageSrc: resolveDisplayImagePath(imagePath),
-                description: homeTypeDetails[type.typeName] || type.description
+                description: homeTypeDetails[type.typeName] || type.description,
+                accent: typeAccents[index % typeAccents.length]
             };
         });
 
         grid.innerHTML = homeTypeCards.map((type, index) => `
-            <button type="button" class="type-card" onclick="showHomeTypeDetail(${index})" aria-label="${escapeAttribute(type.typeName)}の詳細を見る">
+            <button type="button" class="type-card" style="--accent:${escapeAttribute(type.accent)}" onclick="showHomeTypeDetail(${index})" aria-label="${escapeAttribute(type.typeName)}の詳細を見る">
                 ${type.imageSrc ? `<img class="type-card__image" src="${escapeAttribute(type.imageSrc)}" data-image-path="${escapeAttribute(type.imagePath)}" alt="${escapeAttribute(type.typeName)}" onerror="handleHomeTypeImageError(this)">` : ""}
                 <span class="type-card__name">${escapeHtml(type.typeName)}</span>
+                <span class="type-card__summary">${escapeHtml(createTypeSummary(type.description))}</span>
             </button>
         `).join("");
+    }
+
+    function createTypeSummary(description) {
+        return String(description || "").replace(/。.*$/, "。");
     }
 
     function showHomeTypeDetail(index) {
@@ -897,15 +897,9 @@ canvas{max-width:100%;}
         const detailArea = $("detailAbilityArea");
         const toggleButton = $("detailToggleBtn");
         if (!detailArea || !toggleButton) return;
-
         const isOpen = detailArea.classList.contains("is-open");
-        if (isOpen) {
-            detailArea.classList.remove("is-open");
-            toggleButton.textContent = text.detailOpen;
-        } else {
-            detailArea.classList.add("is-open");
-            toggleButton.textContent = text.detailClose;
-        }
+        detailArea.classList.toggle("is-open", !isOpen);
+        toggleButton.textContent = isOpen ? text.detailOpen : text.detailClose;
     }
 
     function findPersonalityType(key) {
@@ -959,4 +953,3 @@ canvas{max-width:100%;}
 
 </body>
 </html>
-
