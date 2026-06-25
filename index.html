@@ -177,6 +177,32 @@ canvas{max-width:100%;}
 #progressFill{height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#3b82f6);border-radius:999px;transition:0.3s;}
 .choice-btn{background:white!important;color:#111827!important;border:2px solid #e5e7eb;display:flex;align-items:center;gap:14px;text-align:left;box-shadow:0 5px 15px rgba(0,0,0,0.12);}
 .choice-btn:hover{border-color:#22c55e;background:#f0fdf4!important;}
+.choice-btn,
+.answer-button,
+.choice-button,
+.option-button{
+    -webkit-tap-highlight-color:transparent;
+}
+.choice-btn:focus,
+.answer-button:focus,
+.choice-button:focus,
+.option-button:focus{
+    outline:none;
+}
+.choice-btn:focus-visible,
+.answer-button:focus-visible,
+.choice-button:focus-visible,
+.option-button:focus-visible{
+    outline:2px solid currentColor;
+    outline-offset:3px;
+}
+.choice-btn:active{background:white!important;}
+@media (hover:none){
+    .choice-btn:hover{
+        border-color:#e5e7eb;
+        background:white!important;
+    }
+}
 .choice-label{background:#16a34a;color:white;width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:bold;flex-shrink:0;}
 .choice-text{flex:1;}
 .choice-btn.is-selected{border-color:#16a34a;background:#dcfce7!important;box-shadow:0 0 0 3px rgba(34,197,94,0.25);}
@@ -650,6 +676,7 @@ canvas{max-width:100%;}
     function showQuestion() {
         const question = activeQuestions[currentIndex];
         const sectionLabel = question.section === "personality" ? text.personality : text.ability;
+        clearChoiceButtonStates();
         $("progressText").textContent = `${sectionLabel} ${currentIndex + 1} / ${activeQuestions.length}`;
         $("progressFill").style.width = `${((currentIndex + 1) / activeQuestions.length) * 100}%`;
         $("question").textContent = question.question;
@@ -665,12 +692,19 @@ canvas{max-width:100%;}
             button.className = "choice-btn";
             if (selectedKey === choice.key) button.classList.add("is-selected");
             button.innerHTML = `<span class="choice-label">${escapeHtml(choice.key)}.</span> ${escapeHtml(choice.text)}`;
-            button.addEventListener("click", () => selectChoiceForCurrentQuestion(choice.key));
+            button.addEventListener("click", () => {
+                button.blur();
+                selectChoiceForCurrentQuestion(choice.key);
+            });
             $("choices").appendChild(button);
         });
+        clearChoiceButtonStates();
     }
 
     function selectChoiceForCurrentQuestion(choiceKey) {
+        if (document.activeElement && typeof document.activeElement.blur === "function") {
+            document.activeElement.blur();
+        }
         const question = activeQuestions[currentIndex];
         if (question.section === "personality") {
             personalityAnswers[question.id] = choiceKey;
@@ -684,6 +718,16 @@ canvas{max-width:100%;}
         }
         if (currentIndex < activeQuestions.length - 1) { currentIndex++; showQuestion(); }
         else showConfirm();
+    }
+
+    function clearChoiceButtonStates() {
+        document.querySelectorAll(".choice-btn, .answer-button, .choice-button, .option-button").forEach((button) => {
+            button.classList.remove("selected", "active", "focus");
+            if (!button.classList.contains("is-selected")) {
+                button.classList.remove("is-selected");
+            }
+            if (typeof button.blur === "function") button.blur();
+        });
     }
 
     function appendAbilityStartQuestion() {
