@@ -257,9 +257,12 @@ canvas{max-width:100%;}
 }
 .start-screen__overlay,.start-screen__grass{display:none;}
 .start-screen__content{width:100%;max-width:1120px;padding:20px;}
-.start-screen__icon{font-size:42px;margin:0 0 10px;}
-.start-title{font-size:clamp(32px,6vw,52px);font-weight:800;color:#0f172a;margin:0 0 12px;line-height:1.25;text-shadow:none;letter-spacing:0;}
-.start-description{font-size:clamp(15px,3.5vw,18px);line-height:1.8;color:#475569;margin:0 auto 30px;max-width:560px;text-shadow:none;}
+.start-hero-panel{position:relative;overflow:hidden;margin:0 auto 34px;padding:42px 28px;border-radius:30px;background:linear-gradient(135deg,rgba(255,255,255,0.9),rgba(239,246,255,0.76) 52%,rgba(236,253,245,0.78));border:1px solid rgba(255,255,255,0.72);box-shadow:0 22px 52px rgba(15,23,42,0.14),inset 0 1px 0 rgba(255,255,255,0.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+.start-hero-panel::before{content:"";position:absolute;inset:12px;border-radius:24px;border:1px solid rgba(37,99,235,0.08);pointer-events:none;}
+.start-hero-panel::after{content:"";position:absolute;left:50%;top:-130px;width:360px;height:360px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle,rgba(37,99,235,0.14),rgba(34,197,94,0.06) 45%,transparent 68%);pointer-events:none;}
+.start-screen__icon{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;width:72px;height:72px;margin:0 0 18px;border-radius:22px;background:rgba(255,255,255,0.82);box-shadow:0 12px 28px rgba(37,99,235,0.16);font-size:38px;line-height:1;}
+.start-title{position:relative;z-index:1;font-size:clamp(36px,7vw,64px);font-weight:900;color:#0f172a;margin:0 0 14px;line-height:1.18;text-shadow:0 2px 0 rgba(255,255,255,0.85);letter-spacing:0;}
+.start-description{position:relative;z-index:1;font-size:clamp(15px,3.5vw,20px);line-height:1.85;color:#64748b;margin:0 auto;max-width:620px;text-shadow:none;}
 .start-btn{display:inline-block;width:auto;max-width:none;margin:30px 0 0;padding:17px 56px;font-size:19px;font-weight:bold;border-radius:14px;background:#2563eb!important;color:white;box-shadow:0 10px 22px rgba(37,99,235,0.24);}
 .start-btn:hover{background:#1d4ed8!important;transform:translateY(-2px);}
 .type-showcase{margin:30px auto 0;width:100%;}
@@ -284,7 +287,10 @@ canvas{max-width:100%;}
     .ability-grid{grid-template-columns:1fr;}
     .result-title span{font-size:32px;}
     .start-screen{min-height:calc(100vh - 24px);padding:24px 16px;border-radius:18px;}
-    .start-screen__icon{font-size:40px;}
+    .start-hero-panel{margin-bottom:26px;padding:32px 18px;border-radius:24px;}
+    .start-screen__icon{width:60px;height:60px;margin-bottom:14px;border-radius:18px;font-size:32px;}
+    .start-title{font-size:clamp(32px,9vw,44px);}
+    .start-description{font-size:15px;line-height:1.75;}
     .start-btn{padding:16px 36px;font-size:18px;width:100%;max-width:320px;}
     .type-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
     .type-card{padding:10px;}
@@ -312,9 +318,11 @@ canvas{max-width:100%;}
         <div class="start-screen__overlay" aria-hidden="true"></div>
         <div class="start-screen__grass" aria-hidden="true"></div>
         <div class="start-screen__content">
-            <p class="start-screen__icon">⚽</p>
-            <h1 class="start-title">あなたのサッカー性格診断</h1>
-            <p class="start-description">16タイプから自分のプレースタイルを見つけよう</p>
+            <div class="start-hero-panel">
+                <p class="start-screen__icon">⚽</p>
+                <h1 class="start-title">あなたのサッカー性格診断</h1>
+                <p class="start-description">16タイプから自分のプレースタイルを見つけよう</p>
+            </div>
             <div id="questionStatus"></div>
             <div class="type-showcase" aria-label="16タイプ一覧">
                 <h2 class="type-showcase__title">16タイプ一覧</h2>
