@@ -218,14 +218,14 @@ canvas{max-width:100%;}
 .choice-btn.is-selected,
 .choice-btn.selected{border-color:#16a34a;background:#dcfce7!important;box-shadow:0 0 0 3px rgba(34,197,94,0.25);}
 .question-list{display:grid;gap:18px;text-align:left;margin-top:18px;}
-.question-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:18px;box-shadow:0 5px 14px rgba(15,23,42,0.08);}
+.question-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:18px;box-shadow:0 5px 14px rgba(15,23,42,0.08);scroll-margin-top:24px;}
 .question-card__title{font-size:18px;font-weight:800;line-height:1.65;color:#0f172a;margin:0 0 14px;}
 .question-card__choices{display:grid;gap:10px;}
 .question-card .choice-btn{width:100%;max-width:none;margin:0;}
 .page-message{display:none;margin:16px auto 0;padding:12px 14px;border-radius:12px;background:#fee2e2;color:#991b1b;font-weight:bold;text-align:center;}
 .page-message.is-visible{display:block;}
-.next-page-btn{background:#2563eb!important;font-weight:bold;box-shadow:0 5px 15px rgba(0,0,0,0.18);}
-.submit-page-btn{background:linear-gradient(180deg,#f59e0b,#ea580c)!important;font-weight:bold;box-shadow:0 5px 15px rgba(0,0,0,0.18);}
+.next-page-btn{background:#2563eb!important;font-weight:bold;box-shadow:0 5px 15px rgba(0,0,0,0.18);scroll-margin-top:24px;}
+.submit-page-btn{background:linear-gradient(180deg,#f59e0b,#ea580c)!important;font-weight:bold;box-shadow:0 5px 15px rgba(0,0,0,0.18);scroll-margin-top:24px;}
 .nav-buttons{margin-top:20px;}
 .nav-btn,.back-btn,.diagnose-btn,.restart-btn{font-weight:bold;box-shadow:0 5px 15px rgba(0,0,0,0.18);}
 .nav-btn,.back-btn{background:#64748b!important;}
@@ -708,7 +708,7 @@ canvas{max-width:100%;}
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    function showAbilityPage() {
+    function showAbilityPage(options = {}) {
         blurActiveButton();
         clearChoiceButtonStates();
         appendAbilityStartQuestion();
@@ -724,7 +724,11 @@ canvas{max-width:100%;}
         $("result").innerHTML = "";
         $("questionButtons").style.display = "block";
         $("backQuestionBtn").style.display = "inline-block";
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        if (options.scrollToAfterQuestionKey) {
+            setTimeout(() => scrollAfterAnswer(options.scrollToAfterQuestionKey), 0);
+        } else if (options.scrollTop !== false) {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
     }
 
     function createQuestionListHtml(questions, section) {
@@ -775,12 +779,13 @@ canvas{max-width:100%;}
                 clearNonCommonAbilityAnswers();
                 abilityAnswers[answerKey] = choiceKey;
                 appendAbilityGroupQuestions(selected?.selectedGroup || "");
-                showAbilityPage();
+                showAbilityPage({ scrollTop: false, scrollToAfterQuestionKey: questionDomKey });
                 return;
             }
         }
         updateQuestionSelection(questionDomKey, choiceKey);
         blurActiveButton();
+        scrollAfterAnswer(questionDomKey);
     }
 
     function updateQuestionSelection(questionDomKey, choiceKey) {
@@ -792,6 +797,19 @@ canvas{max-width:100%;}
         const buttons = [...card.querySelectorAll(".choice-btn")];
         const selectedButton = buttons.find((button) => button.textContent.trim().startsWith(`${choiceKey}.`));
         if (selectedButton) selectedButton.classList.add("is-selected", "selected");
+    }
+
+    function scrollAfterAnswer(questionDomKey) {
+        const cards = [...document.querySelectorAll(".question-card")];
+        const currentIndex = cards.findIndex((card) => card.dataset.questionKey === questionDomKey);
+        if (currentIndex < 0) return;
+        const nextCard = cards[currentIndex + 1];
+        if (nextCard) {
+            nextCard.scrollIntoView({ behavior: "smooth", block: "start" });
+            return;
+        }
+        const actionButton = document.querySelector(".next-page-btn, .submit-page-btn");
+        if (actionButton) actionButton.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
     function goToAbilityPage() {
