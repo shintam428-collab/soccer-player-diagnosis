@@ -217,6 +217,15 @@ canvas{max-width:100%;}
 .choice-text{flex:1;}
 .choice-btn.is-selected,
 .choice-btn.selected{border-color:#16a34a;background:#dcfce7!important;box-shadow:0 0 0 3px rgba(34,197,94,0.25);}
+.question-list{display:grid;gap:18px;text-align:left;margin-top:18px;}
+.question-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:18px;box-shadow:0 5px 14px rgba(15,23,42,0.08);}
+.question-card__title{font-size:18px;font-weight:800;line-height:1.65;color:#0f172a;margin:0 0 14px;}
+.question-card__choices{display:grid;gap:10px;}
+.question-card .choice-btn{width:100%;max-width:none;margin:0;}
+.page-message{display:none;margin:16px auto 0;padding:12px 14px;border-radius:12px;background:#fee2e2;color:#991b1b;font-weight:bold;text-align:center;}
+.page-message.is-visible{display:block;}
+.next-page-btn{background:#2563eb!important;font-weight:bold;box-shadow:0 5px 15px rgba(0,0,0,0.18);}
+.submit-page-btn{background:linear-gradient(180deg,#f59e0b,#ea580c)!important;font-weight:bold;box-shadow:0 5px 15px rgba(0,0,0,0.18);}
 .nav-buttons{margin-top:20px;}
 .nav-btn,.back-btn,.diagnose-btn,.restart-btn{font-weight:bold;box-shadow:0 5px 15px rgba(0,0,0,0.18);}
 .nav-btn,.back-btn{background:#64748b!important;}
@@ -682,58 +691,154 @@ canvas{max-width:100%;}
         $("chartBox").style.display = "none";
         $("result").innerHTML = "";
         updateStatus("");
-        showQuestion();
+        showPersonalityPage();
     }
 
-    function showQuestion() {
-        const question = activeQuestions[currentIndex];
-        const sectionLabel = question.section === "personality" ? text.personality : text.ability;
+    function showPersonalityPage() {
         blurActiveButton();
         clearChoiceButtonStates();
-        $("progressText").textContent = `${sectionLabel} ${currentIndex + 1} / ${activeQuestions.length}`;
-        $("progressFill").style.width = `${((currentIndex + 1) / activeQuestions.length) * 100}%`;
-        $("question").textContent = question.question;
-        $("choices").innerHTML = "";
+        activeQuestions = [...personalityQuestions];
+        $("progressText").textContent = `${text.personality} 1 / 2`;
+        $("progressFill").style.width = "50%";
+        $("question").textContent = text.personality;
+        $("choices").innerHTML = createQuestionListHtml(personalityQuestions, "personality");
         $("result").innerHTML = "";
         $("questionButtons").style.display = "block";
-        $("backQuestionBtn").style.display = currentIndex === 0 ? "none" : "inline-block";
+        $("backQuestionBtn").style.display = "none";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
 
-        question.choices.forEach((choice) => {
-            const selectedKey = question.section === "personality" ? personalityAnswers[question.id] : abilityAnswers[getAbilityAnswerKey(question)];
-            const button = document.createElement("button");
-            button.type = "button";
-            button.className = "choice-btn choice-button answer-button option-button";
-            button.innerHTML = `<span class="choice-label">${escapeHtml(choice.key)}.</span> ${escapeHtml(choice.text)}`;
-            if (selectedKey && selectedKey === choice.key) {
-                button.classList.add("is-selected", "selected");
+    function showAbilityPage() {
+        blurActiveButton();
+        clearChoiceButtonStates();
+        appendAbilityStartQuestion();
+        const commonQuestion = activeQuestions.find((question) => question.section === "ability" && question.routeGroup === "common");
+        const commonAnswer = commonQuestion ? abilityAnswers[getAbilityAnswerKey(commonQuestion)] : "";
+        const selectedCommonChoice = commonQuestion?.choices.find((choice) => choice.key === commonAnswer);
+        if (selectedCommonChoice?.selectedGroup) appendAbilityGroupQuestions(selectedCommonChoice.selectedGroup);
+        const abilityQuestions = activeQuestions.filter((question) => question.section === "ability");
+        $("progressText").textContent = `${text.ability} 2 / 2`;
+        $("progressFill").style.width = "100%";
+        $("question").textContent = text.ability;
+        $("choices").innerHTML = createQuestionListHtml(abilityQuestions, "ability");
+        $("result").innerHTML = "";
+        $("questionButtons").style.display = "block";
+        $("backQuestionBtn").style.display = "inline-block";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function createQuestionListHtml(questions, section) {
+        const actionButton = section === "personality"
+            ? `<button type="button" class="next-page-btn" onclick="goToAbilityPage()">次へ</button>`
+            : `<button type="button" class="submit-page-btn" onclick="submitAbilityPage()">診断する</button>`;
+        return `
+            <div class="question-list">
+                ${questions.map((question, index) => createQuestionCardHtml(question, index)).join("")}
+            </div>
+            <p id="pageMessage" class="page-message">すべての質問に回答してください</p>
+            ${actionButton}
+        `;
+    }
+
+    function createQuestionCardHtml(question, index) {
+        const selectedKey = getSelectedAnswer(question);
+        return `
+            <section class="question-card" data-question-key="${escapeAttribute(getQuestionDomKey(question))}">
+                <h3 class="question-card__title">Q${index + 1}. ${escapeHtml(question.question)}</h3>
+                <div class="question-card__choices">
+                    ${question.choices.map((choice) => `
+                        <button type="button" class="choice-btn choice-button answer-button option-button${selectedKey === choice.key ? " is-selected selected" : ""}" data-question-key="${escapeAttribute(getQuestionDomKey(question))}" data-choice-key="${escapeAttribute(choice.key)}" onclick="selectChoiceFromButton(this)">
+                            <span class="choice-label">${escapeHtml(choice.key)}.</span>
+                            <span class="choice-text">${escapeHtml(choice.text)}</span>
+                        </button>
+                    `).join("")}
+                </div>
+            </section>
+        `;
+    }
+
+    function selectChoiceFromButton(button) {
+        selectChoiceForCurrentQuestion(button.dataset.questionKey || "", button.dataset.choiceKey || "", button);
+    }
+
+    function selectChoiceForCurrentQuestion(questionDomKey, choiceKey, clickedButton) {
+        if (clickedButton && typeof clickedButton.blur === "function") clickedButton.blur();
+        const question = findActiveQuestionByDomKey(questionDomKey);
+        if (!question) return;
+        if (question.section === "personality") personalityAnswers[question.id] = choiceKey;
+        else {
+            const answerKey = getAbilityAnswerKey(question);
+            const previousKey = abilityAnswers[answerKey];
+            abilityAnswers[answerKey] = choiceKey;
+            if (question.routeGroup === "common" && previousKey !== choiceKey) {
+                const selected = question.choices.find((choice) => choice.key === choiceKey);
+                clearNonCommonAbilityAnswers();
+                abilityAnswers[answerKey] = choiceKey;
+                appendAbilityGroupQuestions(selected?.selectedGroup || "");
+                showAbilityPage();
+                return;
             }
-            button.addEventListener("click", (event) => {
-                event.currentTarget.blur();
-                selectChoiceForCurrentQuestion(choice.key, event.currentTarget);
-            });
-            $("choices").appendChild(button);
+        }
+        updateQuestionSelection(questionDomKey, choiceKey);
+        blurActiveButton();
+    }
+
+    function updateQuestionSelection(questionDomKey, choiceKey) {
+        const card = document.querySelector(`[data-question-key="${cssEscape(questionDomKey)}"]`);
+        if (!card) return;
+        card.querySelectorAll(".choice-btn, .answer-button, .choice-button, .option-button").forEach((button) => {
+            button.classList.remove("selected", "active", "focus", "is-selected");
+        });
+        const buttons = [...card.querySelectorAll(".choice-btn")];
+        const selectedButton = buttons.find((button) => button.textContent.trim().startsWith(`${choiceKey}.`));
+        if (selectedButton) selectedButton.classList.add("is-selected", "selected");
+    }
+
+    function goToAbilityPage() {
+        if (!validateQuestionsAnswered(personalityQuestions)) return;
+        showAbilityPage();
+    }
+
+    function submitAbilityPage() {
+        const abilityQuestions = activeQuestions.filter((question) => question.section === "ability");
+        if (!validateQuestionsAnswered(abilityQuestions)) return;
+        finishDiagnosisFlow();
+    }
+
+    function validateQuestionsAnswered(questions) {
+        const missing = questions.find((question) => !getSelectedAnswer(question));
+        const message = $("pageMessage");
+        if (!missing) {
+            if (message) message.classList.remove("is-visible");
+            return true;
+        }
+        if (message) message.classList.add("is-visible");
+        const card = document.querySelector(`[data-question-key="${cssEscape(getQuestionDomKey(missing))}"]`);
+        if (card) card.scrollIntoView({ behavior: "smooth", block: "center" });
+        return false;
+    }
+
+    function getSelectedAnswer(question) {
+        return question.section === "personality" ? personalityAnswers[question.id] : abilityAnswers[getAbilityAnswerKey(question)];
+    }
+
+    function findActiveQuestionByDomKey(questionDomKey) {
+        return activeQuestions.find((question) => getQuestionDomKey(question) === questionDomKey);
+    }
+
+    function getQuestionDomKey(question) {
+        return question.section === "personality" ? `personality__${question.id}` : `ability__${getAbilityAnswerKey(question)}`;
+    }
+
+    function clearNonCommonAbilityAnswers() {
+        activeQuestions.filter((question) => question.section === "ability" && question.routeGroup !== "common").forEach((question) => {
+            delete abilityAnswers[getAbilityAnswerKey(question)];
         });
     }
 
-    function selectChoiceForCurrentQuestion(choiceKey, clickedButton) {
-        if (clickedButton && typeof clickedButton.blur === "function") clickedButton.blur();
-        blurActiveButton();
-        clearChoiceButtonStates();
-        const question = activeQuestions[currentIndex];
-        if (question.section === "personality") {
-            personalityAnswers[question.id] = choiceKey;
-            if (currentIndex === personalityQuestions.length - 1) appendAbilityStartQuestion();
-        } else {
-            abilityAnswers[getAbilityAnswerKey(question)] = choiceKey;
-            if (question.routeGroup === "common") {
-                const selected = question.choices.find((choice) => choice.key === choiceKey);
-                appendAbilityGroupQuestions(selected?.selectedGroup || "");
-            }
-        }
-        blurActiveButton();
-        if (currentIndex < activeQuestions.length - 1) { currentIndex++; showQuestion(); }
-        else showConfirm();
-        blurActiveButton();
+    function cssEscape(value) {
+        if (window.CSS && typeof window.CSS.escape === "function") return window.CSS.escape(value);
+        return String(value).replace(/["\\]/g, "\\$&");
     }
 
     function clearChoiceButtonStates() {
@@ -761,7 +866,7 @@ canvas{max-width:100%;}
     function appendAbilityGroupQuestions(group) {
         const firstAbilityQuestionOnly = activeQuestions.filter((question) => question.section !== "ability" || question.routeGroup === "common");
         const groupQuestions = uniqueQuestions(abilityQuestionBank.filter((question) => question.routeGroup === group));
-        activeQuestions = [...firstAbilityQuestionOnly, ...groupQuestions];
+        activeQuestions = [...firstAbilityQuestionOnly.filter((question) => question.section !== "ability"), ...uniqueQuestions([...firstAbilityQuestionOnly.filter((question) => question.section === "ability"), ...groupQuestions])];
     }
 
     function uniqueQuestions(questions) {
@@ -775,9 +880,7 @@ canvas{max-width:100%;}
     }
 
     function backQuestionFlow() {
-        if (currentIndex <= 0) return;
-        currentIndex--;
-        showQuestion();
+        showPersonalityPage();
     }
 
     function showConfirm() {
@@ -795,8 +898,7 @@ canvas{max-width:100%;}
     function returnToQuestionsFlow() {
         $("confirmArea").classList.add("is-hidden");
         $("quizCard").classList.remove("is-hidden");
-        currentIndex = Math.max(0, activeQuestions.length - 1);
-        showQuestion();
+        showAbilityPage();
     }
 
     function finishDiagnosisFlow() {
@@ -1014,6 +1116,9 @@ canvas{max-width:100%;}
 
     window.startDiagnosis = startDiagnosisFlow;
     window.selectChoice = selectChoiceForCurrentQuestion;
+    window.selectChoiceFromButton = selectChoiceFromButton;
+    window.goToAbilityPage = goToAbilityPage;
+    window.submitAbilityPage = submitAbilityPage;
     window.backQuestion = backQuestionFlow;
     window.returnToQuestions = returnToQuestionsFlow;
     window.finish = finishDiagnosisFlow;
