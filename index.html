@@ -389,7 +389,7 @@ canvas{max-width:100%;}
         abilityTitle: "\u3042\u306a\u305f\u306e\u80fd\u529b\u5024",
         detailOpen: "\u8a73\u7d30\u3092\u898b\u308b",
         detailClose: "\u8a73\u7d30\u3092\u9589\u3058\u308b",
-        detailTitle: "19\u9805\u76ee\u306e\u8a73\u7d30\u80fd\u529b\u5024",
+        detailTitle: "\u7d30\u304b\u3044\u80fd\u529b\u5024",
         restart: "\u3082\u3046\u4e00\u5ea6\u8a3a\u65ad\u3059\u308b",
         you: "\u3042\u306a\u305f",
         imageEmpty: "personality_types.csv \u306e image_path \u304c\u7a7a\u3067\u3059\u3002",
@@ -408,6 +408,23 @@ canvas{max-width:100%;}
     let abilityAnswers = {};
     let loadErrors = [];
     let homeTypeCards = [];
+
+    const abilityNameAliases = {
+        "ボールコントロール": "タッチ精度",
+        "フライパス": "ロングパス",
+        "フィジカル": "体の強さ",
+        "ボール奪取": "ボールハント",
+        "アグレッシブネス": "闘争心"
+    };
+
+    const radarItemGroups = {
+        "オフェンス": ["オフェンスセンス", "決定力"],
+        "ドリブル": ["タッチ精度", "ドリブル", "ボールキープ"],
+        "フィジカル": ["体の強さ", "ヘディング", "ジャンプ力"],
+        "ディフェンス": ["ボールハント", "闘争心", "守備意識"],
+        "スピード": ["スピード", "瞬発力"],
+        "パス": ["グランダーパス", "ロングパス", "カーブ"]
+    };
 
     const homeTypeDetails = {
         "爆速ストライカー": "スピードと直感で相手を置き去りにするタイプ。考えるより先に体が動き、突破や裏抜けで試合の流れを変える。",
@@ -523,7 +540,7 @@ canvas{max-width:100%;}
 
             const scores = {};
             scoreItems.forEach((item) => {
-                const columnIndex = abilityHeader.findIndex((header) => header === item);
+                const columnIndex = abilityHeader.findIndex((header) => normalizeAbilityName(header) === item);
                 scores[item] = columnIndex >= 0 ? clamp(Number(normalizeCell(row[columnIndex])) || 0) : 0;
             });
             questionMap.get(questionKey).choices.push({ key: choice, text: choiceText, selectedGroup, scores });
@@ -534,17 +551,15 @@ canvas{max-width:100%;}
 
     function buildAbilityMetadata(mainHeader, detailHeader) {
         scoreItems = [];
-        radarGroups = {};
-        let currentGroup = "";
+        radarGroups = radarItemGroups;
         for (let index = 6; index < detailHeader.length; index++) {
-            const groupName = normalizeCell(mainHeader[index]);
-            const itemName = normalizeCell(detailHeader[index]);
-            if (groupName) currentGroup = groupName;
+            const itemName = normalizeAbilityName(detailHeader[index]);
             if (!itemName) continue;
-            scoreItems.push(itemName);
-            if (!radarGroups[currentGroup]) radarGroups[currentGroup] = [];
-            radarGroups[currentGroup].push(itemName);
+            if (!scoreItems.includes(itemName)) scoreItems.push(itemName);
         }
+        Object.values(radarItemGroups).flat().forEach((itemName) => {
+            if (!scoreItems.includes(itemName)) scoreItems.push(itemName);
+        });
     }
 
     async function fetchCsvRows(path, errorMessage) {
@@ -1009,8 +1024,10 @@ canvas{max-width:100%;}
     function convertToRadarScores(scores) {
         const radarScores = {};
         Object.entries(radarGroups).forEach(([name, items]) => {
-            const total = items.reduce((sum, item) => sum + (Number(scores[item]) || 0), 0);
-            radarScores[name] = clamp(Math.round(total / items.length));
+            const validItems = items.filter((item) => Object.prototype.hasOwnProperty.call(scores, item));
+            const targetItems = validItems.length ? validItems : items;
+            const total = targetItems.reduce((sum, item) => sum + (Number(scores[item]) || 0), 0);
+            radarScores[name] = clamp(Math.round(total / targetItems.length));
         });
         return radarScores;
     }
@@ -1091,7 +1108,7 @@ canvas{max-width:100%;}
 
     function createOrderedDetailScores(scores) {
         const orderedScores = {};
-        scoreItems.forEach((item) => orderedScores[item] = clamp(scores[item] || 0));
+        unique(Object.values(radarItemGroups).flat()).forEach((item) => orderedScores[item] = clamp(scores[item] || 0));
         return orderedScores;
     }
 
@@ -1110,6 +1127,10 @@ canvas{max-width:100%;}
 
     function getAbilityAnswerKey(question) { return `${question.routeGroup}__${question.id}__${question.question}`; }
     function clamp(value) { return Math.max(0, Math.min(100, Math.round(Number(value) || 0))); }
+    function normalizeAbilityName(value) {
+        const name = normalizeCell(value);
+        return abilityNameAliases[name] || name;
+    }
     function normalizeImagePath(path) { return normalizeCell(path).replace(/^\/+/, ""); }
     function resolveDisplayImagePath(imagePath) { return imagePath; }
     function getFallbackImagePath(imagePath) { return imagePath && !imagePath.includes("/") ? `images/${imagePath}` : ""; }
