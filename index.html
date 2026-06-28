@@ -761,6 +761,11 @@ canvas{max-width:100%;}
                 accent: typeAccents[index % typeAccents.length]
             };
         });
+        homeTypeCards = [
+            ...homeTypeCards,
+            createComingSoonCard(homeTypeCards.length),
+            createComingSoonCard(homeTypeCards.length + 1)
+        ];
 
         grid.innerHTML = homeTypeCards.map((type, index) => `
             <button type="button" class="type-card" style="--accent:${escapeAttribute(type.accent)}" onclick="showHomeTypeDetail(${index})" aria-label="${escapeAttribute(type.typeName)}の詳細を見る">
@@ -776,12 +781,38 @@ canvas{max-width:100%;}
         return summary.length > 46 ? `${summary.slice(0, 46)}...` : summary;
     }
 
+    function createComingSoonCard(index) {
+        const imagePath = "images/comingsoon.jpeg";
+        return {
+            typeName: "Coming soon...",
+            key: "",
+            imagePath,
+            imageSrc: imagePath,
+            description: "新しいプレースタイルを追加予定。",
+            accent: typeAccents[index % typeAccents.length],
+            isComingSoon: true
+        };
+    }
+
     function showHomeTypeDetail(index) {
         const detail = $("homeTypeDetail");
         const type = homeTypeCards[index];
         if (!detail || !type) return;
 
         detail.classList.add("is-open");
+        if (type.isComingSoon) {
+            detail.innerHTML = `
+                ${type.imageSrc ? `<img class="type-detail-card__image" src="${escapeAttribute(type.imageSrc)}" data-image-path="${escapeAttribute(type.imagePath)}" alt="${escapeAttribute(type.typeName)}" onerror="handleHomeTypeImageError(this)">` : ""}
+                <div class="type-detail-card__body">
+                    <h3>${escapeHtml(type.typeName)}</h3>
+                    <p class="type-detail-card__description">新しいプレースタイルを追加予定です。</p>
+                    <button type="button" class="type-detail-card__close" onclick="closeHomeTypeDetail()">閉じる</button>
+                </div>
+            `;
+            detail.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            return;
+        }
+
         detail.innerHTML = `
             ${type.imageSrc ? `<img class="type-detail-card__image" src="${escapeAttribute(type.imageSrc)}" data-image-path="${escapeAttribute(type.imagePath)}" alt="${escapeAttribute(type.typeName)}" onerror="handleHomeTypeImageError(this)">` : ""}
             <div class="type-detail-card__body">
