@@ -459,32 +459,38 @@ canvas{max-width:100%;}
         const rows = await fetchCsvRows(files.personalityQuestions, "personality_questions.csv" + text.dataError);
         let headerIndex = findHeaderRow(rows, ["question_id", "question"]);
         if (headerIndex < 0) headerIndex = findHeaderRow(rows, ["質問", "回答"]);
+        if (headerIndex < 0) headerIndex = findHeaderRow(rows, ["質問"]);
         if (headerIndex < 0) throwCsvFormatError("personality_questions.csv");
         const headers = rows[headerIndex].map(normalizeCell);
         const typeScoreColumns = headers.filter((header) => typeNames.includes(header));
 
-        if (headers.includes("質問") && headers.includes("回答")) {
+        if (headers.includes("質問") || headers.includes("No") || headers.includes("配点")) {
             const questionMap = new Map();
             rows.slice(headerIndex + 1)
                 .map((row) => rowToObject(headers, row))
-                .filter((row) => row["質問"] && row["回答"])
+                .map((row) => ({
+                    raw: row,
+                    questionText: getPersonalityQuestionText(row),
+                    choiceText: getPersonalityChoiceText(row, headers),
+                    scoreText: getPersonalityScoreText(row)
+                }))
+                .filter((row) => row.questionText && row.choiceText)
                 .forEach((row, rowIndex) => {
-                    const id = row.No || row.no || row.question_id || `Q${rowIndex + 1}`;
-                    const questionText = row["質問"];
-                    const questionKey = `${id}__${questionText}`;
+                    const id = row.raw.No || row.raw.no || row.raw.question_id || row.raw["番号"] || `Q${rowIndex + 1}`;
+                    const questionKey = `${id}__${row.questionText}`;
                     if (!questionMap.has(questionKey)) {
                         questionMap.set(questionKey, {
                             section: "personality",
                             id,
-                            question: questionText,
+                            question: row.questionText,
                             csvOrder: rowIndex,
                             choices: []
                         });
                     }
                     questionMap.get(questionKey).choices.push({
                         key: createChoiceKey(questionMap.get(questionKey).choices.length),
-                        text: row["回答"],
-                        scores: parsePersonalityScoreText(row["配点"], typeNames)
+                        text: row.choiceText,
+                        scores: parsePersonalityScoreText(row.scoreText, typeNames)
                     });
                 });
             return [...questionMap.values()].sort((a, b) => a.csvOrder - b.csvOrder);
@@ -652,6 +658,38 @@ canvas{max-width:100%;}
 
     function createChoiceKey(index) {
         return String.fromCharCode(65 + index);
+    }
+
+    function getPersonalityQuestionText(row) {
+        return row["質問"] || row.question || row["question"] || "";
+    }
+
+    function getPersonalityChoiceText(row, headers) {
+        const preferredColumns = ["回答", "choice_text", "回答文", "回答内容", "選択肢", "選択肢文"];
+        for (const column of preferredColumns) {
+            const value = normalizeCell(row[column]);
+            if (value && !looksLikePersonalityScore(value)) return value;
+        }
+
+        const ignoredColumns = new Set(["No", "no", "番号", "question_id", "質問", "question", "配点", "score", "scores"]);
+        const fallbackColumn = headers.find((header) => {
+            const value = normalizeCell(row[header]);
+            return value && !ignoredColumns.has(header) && !looksLikePersonalityScore(value);
+        });
+        return fallbackColumn ? normalizeCell(row[fallbackColumn]) : "";
+    }
+
+    function getPersonalityScoreText(row) {
+        return row["配点"] || row.score || row.scores || "";
+    }
+
+    function looksLikePersonalityScore(value) {
+        const textValue = normalizeCell(value);
+        if (!textValue) return false;
+        if (/^[+-]?\d+(\.\d+)?$/.test(textValue)) return true;
+        const hasScoreNumber = /[+-]\s*\d/.test(textValue);
+        const hasTypeName = personalityTypes.some((type) => textValue.includes(type.typeName));
+        return hasScoreNumber && hasTypeName;
     }
 
     function parsePersonalityScoreText(scoreText, typeNames) {
