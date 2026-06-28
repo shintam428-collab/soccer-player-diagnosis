@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>あなたのサッカー性格診断</title>
+<title>あなたのサッカープレースタイル診断</title>
 
 <style>
 html{background:#f4f7fb;}
@@ -319,13 +319,13 @@ canvas{max-width:100%;}
         <div class="start-screen__grass" aria-hidden="true"></div>
         <div class="start-screen__content">
             <div class="start-hero-panel">
-                <p class="start-screen__icon">⚽</p>
-                <h1 class="start-title">あなたのサッカー性格診断</h1>
-                <p class="start-description">16タイプから自分のプレースタイルを見つけよう</p>
+            <p class="start-screen__icon">⚽</p>
+                <h1 class="start-title">あなたのサッカープレースタイル診断</h1>
+                <p class="start-description">14タイプから自分のプレースタイルを見つけよう</p>
             </div>
             <div id="questionStatus"></div>
-            <div class="type-showcase" aria-label="16タイプ一覧">
-                <h2 class="type-showcase__title">16タイプ一覧</h2>
+            <div class="type-showcase" aria-label="14タイプ一覧">
+                <h2 class="type-showcase__title">14タイプ一覧</h2>
                 <div id="homeTypeGrid" class="type-grid"></div>
                 <div id="homeTypeDetail" class="type-detail-card"></div>
             </div>
@@ -343,7 +343,7 @@ canvas{max-width:100%;}
             <h2 id="question"></h2>
             <div id="choices"></div>
             <div class="nav-buttons" id="questionButtons">
-                <button type="button" class="nav-btn" id="backQuestionBtn" onclick="backQuestion()">前の質問に戻る</button>
+                <button type="button" class="nav-btn" id="backQuestionBtn" onclick="backQuestion()">前の画面に戻る</button>
             </div>
             <div id="result"></div>
         </div>
@@ -362,11 +362,6 @@ canvas{max-width:100%;}
     </div>
 </div>
 
-<script type="text/plain" id="legacy-player-diagnosis">
-古い選手診断スクリプトは、性格診断への変更により使用しません。
-</script>
-
-
 <script>
 (() => {
     const files = {
@@ -379,13 +374,13 @@ canvas{max-width:100%;}
         start: "\u8a3a\u65ad\u3092\u59cb\u3081\u308b",
         loadError: "\u8aad\u307f\u8fbc\u307f\u30a8\u30e9\u30fc",
         dataError: "\u8a3a\u65ad\u30c7\u30fc\u30bf\u3092\u8aad\u307f\u8fbc\u3081\u307e\u305b\u3093\u3067\u3057\u305f",
-        personality: "\u6027\u683c\u8a3a\u65ad",
+        personality: "\u30d7\u30ec\u30fc\u30b9\u30bf\u30a4\u30eb\u8a3a\u65ad",
         ability: "\u80fd\u529b\u5024\u8a3a\u65ad",
         unanswered: "\u672a\u56de\u7b54",
         result: "\u8a3a\u65ad\u7d50\u679c",
         noType: "\u30bf\u30a4\u30d7\u3092\u5224\u5b9a\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f",
         typePrefix: "\u3042\u306a\u305f\u306e\u30bf\u30a4\u30d7\u306f",
-        axisTitle: "\u3042\u306a\u305f\u306e\u6027\u683c\u8ef8",
+        axisTitle: "\u30d7\u30ec\u30fc\u30b9\u30bf\u30a4\u30eb\u50be\u5411",
         abilityTitle: "\u3042\u306a\u305f\u306e\u80fd\u529b\u5024",
         detailOpen: "\u8a73\u7d30\u3092\u898b\u308b",
         detailClose: "\u8a73\u7d30\u3092\u9589\u3058\u308b",
@@ -426,25 +421,6 @@ canvas{max-width:100%;}
         "パス": ["グランダーパス", "ロングパス", "カーブ"]
     };
 
-    const homeTypeDetails = {
-        "爆速ストライカー": "スピードと直感で相手を置き去りにするタイプ。考えるより先に体が動き、突破や裏抜けで試合の流れを変える。",
-        "閃光エース": "速さとひらめきでチームを引っ張るエース。勝負どころで前に出て、周りを勢いづける。",
-        "突撃パワーアタッカー": "強い体と勢いで強引に突破するタイプ。相手にぶつかっても怯まず、ゴールへ一直線に向かう。",
-        "闘将フォワード": "熱い気持ちとパワーで前線を引っ張るタイプ。声とプレーで味方を鼓舞し、試合の空気を変える。",
-        "冷静フィニッシャー": "落ち着いてチャンスを決め切るタイプ。派手さより正確さを大事にし、ゴール前で冷静に判断できる。",
-        "戦術エース": "技術と戦術眼で攻撃を組み立てるタイプ。自分で仕掛けるだけでなく、味方を活かして勝利に導く。",
-        "重戦車アタッカー": "強いフィジカルを使って着実に前進するタイプ。冷静に相手を見ながら、力強くゴールへ迫る。",
-        "勝負師キャプテン": "勝負どころを見極める頼れる主将タイプ。落ち着きと強さを持ち、重要な場面でチームを勝たせる。",
-        "自由なチャンスメーカー": "自由な発想でチャンスを作るタイプ。ドリブルやパスで相手の予想を外し、攻撃に変化を生む。",
-        "ひらめき司令塔": "アイデアと感覚で味方を動かす司令塔タイプ。意外なパスや動きでチームの攻撃を作り出す。",
-        "献身的ハードワーカー": "チームのために走り続けるタイプ。攻守に顔を出し、目立たない場面でも流れを支える。",
-        "熱血チームリーダー": "気持ちと運動量でチームを支えるリーダー。仲間を励まし、苦しい時間でもチームを前向きにする。",
-        "技巧派バランサー": "技術と判断力でバランスを取るタイプ。無理をせず、攻撃と守備のつなぎ役として安定感を出す。",
-        "冷静なゲームメーカー": "試合全体を見て動かすタイプ。落ち着いた判断でパスを選び、チームのリズムを作る。",
-        "守備職人": "一対一や守備対応に強いタイプ。派手さは少ないが、冷静に相手の動きを読み、ピンチを防ぐ。",
-        "鉄壁の統率者": "守備全体をまとめる頼れるタイプ。冷静な指示と強い守備力で、チームの後ろを安定させる。"
-    };
-
     const typeAccents = ["#f97316","#eab308","#ef4444","#dc2626","#0ea5e9","#2563eb","#b45309","#7c3aed","#14b8a6","#8b5cf6","#22c55e","#16a34a","#06b6d4","#4f46e5","#15803d","#0f766e"];
 
     const $ = (id) => document.getElementById(id);
@@ -458,9 +434,9 @@ canvas{max-width:100%;}
         $("startBtn").textContent = text.loading;
 
         try {
-            [personalityQuestions, personalityTypes, abilityQuestionBank] = await Promise.all([
-                loadPersonalityQuestions(),
-                loadPersonalityTypes(),
+            personalityTypes = await loadPersonalityTypes();
+            [personalityQuestions, abilityQuestionBank] = await Promise.all([
+                loadPersonalityQuestions(personalityTypes.map((type) => type.typeName)),
                 loadAbilityQuestions()
             ]);
             axisOrder = unique(personalityQuestions.map((question) => question.axis).filter(Boolean));
@@ -479,11 +455,42 @@ canvas{max-width:100%;}
         }
     }
 
-    async function loadPersonalityQuestions() {
+    async function loadPersonalityQuestions(typeNames = []) {
         const rows = await fetchCsvRows(files.personalityQuestions, "personality_questions.csv" + text.dataError);
-        const headerIndex = findHeaderRow(rows, ["question_id", "question", "choice_a_text", "choice_b_text"]);
+        const headerIndex = findHeaderRow(rows, ["question_id", "question"]);
         if (headerIndex < 0) throwCsvFormatError("personality_questions.csv");
         const headers = rows[headerIndex].map(normalizeCell);
+        const typeScoreColumns = headers.filter((header) => typeNames.includes(header));
+
+        if (headers.includes("choice") && headers.includes("choice_text") && typeScoreColumns.length) {
+            const questionMap = new Map();
+            rows.slice(headerIndex + 1)
+                .map((row) => rowToObject(headers, row))
+                .filter((row) => row.question_id && row.question && row.choice && row.choice_text)
+                .forEach((row, rowIndex) => {
+                    const questionKey = `${row.question_id}__${row.question}`;
+                    if (!questionMap.has(questionKey)) {
+                        questionMap.set(questionKey, {
+                            section: "personality",
+                            id: row.question_id,
+                            question: row.question,
+                            csvOrder: rowIndex,
+                            choices: []
+                        });
+                    }
+                    const scores = {};
+                    typeScoreColumns.forEach((typeName) => scores[typeName] = Number(row[typeName]) || 0);
+                    questionMap.get(questionKey).choices.push({
+                        key: row.choice,
+                        text: row.choice_text,
+                        scores
+                    });
+                });
+            return [...questionMap.values()].sort((a, b) => a.csvOrder - b.csvOrder);
+        }
+
+        const legacyHeaderRequired = ["choice_a_text", "choice_b_text"];
+        if (!legacyHeaderRequired.every((column) => headers.includes(column))) throwCsvFormatError("personality_questions.csv");
         return rows.slice(headerIndex + 1)
             .map((row) => rowToObject(headers, row))
             .filter((row) => row.question_id && row.question && row.choice_a_text && row.choice_b_text)
@@ -502,15 +509,16 @@ canvas{max-width:100%;}
 
     async function loadPersonalityTypes() {
         const rows = await fetchCsvRows(files.personalityTypes, "personality_types.csv" + text.dataError);
-        const headerIndex = findHeaderRow(rows, ["type_name", "personality_key", "image_path", "description"]);
+        const headerIndex = findHeaderRow(rows, ["type_name", "image_path", "description"]);
         if (headerIndex < 0) throwCsvFormatError("personality_types.csv");
         const headers = rows[headerIndex].map(normalizeCell);
         return rows.slice(headerIndex + 1)
             .map((row) => rowToObject(headers, row))
-            .filter((row) => row.personality_key && row.type_name)
+            .filter((row) => row.type_name)
             .map((row) => ({
+                typeId: row.type_id,
                 typeName: row.type_name,
-                key: row.personality_key,
+                key: row.personality_key || row.type_name,
                 imagePath: row.image_path,
                 description: row.description,
                 axes: [row.axis_attack_support, row.axis_intuition_calm, row.axis_speed_physical, row.axis_free_leader]
@@ -642,7 +650,7 @@ canvas{max-width:100%;}
                 ...type,
                 imagePath,
                 imageSrc: resolveDisplayImagePath(imagePath),
-                description: homeTypeDetails[type.typeName] || type.description,
+                description: type.description,
                 accent: typeAccents[index % typeAccents.length]
             };
         });
@@ -657,7 +665,8 @@ canvas{max-width:100%;}
     }
 
     function createTypeSummary(description) {
-        return String(description || "").replace(/。.*$/, "。");
+        const summary = String(description || "");
+        return summary.length > 46 ? `${summary.slice(0, 46)}...` : summary;
     }
 
     function showHomeTypeDetail(index) {
@@ -670,7 +679,7 @@ canvas{max-width:100%;}
             ${type.imageSrc ? `<img class="type-detail-card__image" src="${escapeAttribute(type.imageSrc)}" data-image-path="${escapeAttribute(type.imagePath)}" alt="${escapeAttribute(type.typeName)}" onerror="handleHomeTypeImageError(this)">` : ""}
             <div class="type-detail-card__body">
                 <h3>${escapeHtml(type.typeName)}</h3>
-                <p class="type-detail-card__key">${escapeHtml(type.key)}</p>
+                ${type.key && type.key !== type.typeName ? `<p class="type-detail-card__key">${escapeHtml(type.key)}</p>` : ""}
                 <p class="type-detail-card__description">${escapeHtml(type.description)}</p>
                 <button type="button" class="type-detail-card__close" onclick="closeHomeTypeDetail()">閉じる</button>
             </div>
@@ -962,6 +971,9 @@ canvas{max-width:100%;}
 
         const imagePath = normalizeImagePath(resultType.imagePath);
         const displayImagePath = resolveDisplayImagePath(imagePath);
+        const axisSummaryHtml = personality.axes.length
+            ? `<div class="section-card"><h3>${text.axisTitle}</h3><div class="axis-summary">${personality.axes.map((axis) => `<div class="axis-pill"><span>${escapeHtml(axis.label)}</span><strong>${escapeHtml(axis.value)}</strong></div>`).join("")}</div></div>`
+            : "";
         $("result").innerHTML = `
             <div class="result-hero">
                 <div class="result-badge">${text.result}</div>
@@ -969,7 +981,7 @@ canvas{max-width:100%;}
                 ${imagePath ? `<img id="characterImage" class="character-result-image" src="${escapeAttribute(displayImagePath)}" alt="${escapeAttribute(resultType.typeName)}"><p class="image-error-message" id="imageErrorMessage"></p>` : `<p class="image-error-message" style="display:block;">${text.imageEmpty}</p>`}
                 <p class="result-description">${escapeHtml(resultType.description)}</p>
             </div>
-            <div class="section-card"><h3>${text.axisTitle}</h3><div class="axis-summary">${personality.axes.map((axis) => `<div class="axis-pill"><span>${escapeHtml(axis.label)}</span><strong>${escapeHtml(axis.value)}</strong></div>`).join("")}</div></div>
+            ${axisSummaryHtml}
             <div class="section-card">
                 <h3>${text.abilityTitle}</h3>
                 <div class="ability-grid">${createAbilityHtml(radarScores)}</div>
@@ -986,6 +998,27 @@ canvas{max-width:100%;}
     }
 
     function judgePersonality() {
+        const typeNames = personalityTypes.map((type) => type.typeName);
+        const typeScores = Object.fromEntries(typeNames.map((typeName) => [typeName, 0]));
+        let hasTypeScore = false;
+
+        personalityQuestions.forEach((question) => {
+            const selected = question.choices.find((choice) => choice.key === personalityAnswers[question.id]);
+            if (!selected?.scores) return;
+            hasTypeScore = true;
+            typeNames.forEach((typeName) => {
+                typeScores[typeName] += Number(selected.scores[typeName]) || 0;
+            });
+        });
+
+        if (hasTypeScore) {
+            const bestType = personalityTypes.reduce((best, type) => {
+                if (!best) return type;
+                return (typeScores[type.typeName] || 0) > (typeScores[best.typeName] || 0) ? type : best;
+            }, null);
+            return { axes: [], key: bestType?.typeName || "", scores: typeScores };
+        }
+
         const axes = axisOrder.map((axisLabel) => {
             const questions = personalityQuestions.filter((question) => question.axis === axisLabel);
             const counts = {};
@@ -1122,7 +1155,7 @@ canvas{max-width:100%;}
     }
 
     function findPersonalityType(key) {
-        return personalityTypes.find((type) => type.key === key) || personalityTypes.find((type) => type.axes.join(" \u00d7 ") === key) || null;
+        return personalityTypes.find((type) => type.typeName === key) || personalityTypes.find((type) => type.key === key) || personalityTypes.find((type) => type.axes.join(" \u00d7 ") === key) || null;
     }
 
     function getAbilityAnswerKey(question) { return `${question.routeGroup}__${question.id}__${question.question}`; }
@@ -1179,3 +1212,4 @@ canvas{max-width:100%;}
 
 </body>
 </html>
+
