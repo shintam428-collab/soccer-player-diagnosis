@@ -11,7 +11,7 @@ body{
     font-family:Arial,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
     color:#0f172a;
     text-align:center;
-    padding:20px;
+    padding:92px 20px 20px;
     min-height:100vh;
     margin:0;
     background:transparent;
@@ -19,6 +19,18 @@ body{
 }
 .page-content{position:relative;z-index:1;}
 .is-hidden{display:none!important;}
+.site-header{position:fixed;top:0;left:0;right:0;z-index:20;background:rgba(255,255,255,0.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(226,232,240,0.95);box-shadow:0 8px 22px rgba(15,23,42,0.08);}
+.site-header__inner{max-width:1120px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:18px;}
+.site-brand{font-weight:900;color:#0f172a;font-size:18px;letter-spacing:0;white-space:nowrap;}
+.site-nav{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:4px 0;}
+.site-nav__button{display:inline-flex!important;align-items:center;justify-content:center;width:auto;max-width:none;margin:0;padding:10px 14px;border-radius:999px;background:transparent!important;color:#475569!important;font-size:14px;font-weight:800;box-shadow:none;white-space:nowrap;border:1px solid transparent;}
+.site-nav__button:hover{transform:none;background:#f1f5f9!important;color:#0f172a!important;}
+.site-nav__button.is-active{background:#2563eb!important;color:white!important;border-color:#2563eb;}
+.simple-page{max-width:900px;margin:0 auto;}
+.simple-page__card{background:rgba(255,255,255,0.86);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(226,232,240,0.9);border-radius:24px;box-shadow:0 12px 30px rgba(15,23,42,0.12);padding:42px 24px;color:#0f172a;}
+.simple-page__title{font-size:clamp(28px,6vw,44px);margin:0 0 14px;font-weight:900;}
+.simple-page__text{max-width:620px;margin:0 auto 22px;color:#475569;line-height:1.8;font-size:16px;}
+.simple-page__button{display:inline-block;width:auto;max-width:none;margin:0;padding:14px 34px;border-radius:14px;background:#2563eb!important;color:white;font-weight:800;box-shadow:0 10px 22px rgba(37,99,235,0.22);}
 .ambient-bg{
     position:fixed;
     inset:0;
@@ -281,7 +293,11 @@ canvas{max-width:100%;}
 .type-detail-card__description{margin:0;color:#334155;line-height:1.8;}
 .type-detail-card__close{margin-top:14px;padding:10px 18px;border-radius:10px;background:#334155!important;color:#fff;font-size:14px;width:auto;}
 @media(max-width:600px){
-    body{padding:12px;}
+    body{padding:112px 12px 12px;}
+    .site-header__inner{display:block;padding:10px 12px;}
+    .site-brand{text-align:left;margin-bottom:8px;font-size:16px;}
+    .site-nav{gap:8px;padding-bottom:2px;}
+    .site-nav__button{font-size:13px;padding:9px 12px;}
     #question{font-size:20px;}
     button{font-size:16px;}
     .ability-grid{grid-template-columns:1fr;}
@@ -312,6 +328,18 @@ canvas{max-width:100%;}
     <div class="ambient-bg__glow ambient-bg__glow--2"></div>
     <div class="ambient-bg__spotlight"></div>
 </div>
+
+<header class="site-header">
+    <div class="site-header__inner">
+        <div class="site-brand">サッカースタイル診断</div>
+        <nav class="site-nav" aria-label="目的別メニュー">
+            <button type="button" class="site-nav__button is-active" data-nav="home" onclick="showHomeView()">ホーム</button>
+            <button type="button" class="site-nav__button" data-nav="personality" onclick="showPersonalityComingSoon()">性格診断</button>
+            <button type="button" class="site-nav__button" data-nav="ability" onclick="startAbilityMeasurement()">能力測定</button>
+            <button type="button" class="site-nav__button" data-nav="playstyle" onclick="startDiagnosis()">プレースタイル診断</button>
+        </nav>
+    </div>
+</header>
 
 <div class="page-content">
     <section id="startScreen" class="start-screen">
@@ -360,6 +388,14 @@ canvas{max-width:100%;}
             <canvas id="radarChart"></canvas>
         </div>
     </div>
+
+    <section id="simplePage" class="simple-page is-hidden">
+        <div class="simple-page__card">
+            <h2 id="simplePageTitle" class="simple-page__title"></h2>
+            <p id="simplePageText" class="simple-page__text"></p>
+            <button type="button" id="simplePageButton" class="simple-page__button is-hidden"></button>
+        </div>
+    </section>
 </div>
 
 <script>
@@ -403,6 +439,7 @@ canvas{max-width:100%;}
     let abilityAnswers = {};
     let loadErrors = [];
     let homeTypeCards = [];
+    let diagnosisMode = "playstyle";
 
     const abilityNameAliases = {
         "ボールコントロール": "タッチ精度",
@@ -747,6 +784,53 @@ canvas{max-width:100%;}
         $("questionStatus").innerHTML = message ? `<p class="error-message">${message}</p>` : "";
     }
 
+    function setActiveNav(name) {
+        document.querySelectorAll(".site-nav__button").forEach((button) => {
+            button.classList.toggle("is-active", button.dataset.nav === name);
+        });
+    }
+
+    function hideAllViews() {
+        $("startScreen").classList.add("is-hidden");
+        $("quizArea").classList.add("is-hidden");
+        $("quizCard").classList.add("is-hidden");
+        $("confirmArea").classList.add("is-hidden");
+        $("simplePage").classList.add("is-hidden");
+        $("chartBox").style.display = "none";
+    }
+
+    function showHomeView() {
+        diagnosisMode = "playstyle";
+        hideAllViews();
+        $("startScreen").classList.remove("is-hidden");
+        $("result").innerHTML = "";
+        setActiveNav("home");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function showSimplePage(navName, title, message, buttonText = "", onClick = null) {
+        hideAllViews();
+        $("simplePageTitle").textContent = title;
+        $("simplePageText").textContent = message;
+        const button = $("simplePageButton");
+        if (buttonText && onClick) {
+            button.textContent = buttonText;
+            button.onclick = onClick;
+            button.classList.remove("is-hidden");
+        } else {
+            button.textContent = "";
+            button.onclick = null;
+            button.classList.add("is-hidden");
+        }
+        $("simplePage").classList.remove("is-hidden");
+        setActiveNav(navName);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function showPersonalityComingSoon() {
+        showSimplePage("personality", "性格診断", "このメニューは現在準備中です。公開までしばらくお待ちください。");
+    }
+
     function renderHomeTypeGrid() {
         const grid = $("homeTypeGrid");
         if (!grid) return;
@@ -849,11 +933,14 @@ canvas{max-width:100%;}
             updateStatus(text.dataError);
             return;
         }
+        diagnosisMode = "playstyle";
+        setActiveNav("playstyle");
         currentIndex = 0;
         personalityAnswers = {};
         abilityAnswers = {};
         activeQuestions = [...personalityQuestions];
         $("startScreen").classList.add("is-hidden");
+        $("simplePage").classList.add("is-hidden");
         $("quizArea").classList.remove("is-hidden");
         $("quizCard").classList.remove("is-hidden");
         $("confirmArea").classList.add("is-hidden");
@@ -862,6 +949,28 @@ canvas{max-width:100%;}
         $("result").innerHTML = "";
         updateStatus("");
         showPersonalityPage();
+    }
+
+    function startAbilityMeasurementFlow() {
+        if (!abilityQuestionBank.length) {
+            showSimplePage("ability", "能力測定", text.dataError);
+            return;
+        }
+        diagnosisMode = "ability";
+        setActiveNav("ability");
+        currentIndex = 0;
+        abilityAnswers = {};
+        activeQuestions = [];
+        $("startScreen").classList.add("is-hidden");
+        $("simplePage").classList.add("is-hidden");
+        $("quizArea").classList.remove("is-hidden");
+        $("quizCard").classList.remove("is-hidden");
+        $("confirmArea").classList.add("is-hidden");
+        $("progressArea").style.display = "block";
+        $("chartBox").style.display = "none";
+        $("result").innerHTML = "";
+        updateStatus("");
+        showAbilityPage();
     }
 
     function showPersonalityPage() {
@@ -887,7 +996,7 @@ canvas{max-width:100%;}
         const selectedCommonChoice = commonQuestion?.choices.find((choice) => choice.key === commonAnswer);
         if (selectedCommonChoice?.selectedGroup) appendAbilityGroupQuestions(selectedCommonChoice.selectedGroup);
         const abilityQuestions = activeQuestions.filter((question) => question.section === "ability");
-        $("progressText").textContent = `${text.ability} 2 / 2`;
+        $("progressText").textContent = diagnosisMode === "ability" ? "能力測定" : `${text.ability} 2 / 2`;
         $("progressFill").style.width = "100%";
         $("question").textContent = text.ability;
         $("choices").innerHTML = createQuestionListHtml(abilityQuestions, "ability");
@@ -1068,6 +1177,10 @@ canvas{max-width:100%;}
     }
 
     function backQuestionFlow() {
+        if (diagnosisMode === "ability") {
+            showHomeView();
+            return;
+        }
         showPersonalityPage();
     }
 
@@ -1100,6 +1213,28 @@ canvas{max-width:100%;}
         $("choices").innerHTML = "";
         $("questionButtons").style.display = "none";
         $("question").textContent = text.result;
+
+        if (diagnosisMode === "ability") {
+            $("result").innerHTML = `
+                <div class="result-hero">
+                    <div class="result-badge">能力測定</div>
+                    <h2 class="result-title"><span>あなたの能力値</span></h2>
+                    <p class="result-description">回答から計算した能力バランスです。</p>
+                </div>
+                <div class="section-card">
+                    <h3>${text.abilityTitle}</h3>
+                    <div class="ability-grid">${createAbilityHtml(radarScores)}</div>
+                    <button type="button" id="detailToggleBtn" class="detail-toggle-btn" onclick="toggleDetailAbilities()">${text.detailOpen}</button>
+                    <div id="detailAbilityArea" class="detail-ability-area">
+                        <h3>${text.detailTitle}</h3>
+                        <div class="ability-grid">${createAbilityHtml(createOrderedDetailScores(detailScores))}</div>
+                    </div>
+                </div>
+                <button type="button" class="restart-btn" onclick="startAbilityMeasurement()">もう一度測定する</button>
+            `;
+            drawRadarChart(radarScores);
+            return;
+        }
 
         if (!resultType) {
             $("chartBox").style.display = "none";
@@ -1333,6 +1468,9 @@ canvas{max-width:100%;}
     function escapeAttribute(value) { return escapeHtml(value).replace(/`/g, "&#96;"); }
 
     window.startDiagnosis = startDiagnosisFlow;
+    window.startAbilityMeasurement = startAbilityMeasurementFlow;
+    window.showHomeView = showHomeView;
+    window.showPersonalityComingSoon = showPersonalityComingSoon;
     window.selectChoice = selectChoiceForCurrentQuestion;
     window.selectChoiceFromButton = selectChoiceFromButton;
     window.goToAbilityPage = goToAbilityPage;
