@@ -333,10 +333,10 @@ canvas{max-width:100%;}
     <div class="site-header__inner">
         <div class="site-brand">サッカースタイル診断</div>
         <nav class="site-nav" aria-label="目的別メニュー">
-            <button type="button" class="site-nav__button is-active" data-nav="home" onclick="showHomeView()">ホーム</button>
+            <button type="button" class="site-nav__button" data-nav="home" onclick="showHomeView()">ホーム</button>
             <button type="button" class="site-nav__button" data-nav="personality" onclick="showPersonalityComingSoon()">性格診断</button>
-            <button type="button" class="site-nav__button" data-nav="ability" onclick="startAbilityMeasurement()">能力測定</button>
-            <button type="button" class="site-nav__button" data-nav="playstyle" onclick="startDiagnosis()">プレースタイル診断</button>
+            <button type="button" class="site-nav__button" data-nav="ability" onclick="showAbilityMeasurementTop()">能力測定</button>
+            <button type="button" class="site-nav__button is-active" data-nav="playstyle" onclick="showPlaystyleTop()">プレースタイル診断</button>
         </nav>
     </div>
 </header>
@@ -800,11 +800,16 @@ canvas{max-width:100%;}
     }
 
     function showHomeView() {
+        diagnosisMode = "home";
+        showSimplePage("home", "ホーム", "ホーム画面は準備中です。");
+    }
+
+    function showPlaystyleTop() {
         diagnosisMode = "playstyle";
         hideAllViews();
         $("startScreen").classList.remove("is-hidden");
         $("result").innerHTML = "";
-        setActiveNav("home");
+        setActiveNav("playstyle");
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
@@ -829,6 +834,11 @@ canvas{max-width:100%;}
 
     function showPersonalityComingSoon() {
         showSimplePage("personality", "性格診断", "このメニューは現在準備中です。公開までしばらくお待ちください。");
+    }
+
+    function showAbilityMeasurementTop() {
+        diagnosisMode = "ability";
+        showSimplePage("ability", "能力測定", "質問に答えると、あなたの能力値とレーダーチャートを確認できます。", "能力測定を始める", startAbilityMeasurementFlow);
     }
 
     function renderHomeTypeGrid() {
@@ -929,7 +939,7 @@ canvas{max-width:100%;}
     }
 
     function startDiagnosisFlow() {
-        if (!personalityQuestions.length || !personalityTypes.length || !abilityQuestionBank.length) {
+        if (!personalityQuestions.length || !personalityTypes.length) {
             updateStatus(text.dataError);
             return;
         }
@@ -977,8 +987,8 @@ canvas{max-width:100%;}
         blurActiveButton();
         clearChoiceButtonStates();
         activeQuestions = [...personalityQuestions];
-        $("progressText").textContent = `${text.personality} 1 / 2`;
-        $("progressFill").style.width = "50%";
+        $("progressText").textContent = text.personality;
+        $("progressFill").style.width = "100%";
         $("question").textContent = text.personality;
         $("choices").innerHTML = createQuestionListHtml(personalityQuestions, "personality");
         $("result").innerHTML = "";
@@ -1012,7 +1022,7 @@ canvas{max-width:100%;}
 
     function createQuestionListHtml(questions, section) {
         const actionButton = section === "personality"
-            ? `<button type="button" class="next-page-btn" onclick="goToAbilityPage()">次へ</button>`
+            ? `<button type="button" class="next-page-btn" onclick="submitPlaystylePage()">診断する</button>`
             : `<button type="button" class="submit-page-btn" onclick="submitAbilityPage()">診断する</button>`;
         return `
             <div class="question-list">
@@ -1091,9 +1101,9 @@ canvas{max-width:100%;}
         if (actionButton) actionButton.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
-    function goToAbilityPage() {
+    function submitPlaystylePage() {
         if (!validateQuestionsAnswered(personalityQuestions)) return;
-        showAbilityPage();
+        showConfirm();
     }
 
     function submitAbilityPage() {
@@ -1178,10 +1188,10 @@ canvas{max-width:100%;}
 
     function backQuestionFlow() {
         if (diagnosisMode === "ability") {
-            showHomeView();
+            showSimplePage("ability", "能力測定", "質問に答えると、あなたの能力値とレーダーチャートを確認できます。", "能力測定を始める", startAbilityMeasurementFlow);
             return;
         }
-        showPersonalityPage();
+        showPlaystyleTop();
     }
 
     function showConfirm() {
@@ -1199,14 +1209,11 @@ canvas{max-width:100%;}
     function returnToQuestionsFlow() {
         $("confirmArea").classList.add("is-hidden");
         $("quizCard").classList.remove("is-hidden");
-        showAbilityPage();
+        if (diagnosisMode === "ability") showAbilityPage();
+        else showPersonalityPage();
     }
 
     function finishDiagnosisFlow() {
-        const personality = judgePersonality();
-        const resultType = findPersonalityType(personality.key);
-        const detailScores = calculateAbilityScores();
-        const radarScores = convertToRadarScores(detailScores);
         $("confirmArea").classList.add("is-hidden");
         $("quizCard").classList.remove("is-hidden");
         $("progressArea").style.display = "none";
@@ -1215,6 +1222,8 @@ canvas{max-width:100%;}
         $("question").textContent = text.result;
 
         if (diagnosisMode === "ability") {
+            const detailScores = calculateAbilityScores();
+            const radarScores = convertToRadarScores(detailScores);
             $("result").innerHTML = `
                 <div class="result-hero">
                     <div class="result-badge">能力測定</div>
@@ -1236,6 +1245,9 @@ canvas{max-width:100%;}
             return;
         }
 
+        const personality = judgePersonality();
+        const resultType = findPersonalityType(personality.key);
+
         if (!resultType) {
             $("chartBox").style.display = "none";
             $("result").innerHTML = `<div class="result-hero"><div class="result-badge">${text.result}</div><h2 class="result-title">${text.noType}</h2><p class="result-description">personality_types.csv: ${escapeHtml(personality.key)}</p></div><button type="button" class="restart-btn" onclick="startDiagnosis()">${text.restart}</button>`;
@@ -1244,9 +1256,6 @@ canvas{max-width:100%;}
 
         const imagePath = normalizeImagePath(resultType.imagePath);
         const displayImagePath = resolveDisplayImagePath(imagePath);
-        const axisSummaryHtml = personality.axes.length
-            ? `<div class="section-card"><h3>${text.axisTitle}</h3><div class="axis-summary">${personality.axes.map((axis) => `<div class="axis-pill"><span>${escapeHtml(axis.label)}</span><strong>${escapeHtml(axis.value)}</strong></div>`).join("")}</div></div>`
-            : "";
         $("result").innerHTML = `
             <div class="result-hero">
                 <div class="result-badge">${text.result}</div>
@@ -1254,20 +1263,10 @@ canvas{max-width:100%;}
                 ${imagePath ? `<img id="characterImage" class="character-result-image" src="${escapeAttribute(displayImagePath)}" alt="${escapeAttribute(resultType.typeName)}"><p class="image-error-message" id="imageErrorMessage"></p>` : `<p class="image-error-message" style="display:block;">${text.imageEmpty}</p>`}
                 <p class="result-description">${escapeHtml(resultType.description)}</p>
             </div>
-            ${axisSummaryHtml}
-            <div class="section-card">
-                <h3>${text.abilityTitle}</h3>
-                <div class="ability-grid">${createAbilityHtml(radarScores)}</div>
-                <button type="button" id="detailToggleBtn" class="detail-toggle-btn" onclick="toggleDetailAbilities()">${text.detailOpen}</button>
-                <div id="detailAbilityArea" class="detail-ability-area">
-                    <h3>${text.detailTitle}</h3>
-                    <div class="ability-grid">${createAbilityHtml(createOrderedDetailScores(detailScores))}</div>
-                </div>
-            </div>
             <button type="button" class="restart-btn" onclick="startDiagnosis()">${text.restart}</button>
         `;
         attachCharacterImageError(imagePath, displayImagePath);
-        drawRadarChart(radarScores);
+        $("chartBox").style.display = "none";
     }
 
     function judgePersonality() {
@@ -1470,10 +1469,12 @@ canvas{max-width:100%;}
     window.startDiagnosis = startDiagnosisFlow;
     window.startAbilityMeasurement = startAbilityMeasurementFlow;
     window.showHomeView = showHomeView;
+    window.showPlaystyleTop = showPlaystyleTop;
+    window.showAbilityMeasurementTop = showAbilityMeasurementTop;
     window.showPersonalityComingSoon = showPersonalityComingSoon;
     window.selectChoice = selectChoiceForCurrentQuestion;
     window.selectChoiceFromButton = selectChoiceFromButton;
-    window.goToAbilityPage = goToAbilityPage;
+    window.submitPlaystylePage = submitPlaystylePage;
     window.submitAbilityPage = submitAbilityPage;
     window.backQuestion = backQuestionFlow;
     window.returnToQuestions = returnToQuestionsFlow;
