@@ -457,10 +457,38 @@ canvas{max-width:100%;}
 
     async function loadPersonalityQuestions(typeNames = []) {
         const rows = await fetchCsvRows(files.personalityQuestions, "personality_questions.csv" + text.dataError);
-        const headerIndex = findHeaderRow(rows, ["question_id", "question"]);
+        let headerIndex = findHeaderRow(rows, ["question_id", "question"]);
+        if (headerIndex < 0) headerIndex = findHeaderRow(rows, ["質問", "回答"]);
         if (headerIndex < 0) throwCsvFormatError("personality_questions.csv");
         const headers = rows[headerIndex].map(normalizeCell);
         const typeScoreColumns = headers.filter((header) => typeNames.includes(header));
+
+        if (headers.includes("質問") && headers.includes("回答")) {
+            const questionMap = new Map();
+            rows.slice(headerIndex + 1)
+                .map((row) => rowToObject(headers, row))
+                .filter((row) => row["質問"] && row["回答"])
+                .forEach((row, rowIndex) => {
+                    const id = row.No || row.no || row.question_id || `Q${rowIndex + 1}`;
+                    const questionText = row["質問"];
+                    const questionKey = `${id}__${questionText}`;
+                    if (!questionMap.has(questionKey)) {
+                        questionMap.set(questionKey, {
+                            section: "personality",
+                            id,
+                            question: questionText,
+                            csvOrder: rowIndex,
+                            choices: []
+                        });
+                    }
+                    questionMap.get(questionKey).choices.push({
+                        key: createChoiceKey(questionMap.get(questionKey).choices.length),
+                        text: row["回答"],
+                        scores: parsePersonalityScoreText(row["配点"], typeNames)
+                    });
+                });
+            return [...questionMap.values()].sort((a, b) => a.csvOrder - b.csvOrder);
+        }
 
         if (headers.includes("choice") && headers.includes("choice_text") && typeScoreColumns.length) {
             const questionMap = new Map();
@@ -501,8 +529,8 @@ canvas{max-width:100%;}
                 question: row.question,
                 tieBreakQuestion: row.tie_break_question,
                 choices: [
-                    { key: row.choice_a || "A", text: row.choice_a_text, value: row.choice_a_value },
-                    { key: row.choice_b || "B", text: row.choice_b_text, value: row.choice_b_value }
+                    { key: row.choice_a || "A", text: row.choice_a_text, value: row.choice_a_value, scores: createLegacyPersonalityScores(row.choice_a_value, typeNames) },
+                    { key: row.choice_b || "B", text: row.choice_b_text, value: row.choice_b_value, scores: createLegacyPersonalityScores(row.choice_b_value, typeNames) }
                 ]
             }));
     }
@@ -620,6 +648,35 @@ canvas{max-width:100%;}
             if (header) object[header] = normalizeCell(row[index] || "");
         });
         return object;
+    }
+
+    function createChoiceKey(index) {
+        return String.fromCharCode(65 + index);
+    }
+
+    function parsePersonalityScoreText(scoreText, typeNames) {
+        const scores = Object.fromEntries(typeNames.map((typeName) => [typeName, 0]));
+        const source = normalizeCell(scoreText);
+        if (!source) return scores;
+
+        typeNames.forEach((typeName) => {
+            const escapedName = escapeRegExp(typeName);
+            const match = source.match(new RegExp(`${escapedName}\\s*([+-]?\\d+)`));
+            if (match) scores[typeName] = Number(match[1]) || 0;
+        });
+        return scores;
+    }
+
+    function createLegacyPersonalityScores(value, typeNames) {
+        const scores = Object.fromEntries(typeNames.map((typeName) => [typeName, 0]));
+        personalityTypes.forEach((type) => {
+            if (type.axes.includes(value)) scores[type.typeName] = 1;
+        });
+        return scores;
+    }
+
+    function escapeRegExp(value) {
+        return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     }
 
     function throwCsvFormatError(filename) {
@@ -778,13 +835,14 @@ canvas{max-width:100%;}
 
     function createQuestionCardHtml(question, index) {
         const selectedKey = getSelectedAnswer(question);
+        const choiceLabelHtml = (choice) => question.section === "personality" ? "" : `<span class="choice-label">${escapeHtml(choice.key)}.</span>`;
         return `
-            <section class="question-card" data-question-key="${escapeAttribute(getQuestionDomKey(question))}">
+            <section class="question-card" data-section="${escapeAttribute(question.section)}" data-question-key="${escapeAttribute(getQuestionDomKey(question))}">
                 <h3 class="question-card__title">Q${index + 1}. ${escapeHtml(question.question)}</h3>
                 <div class="question-card__choices">
                     ${question.choices.map((choice) => `
                         <button type="button" class="choice-btn choice-button answer-button option-button${selectedKey === choice.key ? " is-selected selected" : ""}" data-question-key="${escapeAttribute(getQuestionDomKey(question))}" data-choice-key="${escapeAttribute(choice.key)}" onclick="selectChoiceFromButton(this)">
-                            <span class="choice-label">${escapeHtml(choice.key)}.</span>
+                            ${choiceLabelHtml(choice)}
                             <span class="choice-text">${escapeHtml(choice.text)}</span>
                         </button>
                     `).join("")}
@@ -826,8 +884,7 @@ canvas{max-width:100%;}
         card.querySelectorAll(".choice-btn, .answer-button, .choice-button, .option-button").forEach((button) => {
             button.classList.remove("selected", "active", "focus", "is-selected");
         });
-        const buttons = [...card.querySelectorAll(".choice-btn")];
-        const selectedButton = buttons.find((button) => button.textContent.trim().startsWith(`${choiceKey}.`));
+        const selectedButton = card.querySelector(`.choice-btn[data-choice-key="${cssEscape(choiceKey)}"]`);
         if (selectedButton) selectedButton.classList.add("is-selected", "selected");
     }
 
