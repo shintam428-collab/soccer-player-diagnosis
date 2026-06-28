@@ -464,36 +464,8 @@ canvas{max-width:100%;}
         const headers = rows[headerIndex].map(normalizeCell);
         const typeScoreColumns = headers.filter((header) => typeNames.includes(header));
 
-        if (headers.includes("質問") || headers.includes("No") || headers.includes("配点")) {
-            const questionMap = new Map();
-            rows.slice(headerIndex + 1)
-                .map((row) => rowToObject(headers, row))
-                .map((row) => ({
-                    raw: row,
-                    questionText: getPersonalityQuestionText(row),
-                    choiceText: getPersonalityChoiceText(row, headers),
-                    scoreText: getPersonalityScoreText(row)
-                }))
-                .filter((row) => row.questionText && row.choiceText)
-                .forEach((row, rowIndex) => {
-                    const id = row.raw.No || row.raw.no || row.raw.question_id || row.raw["番号"] || `Q${rowIndex + 1}`;
-                    const questionKey = `${id}__${row.questionText}`;
-                    if (!questionMap.has(questionKey)) {
-                        questionMap.set(questionKey, {
-                            section: "personality",
-                            id,
-                            question: row.questionText,
-                            csvOrder: rowIndex,
-                            choices: []
-                        });
-                    }
-                    questionMap.get(questionKey).choices.push({
-                        key: createChoiceKey(questionMap.get(questionKey).choices.length),
-                        text: row.choiceText,
-                        scores: parsePersonalityScoreText(row.scoreText, typeNames)
-                    });
-                });
-            return [...questionMap.values()].sort((a, b) => a.csvOrder - b.csvOrder);
+        if (headers.includes("質問") && headers.includes("回答") && headers.includes("配点")) {
+            return loadJapanesePersonalityQuestions(rows, headerIndex, headers, typeNames);
         }
 
         if (headers.includes("choice") && headers.includes("choice_text") && typeScoreColumns.length) {
@@ -658,6 +630,46 @@ canvas{max-width:100%;}
 
     function createChoiceKey(index) {
         return String.fromCharCode(65 + index);
+    }
+
+    function loadJapanesePersonalityQuestions(rows, headerIndex, headers, typeNames) {
+        const noIndex = headers.indexOf("No");
+        const questionIndex = headers.indexOf("質問");
+        const answerIndex = headers.indexOf("回答");
+        const scoreIndex = headers.indexOf("配点");
+        const questionMap = new Map();
+        let lastQuestionNo = "";
+        let lastQuestionText = "";
+
+        rows.slice(headerIndex + 1).forEach((row, rowIndex) => {
+            const no = normalizeCell(noIndex >= 0 ? row[noIndex] : "");
+            const questionText = normalizeCell(row[questionIndex]) || lastQuestionText;
+            const answerText = normalizeCell(row[answerIndex]);
+            const scoreText = normalizeCell(row[scoreIndex]);
+            if (!questionText || !answerText) return;
+
+            lastQuestionNo = no || lastQuestionNo || `Q${questionMap.size + 1}`;
+            lastQuestionText = questionText;
+            const questionKey = questionText;
+
+            if (!questionMap.has(questionKey)) {
+                questionMap.set(questionKey, {
+                    section: "personality",
+                    id: no || lastQuestionNo || `Q${questionMap.size + 1}`,
+                    question: questionText,
+                    csvOrder: rowIndex,
+                    choices: []
+                });
+            }
+
+            questionMap.get(questionKey).choices.push({
+                key: createChoiceKey(questionMap.get(questionKey).choices.length),
+                text: answerText,
+                scores: parsePersonalityScoreText(scoreText, typeNames)
+            });
+        });
+
+        return [...questionMap.values()].sort((a, b) => a.csvOrder - b.csvOrder);
     }
 
     function getPersonalityQuestionText(row) {
