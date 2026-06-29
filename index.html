@@ -569,7 +569,9 @@ canvas{max-width:100%;}
 
     async function loadPersonalityQuestions(typeNames = []) {
         const rows = await fetchCsvRows(files.personalityQuestions, "personality_questions.csv" + text.dataError);
-        let headerIndex = findHeaderRow(rows, ["question_id", "question"]);
+        let headerIndex = findHeaderRow(rows, ["No", "質問", "回答", "配点"]);
+        if (headerIndex < 0) headerIndex = findHeaderRow(rows, ["質問", "回答", "配点"]);
+        if (headerIndex < 0) headerIndex = findHeaderRow(rows, ["question_id", "question"]);
         if (headerIndex < 0) headerIndex = findHeaderRow(rows, ["質問", "回答"]);
         if (headerIndex < 0) headerIndex = findHeaderRow(rows, ["質問"]);
         if (headerIndex < 0) throwCsvFormatError("personality_questions.csv");
@@ -756,9 +758,15 @@ canvas{max-width:100%;}
         rows.slice(headerIndex + 1).forEach((row, rowIndex) => {
             const no = normalizeCell(noIndex >= 0 ? row[noIndex] : "");
             const questionText = normalizeCell(row[questionIndex]) || lastQuestionText;
-            const answerText = normalizeCell(row[answerIndex]);
-            const scoreText = normalizeCell(row[scoreIndex]);
+            let answerText = normalizeCell(row[answerIndex]);
+            let scoreText = normalizeCell(row[scoreIndex]);
+            if (looksLikePersonalityScore(answerText) && scoreText && !looksLikePersonalityScore(scoreText)) {
+                const originalAnswerText = answerText;
+                answerText = scoreText;
+                scoreText = originalAnswerText;
+            }
             if (!questionText || !answerText) return;
+            if (looksLikePersonalityScore(answerText)) return;
 
             lastQuestionNo = no || lastQuestionNo || `Q${questionMap.size + 1}`;
             lastQuestionText = questionText;
@@ -777,6 +785,7 @@ canvas{max-width:100%;}
             questionMap.get(questionKey).choices.push({
                 key: createChoiceKey(questionMap.get(questionKey).choices.length),
                 text: answerText,
+                scoreText,
                 scores: parsePersonalityScoreText(scoreText, typeNames)
             });
         });
@@ -808,22 +817,22 @@ canvas{max-width:100%;}
     }
 
     function looksLikePersonalityScore(value) {
-        const textValue = normalizeCell(value);
+        const textValue = normalizeScoreText(value);
         if (!textValue) return false;
         if (/^[+-]?\d+(\.\d+)?$/.test(textValue)) return true;
-        const hasScoreNumber = /[+-]\s*\d/.test(textValue);
+        const hasScoreNumber = /[+-]\d/.test(textValue);
         const hasTypeName = personalityTypes.some((type) => textValue.includes(type.typeName));
         return hasScoreNumber && hasTypeName;
     }
 
     function parsePersonalityScoreText(scoreText, typeNames) {
         const scores = Object.fromEntries(typeNames.map((typeName) => [typeName, 0]));
-        const source = normalizeCell(scoreText);
+        const source = normalizeScoreText(scoreText);
         if (!source) return scores;
 
         typeNames.forEach((typeName) => {
             const escapedName = escapeRegExp(typeName);
-            const match = source.match(new RegExp(`${escapedName}\\s*([+-]?\\d+)`));
+            const match = source.match(new RegExp(`${escapedName}\\s*([+-]\\s*\\d+|\\d+)`));
             if (match) scores[typeName] = Number(match[1]) || 0;
         });
         return scores;
@@ -839,6 +848,14 @@ canvas{max-width:100%;}
 
     function escapeRegExp(value) {
         return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function normalizeScoreText(value) {
+        return normalizeCell(value)
+            .replace(/＋/g, "+")
+            .replace(/−|ー|－/g, "-")
+            .replace(/、/g, ",")
+            .replace(/\s+/g, "");
     }
 
     function throwCsvFormatError(filename) {
