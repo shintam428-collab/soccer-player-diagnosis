@@ -254,7 +254,7 @@ canvas{max-width:100%;}
 .choice-btn.is-selected,
 .choice-btn.selected{border-color:#16a34a;background:#dcfce7!important;box-shadow:0 0 0 3px rgba(34,197,94,0.25);}
 .question-list{display:grid;gap:18px;text-align:left;margin-top:18px;}
-.question-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:18px;box-shadow:0 5px 14px rgba(15,23,42,0.08);scroll-margin-top:24px;}
+.question-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:18px;box-shadow:0 5px 14px rgba(15,23,42,0.08);scroll-margin-top:110px;}
 .question-card__title{font-size:18px;font-weight:800;line-height:1.65;color:#0f172a;margin:0 0 14px;}
 .question-card__choices{display:grid;gap:10px;}
 .question-card .choice-btn{width:100%;max-width:none;margin:0;}
@@ -346,6 +346,7 @@ canvas{max-width:100%;}
     .type-card{padding:7px;}
     .type-card__image{padding:2px;}
     .type-card__name{font-size:13px;}
+    .question-card{scroll-margin-top:120px;}
     .type-detail-card.is-open{display:block;}
     .type-detail-card__image{width:120px;margin:0 auto 14px;display:block;}
     .type-detail-card__body h3{text-align:center;font-size:22px;}
@@ -1208,11 +1209,28 @@ canvas{max-width:100%;}
         if (currentIndex < 0) return;
         const nextCard = cards[currentIndex + 1];
         if (nextCard) {
-            nextCard.scrollIntoView({ behavior: "smooth", block: "start" });
+            scrollToElementWithOffset(nextCard);
             return;
         }
         const actionButton = document.querySelector(".next-page-btn, .submit-page-btn");
-        if (actionButton) actionButton.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (actionButton) scrollToElementWithOffset(actionButton);
+    }
+
+    function getHeaderOffset() {
+        const header = document.querySelector(".site-header, header, .top-nav, .global-nav");
+        const headerHeight = header ? header.getBoundingClientRect().height : 0;
+        const extraMargin = window.innerWidth <= 600 ? 24 : 16;
+        return headerHeight + extraMargin;
+    }
+
+    function scrollToElementWithOffset(element) {
+        if (!element) return;
+        const offset = getHeaderOffset();
+        const targetTop = element.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({
+            top: Math.max(0, targetTop),
+            behavior: "smooth"
+        });
     }
 
     function submitPlaystylePage() {
@@ -1235,7 +1253,7 @@ canvas{max-width:100%;}
         }
         if (message) message.classList.add("is-visible");
         const card = document.querySelector(`[data-question-key="${cssEscape(getQuestionDomKey(missing))}"]`);
-        if (card) card.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (card) scrollToElementWithOffset(card);
         return false;
     }
 
