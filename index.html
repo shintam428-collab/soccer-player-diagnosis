@@ -582,31 +582,8 @@ canvas{max-width:100%;}
             return loadJapanesePersonalityQuestions(rows, headerIndex, headers, typeNames);
         }
 
-        if (headers.includes("choice") && headers.includes("choice_text") && typeScoreColumns.length) {
-            const questionMap = new Map();
-            rows.slice(headerIndex + 1)
-                .map((row) => rowToObject(headers, row))
-                .filter((row) => row.question_id && row.question && row.choice && row.choice_text)
-                .forEach((row, rowIndex) => {
-                    const questionKey = `${row.question_id}__${row.question}`;
-                    if (!questionMap.has(questionKey)) {
-                        questionMap.set(questionKey, {
-                            section: "personality",
-                            id: row.question_id,
-                            question: row.question,
-                            csvOrder: rowIndex,
-                            choices: []
-                        });
-                    }
-                    const scores = {};
-                    typeScoreColumns.forEach((typeName) => scores[typeName] = Number(row[typeName]) || 0);
-                    questionMap.get(questionKey).choices.push({
-                        key: row.choice,
-                        text: row.choice_text,
-                        scores
-                    });
-                });
-            return [...questionMap.values()].sort((a, b) => a.csvOrder - b.csvOrder);
+        if (headers.includes("question_id") && headers.includes("question") && headers.includes("choice") && headers.includes("choice_text") && typeScoreColumns.length) {
+            return loadTypeScorePersonalityQuestions(rows, headerIndex, headers, typeScoreColumns);
         }
 
         const legacyHeaderRequired = ["choice_a_text", "choice_b_text"];
@@ -744,6 +721,37 @@ canvas{max-width:100%;}
 
     function createChoiceKey(index) {
         return String.fromCharCode(65 + index);
+    }
+
+    function loadTypeScorePersonalityQuestions(rows, headerIndex, headers, typeScoreColumns) {
+        const questionMap = new Map();
+        rows.slice(headerIndex + 1)
+            .map((row) => rowToObject(headers, row))
+            .filter((row) => row.question_id && row.question && row.choice && row.choice_text)
+            .forEach((row, rowIndex) => {
+                const questionKey = row.question_id;
+                if (!questionMap.has(questionKey)) {
+                    questionMap.set(questionKey, {
+                        section: "personality",
+                        id: row.question_id,
+                        question: row.question,
+                        csvOrder: rowIndex,
+                        choices: []
+                    });
+                }
+
+                const scores = {};
+                typeScoreColumns.forEach((typeName) => {
+                    scores[typeName] = Number(normalizeCell(row[typeName])) || 0;
+                });
+
+                questionMap.get(questionKey).choices.push({
+                    key: row.choice,
+                    text: row.choice_text,
+                    scores
+                });
+            });
+        return [...questionMap.values()].sort((a, b) => a.csvOrder - b.csvOrder);
     }
 
     function loadJapanesePersonalityQuestions(rows, headerIndex, headers, typeNames) {
@@ -1397,28 +1405,7 @@ canvas{max-width:100%;}
             return { axes: [], key: bestType?.typeName || "", scores: typeScores };
         }
 
-        const axes = axisOrder.map((axisLabel) => {
-            const questions = personalityQuestions.filter((question) => question.axis === axisLabel);
-            const counts = {};
-            questions.forEach((question) => {
-                const selected = question.choices.find((choice) => choice.key === personalityAnswers[question.id]);
-                if (selected) counts[selected.value] = (counts[selected.value] || 0) + 1;
-            });
-            const values = unique(questions.flatMap((question) => question.choices.map((choice) => choice.value)).filter(Boolean));
-            const first = values[0] || "";
-            const second = values[1] || "";
-            let value = first;
-            if ((counts[first] || 0) > (counts[second] || 0)) value = first;
-            else if ((counts[first] || 0) < (counts[second] || 0)) value = second;
-            else {
-                const tieId = questions.find((question) => question.tieBreakQuestion)?.tieBreakQuestion;
-                const tieQuestion = personalityQuestions.find((question) => question.id === tieId);
-                const selected = tieQuestion?.choices.find((choice) => choice.key === personalityAnswers[tieQuestion.id]);
-                value = selected?.value || first;
-            }
-            return { label: axisLabel, value };
-        });
-        return { axes, key: axes.map((axis) => axis.value).join(" \u00d7 ") };
+        return { axes: [], key: "", scores: typeScores };
     }
 
     function calculateAbilityScores() {
