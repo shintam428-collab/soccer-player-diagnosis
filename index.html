@@ -770,7 +770,7 @@ canvas{max-width:100%;}
 
             lastQuestionNo = no || lastQuestionNo || `Q${questionMap.size + 1}`;
             lastQuestionText = questionText;
-            const questionKey = questionText;
+            const questionKey = lastQuestionNo;
 
             if (!questionMap.has(questionKey)) {
                 questionMap.set(questionKey, {
@@ -1143,12 +1143,18 @@ canvas{max-width:100%;}
                     ${question.choices.map((choice) => `
                         <button type="button" class="choice-btn choice-button answer-button option-button${selectedKey === choice.key ? " is-selected selected" : ""}" data-question-key="${escapeAttribute(getQuestionDomKey(question))}" data-choice-key="${escapeAttribute(choice.key)}" onclick="selectChoiceFromButton(this)">
                             ${choiceLabelHtml(choice)}
-                            <span class="choice-text">${escapeHtml(choice.text)}</span>
+                            <span class="choice-text">${escapeHtml(getDisplayChoiceText(choice))}</span>
                         </button>
                     `).join("")}
                 </div>
             </section>
         `;
+    }
+
+    function getDisplayChoiceText(choice) {
+        const textValue = normalizeCell(choice.text);
+        if (!looksLikePersonalityScore(textValue)) return textValue;
+        return "";
     }
 
     function selectChoiceFromButton(button) {
@@ -1302,7 +1308,7 @@ canvas{max-width:100%;}
             const selectedKey = question.section === "personality" ? personalityAnswers[question.id] : abilityAnswers[getAbilityAnswerKey(question)];
             const selected = question.choices.find((choice) => choice.key === selectedKey);
             const label = question.section === "personality" ? text.personality : text.ability;
-            return `<li class="confirm-item"><strong>${label}${index + 1}. ${escapeHtml(question.question)}</strong><br>${selected ? `${escapeHtml(selected.key)}. ${escapeHtml(selected.text)}` : text.unanswered}</li>`;
+            return `<li class="confirm-item"><strong>${label}${index + 1}. ${escapeHtml(question.question)}</strong><br>${selected ? `${escapeHtml(selected.key)}. ${escapeHtml(getDisplayChoiceText(selected))}` : text.unanswered}</li>`;
         }).join("");
     }
 
