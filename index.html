@@ -512,7 +512,7 @@ canvas{max-width:100%;}
         personalityQuestions: "./personality_questions.csv",
         personalityTypes: "./personality_types.csv",
         abilityQuestions: "./questions.csv",
-        abilityTemplates: "./question_templates.csv",
+        baseAbilityValues: "./base_ability_values.csv",
         positionPlaystyles: "./position_playstyles.csv",
         additionalQuestions: "./additional_questions.csv",
         abilitySelectMap: "./ability_select_map.csv",
@@ -561,6 +561,12 @@ canvas{max-width:100%;}
     let abilityMeasurementState = {};
 
     const abilityNameAliases = {
+        "オフザボール": "パスを受ける動き",
+        "ジャンプ力": "ジャンプ",
+        "パス精度": "パス",
+        "アイデア": "センス",
+        "グランダーパス": "パス",
+        "ロングパス": "パス",
         "フライパス": "ロングパス",
         "フィジカル": "体の強さ",
         "ボール奪取": "ボールハント",
@@ -569,35 +575,35 @@ canvas{max-width:100%;}
     };
 
     const ability20Names = [
-        "決定力","オフザボール","ポジショニング","ボールキープ","足元の技術",
-        "ボールコントロール","ドリブル","アイデア","体の強さ","ジャンプ",
-        "ヘディング","対人守備","守備意識","予測力","最高速度",
-        "瞬発力","推進力","グランダーパス","ロングパス","パス精度"
+        "オフェンスセンス","決定力","パスを受ける動き","ポジショニング",
+        "足元の技術","ボールコントロール","ドリブル","ボールキープ",
+        "体の強さ","ヘディング","ジャンプ","対人守備","守備意識",
+        "予測力","最高速度","推進力","瞬発力","アジリティー","パス","センス"
     ];
 
     const radarItemGroups = {
-        "オフェンス": ["オフェンスセンス", "決定力", "パスを受ける動き", "オフザボール", "ポジショニング"],
+        "オフェンス": ["オフェンスセンス", "決定力", "パスを受ける動き", "ポジショニング"],
         "ドリブル": ["足元の技術", "ボールコントロール", "ドリブル", "ボールキープ"],
         "フィジカル": ["体の強さ", "ヘディング", "ジャンプ"],
         "ディフェンス": ["対人守備", "守備意識", "予測力"],
         "スピード": ["最高速度", "推進力", "瞬発力", "アジリティー"],
-        "パス": ["パス", "グランダーパス", "ロングパス", "パス精度", "センス", "アイデア"]
+        "パス": ["パス", "センス"]
     };
 
     const defaultAbilitySelectMap = {
-        "オフェンス": ["オフェンスセンス", "決定力", "パスを受ける動き", "オフザボール", "ポジショニング"],
+        "オフェンス": ["オフェンスセンス", "決定力", "パスを受ける動き", "ポジショニング"],
         "決定力": ["決定力"],
-        "パスを受ける動き": ["オフザボール", "ポジショニング"],
+        "パスを受ける動き": ["パスを受ける動き", "ポジショニング"],
         "足元の技術": ["足元の技術", "ボールコントロール"],
         "ドリブル": ["足元の技術", "ボールコントロール", "ドリブル", "ボールキープ"],
         "フィジカル": ["体の強さ"],
         "空中戦": ["ジャンプ", "ヘディング"],
         "ディフェンス": ["対人守備", "守備意識", "予測力"],
-        "スピード": ["最高速度", "推進力", "瞬発力"],
+        "スピード": ["最高速度", "推進力", "瞬発力", "アジリティー"],
         "足の速さ": ["最高速度", "推進力"],
-        "アジリティー": ["瞬発力"],
-        "パス": ["グランダーパス", "ロングパス", "パス精度", "アイデア"],
-        "センス": ["アイデア"]
+        "アジリティー": ["アジリティー", "瞬発力"],
+        "パス": ["パス", "センス"],
+        "センス": ["センス"]
     };
 
     const defaultAdditionalQuestions = [
@@ -723,19 +729,19 @@ canvas{max-width:100%;}
             }
         };
 
-        const [abilitiesRows, positionRows, additionalRows, radarMapRows] = await Promise.all([
+        const [abilitiesRows, positionRows, additionalRows, baseRows, radarMapRows] = await Promise.all([
             loadRequired("abilities_20.csv", files.abilities20),
             loadRequired("position_playstyles.csv", files.positionPlaystyles),
             loadRequired("additional_questions.csv", files.additionalQuestions),
+            loadRequired("base_ability_values.csv", files.baseAbilityValues),
             loadRequired("radar_map.csv", files.radarMap)
         ]);
 
-        const [selectMapResult, baseRows, scoringRows] = await Promise.all([
+        const [selectMapResult, scoringRows] = await Promise.all([
             fetchFirstAvailableAbilityCsv([
                 { label: "ability_select_map.csv", path: files.abilitySelectMap },
                 { label: "ability_select_long.csv", path: files.abilitySelectLong }
             ]),
-            loadOptional("question_templates.csv", files.abilityTemplates),
             loadOptional("スコアリングルール.csv", files.scoringRules)
         ]);
 
@@ -750,7 +756,7 @@ canvas{max-width:100%;}
         const selectMap = normalizeAbilitySelectMap(parseAbilitySelectMap(selectMapResult.rows, abilities), abilities);
         const radarMap = parseRadarMap(radarMapRows, abilities);
         const additionalQuestions = parseAdditionalQuestions(additionalRows);
-        const baseAbilities = parseBaseAbilities(baseRows, abilities, "question_templates.csv");
+        const baseAbilities = parseBaseAbilities(baseRows, abilities, "base_ability_values.csv");
 
         return {
             abilities,
@@ -783,12 +789,11 @@ canvas{max-width:100%;}
     }
 
     function parseBaseAbilities(rows, abilities, fileName = "question_templates.csv") {
-        if (!rows || !rows.length) return [];
+        if (!rows || !rows.length) throw new Error(`${fileName} format error: CSVが空です`);
         let headerIndex = findHeaderRow(rows, ["position", "playstyle"]);
         if (headerIndex < 0) headerIndex = findHeaderRow(rows, ["ポジション", "プレースタイル"]);
         if (headerIndex < 0) {
-            console.log(`${fileName}: position/playstyle列が見つからないため、基礎能力は中立値で計算します。`);
-            return [];
+            throw new Error(`${fileName} format error: ポジション と プレースタイル 列が見つかりません`);
         }
         const headers = rows[headerIndex].map(normalizeCell);
         const parsedRows = rows.slice(headerIndex + 1)
@@ -800,7 +805,7 @@ canvas{max-width:100%;}
                 scores: Object.fromEntries(abilities.map((ability) => [ability, clamp(Number(getAbilityRowValue(row, ability)) || 0)]))
             }));
         if (!parsedRows.length) {
-            console.log(`${fileName}: 有効なポジション×プレースタイル行がないため、基礎能力は中立値で計算します。`);
+            throw new Error(`${fileName} format error: 有効なポジション×プレースタイル行が見つかりません`);
         }
         return parsedRows;
     }
@@ -1891,7 +1896,22 @@ canvas{max-width:100%;}
         $("question").textContent = text.result;
 
         if (diagnosisMode === "ability") {
-            const detailScores = calculateAbilityScores();
+            let detailScores;
+            try {
+                detailScores = calculateAbilityScores();
+            } catch (error) {
+                console.log(error.message || error);
+                $("chartBox").style.display = "none";
+                $("result").innerHTML = `
+                    <div class="result-hero">
+                        <div class="result-badge">能力測定</div>
+                        <h2 class="result-title"><span>基礎能力値が見つかりません</span></h2>
+                        <p class="result-description">${escapeHtml(error.message || "base_ability_values.csv に、選択したポジションとプレースタイルの行がありません。")}</p>
+                    </div>
+                    <button type="button" class="restart-btn" onclick="startAbilityMeasurement()">もう一度測定する</button>
+                `;
+                return;
+            }
             const radarScores = convertToRadarScores(detailScores);
             $("result").innerHTML = `
                 <div class="result-hero">
@@ -1965,19 +1985,32 @@ canvas{max-width:100%;}
 
     function calculateAbilityScores() {
         const data = abilityMeasurementData;
-        const baseRow = data.baseAbilities.find((row) => row.position === abilityMeasurementState.position && row.playstyle === abilityMeasurementState.playstyle);
-        const baseScores = baseRow?.scores || Object.fromEntries(data.abilities.map((ability) => [ability, 50]));
+        const baseRow = findBaseAbilityRow();
+        if (!baseRow) {
+            throw new Error(`基礎能力値が見つかりません: base_ability_values.csv に「${abilityMeasurementState.position} / ${abilityMeasurementState.playstyle}」の行がありません。`);
+        }
+        const baseScores = baseRow.scores;
         const additionalTotal = Object.values(abilityMeasurementState.additionalAnswers).reduce((sum, value) => sum + (Number(value) || 0), 0);
         const strengthAbilities = getStrengthAbilitySet();
+        const weaknessAbilities = getWeaknessAbilitySet();
         const scores = {};
 
         data.abilities.forEach((ability) => {
             const baseValue = Number(baseScores[ability]) || 0;
             const rating = Number(abilityMeasurementState.ratings[ability]) || 0;
-            const multiplier = strengthAbilities.has(ability) ? 3 : 1;
-            scores[ability] = Math.min(100, Math.round(baseValue + additionalTotal + rating * multiplier));
+            const multiplier = strengthAbilities.has(ability) ? 3 : weaknessAbilities.has(ability) ? 0.5 : 1;
+            scores[ability] = clamp(baseValue + additionalTotal + rating * multiplier);
         });
         return scores;
+    }
+
+    function findBaseAbilityRow() {
+        const normalizeKey = (value) => normalizeCell(value).replace(/\s+/g, "");
+        const selectedPosition = normalizeKey(abilityMeasurementState.position);
+        const selectedPlaystyle = normalizeKey(abilityMeasurementState.playstyle);
+        return abilityMeasurementData.baseAbilities.find((row) => {
+            return normalizeKey(row.position) === selectedPosition && normalizeKey(row.playstyle) === selectedPlaystyle;
+        }) || null;
     }
 
     function getStrengthAbilitySet() {
@@ -1992,6 +2025,20 @@ canvas{max-width:100%;}
                 .forEach((target) => strengthAbilities.add(target));
         });
         return strengthAbilities;
+    }
+
+    function getWeaknessAbilitySet() {
+        const data = abilityMeasurementData;
+        const weaknessAbilities = new Set();
+        abilityMeasurementState.weaknesses.forEach((item) => {
+            const targets = data.selectMap[item] || defaultAbilitySelectMap[item] || [];
+            targets
+                .flatMap((target) => expandAbilityTarget(target))
+                .map(normalizeAbilityName)
+                .filter((target) => data.abilities.includes(target))
+                .forEach((target) => weaknessAbilities.add(target));
+        });
+        return weaknessAbilities;
     }
 
     function convertToRadarScores(scores) {
