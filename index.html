@@ -268,6 +268,7 @@ canvas{max-width:100%;}
 .rating-dot{width:30px;height:30px;min-width:30px;margin:0;padding:0;border-radius:50%;border:2px solid #94a3b8;background:white!important;box-shadow:0 4px 10px rgba(15,23,42,0.12);}
 .rating-dot:hover{transform:scale(1.08);border-color:#2563eb;}
 .rating-dot.is-selected{background:#2563eb!important;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,0.18);}
+.self-rating-intro{margin:0 0 4px;padding:14px 16px;border-radius:14px;background:rgba(37,99,235,0.08);color:#1e293b;font-weight:800;text-align:center;line-height:1.7;}
 .question-list{display:grid;gap:18px;text-align:left;margin-top:18px;}
 .question-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:18px;box-shadow:0 5px 14px rgba(15,23,42,0.08);scroll-margin-top:110px;}
 .question-card__title{font-size:18px;font-weight:800;line-height:1.65;color:#0f172a;margin:0 0 14px;}
@@ -1601,15 +1602,16 @@ canvas{max-width:100%;}
         const ratingItems = abilityMeasurementData.abilities;
         renderAbilityStep("能力測定：自己評価", 82, `
             <div class="question-list">
+                <p class="self-rating-intro">同じ年代・周りの人と比べて、あなたの能力を評価してください</p>
                 ${ratingItems.map((item) => `
                     <section class="question-card" data-rating-item="${escapeAttribute(item)}">
-                        <h3 class="question-card__title">同じ年代・同じレベルの周りの人と比べて、あなたの${escapeHtml(item)}は高いと思いますか？</h3>
+                        <h3 class="question-card__title">${escapeHtml(item)}</h3>
                         <div class="rating-scale">
-                            <span>そう思う</span>
+                            <span>低い</span>
                             <div class="rating-dots">
                                 ${abilityMeasurementData.selfRatingOptions.map((score, index) => `<button type="button" class="rating-dot${abilityMeasurementState.ratings[item] === score ? " is-selected" : ""}" aria-label="${index + 1}番目" onclick="selectSelfRating('${escapeAttribute(item)}', ${score}, this)"></button>`).join("")}
                             </div>
-                            <span>そう思わない</span>
+                            <span>高い</span>
                         </div>
                     </section>
                 `).join("")}
