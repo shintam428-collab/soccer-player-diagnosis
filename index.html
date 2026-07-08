@@ -141,13 +141,13 @@ button:hover{transform:scale(1.04);}
     text-align:left;
 }
 .section-card{background:#f8fafc;border-radius:16px;padding:18px;margin-top:18px;box-shadow:0 5px 15px rgba(0,0,0,0.15);}
-.review-card{background:linear-gradient(180deg,#ffffff,#f8fafc);border:1px solid #dbeafe;border-radius:18px;padding:22px;margin:22px auto 0;box-shadow:0 8px 24px rgba(15,23,42,0.14);text-align:center;}
+.review-card{background:linear-gradient(135deg,#fff7cc 0%,#e0f2fe 55%,#ffffff 100%);border:2px solid rgba(250,204,21,0.75);border-radius:24px;padding:34px 26px;margin:34px auto 0;box-shadow:0 18px 42px rgba(15,23,42,0.22),0 0 0 6px rgba(255,255,255,0.45);text-align:center;max-width:760px;}
 .review-area{display:none;}
 .review-area.is-visible{display:block;}
-.review-card h3{margin:0 0 8px;color:#0f172a;font-size:22px;}
-.review-card p{margin:0 auto 16px;max-width:560px;color:#475569;line-height:1.75;font-weight:700;}
-.review-card__button{display:inline-flex;align-items:center;justify-content:center;padding:13px 28px;border-radius:999px;background:linear-gradient(180deg,#2563eb,#1d4ed8);color:white!important;text-decoration:none;font-weight:900;box-shadow:0 8px 18px rgba(37,99,235,0.25);transition:transform .18s ease,box-shadow .18s ease;}
-.review-card__button:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(37,99,235,0.32);}
+.review-card h3{margin:0 0 14px;color:#0f172a;font-size:clamp(24px,4.4vw,34px);font-weight:900;letter-spacing:0;}
+.review-card p{margin:0 auto 24px;max-width:620px;color:#334155;line-height:1.9;font-size:17px;font-weight:800;text-align:center;}
+.review-card__button{display:inline-flex;align-items:center;justify-content:center;min-height:56px;padding:16px 42px;border-radius:999px;background:linear-gradient(180deg,#fb923c,#f97316);color:white!important;text-decoration:none;font-size:18px;font-weight:900;box-shadow:0 12px 24px rgba(249,115,22,0.36),inset 0 1px 0 rgba(255,255,255,0.35);transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;}
+.review-card__button:hover{transform:translateY(-3px);filter:brightness(1.04);box-shadow:0 18px 32px rgba(249,115,22,0.42),inset 0 1px 0 rgba(255,255,255,0.4);}
 .ability-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:15px;}
 .ability-item{background:white;border-radius:12px;padding:12px;text-align:left;box-shadow:0 3px 10px rgba(0,0,0,0.12);}
 .ability-name{display:flex;justify-content:space-between;gap:10px;font-weight:bold;margin-bottom:6px;}
@@ -359,9 +359,9 @@ canvas{max-width:100%;}
     #question{font-size:20px;}
     button{font-size:16px;}
     .ability-grid{grid-template-columns:1fr;}
-    .review-card{padding:18px 14px;border-radius:16px;}
-    .review-card h3{font-size:19px;}
-    .review-card__button{width:100%;max-width:280px;}
+    .review-card{padding:28px 16px;border-radius:20px;margin-top:28px;}
+    .review-card p{font-size:15px;line-height:1.8;}
+    .review-card__button{width:100%;max-width:320px;min-height:58px;font-size:17px;}
     .result-title span{font-size:32px;}
     .start-screen{min-height:calc(100vh - 24px);padding:24px 16px;border-radius:18px;}
     .start-hero-panel{margin-bottom:26px;padding:32px 18px;border-radius:24px;}
@@ -2055,8 +2055,8 @@ canvas{max-width:100%;}
         const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdOeGtQ2z28QWagcLrtyNbJnNXXWF46c7apcg_dXMol1XE8rA/viewform?usp=publish-editor";
         return `
             <div class="review-card">
-                <h3>この診断の感想を教えてください</h3>
-                <p>今後の改善のために、評価や感想を送ってもらえると嬉しいです。</p>
+                <h3>⭐ レビューにご協力ください</h3>
+                <p>診断の感想や評価を送ってもらえると、今後の改善に役立ちます。<br>30秒ほどで終わるので、ぜひお願いします！</p>
                 <a class="review-card__button" href="${escapeAttribute(formUrl)}" target="_blank" rel="noopener noreferrer">レビューを書く</a>
             </div>
         `;
