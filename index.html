@@ -498,14 +498,14 @@ canvas{max-width:100%;}
         personalityQuestions: "./personality_questions.csv",
         personalityTypes: "./personality_types.csv",
         abilityQuestions: "./questions.csv",
-        baseAbilities: "./base_abilities.csv",
+        abilityTemplates: "./question_templates.csv",
         positionPlaystyles: "./position_playstyles.csv",
         additionalQuestions: "./additional_questions.csv",
         abilitySelectMap: "./ability_select_map.csv",
-        selfRatingOptions: "./self_rating_options.csv",
+        abilitySelectLong: "./ability_select_long.csv",
         radarMap: "./radar_map.csv",
         abilities20: "./abilities_20.csv",
-        scoringRules: "./scoring_rules.csv"
+        scoringRules: "./スコアリングルール.csv"
     };
     const text = {
         loading: "\u8aad\u307f\u8fbc\u307f\u4e2d...",
@@ -547,7 +547,6 @@ canvas{max-width:100%;}
     let abilityMeasurementState = {};
 
     const abilityNameAliases = {
-        "ボールコントロール": "タッチ精度",
         "フライパス": "ロングパス",
         "フィジカル": "体の強さ",
         "ボール奪取": "ボールハント",
@@ -616,7 +615,7 @@ canvas{max-width:100%;}
                 console.log("ability measurement CSV loaded");
             } catch (abilityError) {
                 console.log("Ability measurement CSV load failed", abilityError);
-                abilityMeasurementLoadError = "能力診断用CSVを読み込めませんでした";
+                abilityMeasurementLoadError = abilityError.message || "能力診断用CSVを読み込めませんでした";
             }
             axisOrder = unique(personalityQuestions.map((question) => question.axis).filter(Boolean));
             $("startBtn").disabled = false;
@@ -689,28 +688,50 @@ canvas{max-width:100%;}
     }
 
     async function loadAbilityMeasurementData() {
-        const [
-            baseRows,
-            positionRows,
-            additionalRows,
-            selectMapRows,
-            selfRatingRows,
-            radarMapRows,
-            abilitiesRows,
-            scoringRows
-        ] = await Promise.all([
-            fetchCsvRows(files.baseAbilities, "能力診断用CSVを読み込めませんでした"),
-            fetchCsvRows(files.positionPlaystyles, "能力診断用CSVを読み込めませんでした"),
-            fetchCsvRows(files.additionalQuestions, "能力診断用CSVを読み込めませんでした"),
-            fetchCsvRows(files.abilitySelectMap, "能力診断用CSVを読み込めませんでした"),
-            fetchCsvRows(files.selfRatingOptions, "能力診断用CSVを読み込めませんでした"),
-            fetchCsvRows(files.radarMap, "能力診断用CSVを読み込めませんでした"),
-            fetchCsvRows(files.abilities20, "能力診断用CSVを読み込めませんでした"),
-            fetchCsvRows(files.scoringRules, "能力診断用CSVを読み込めませんでした")
+        const loadFailures = [];
+        const loadRequired = async (label, path) => {
+            try {
+                return await fetchAbilityCsvRows(path, label);
+            } catch (error) {
+                loadFailures.push(`${label}（${path}）`);
+                console.log("Ability CSV failed:", label, path, error);
+                return null;
+            }
+        };
+        const loadOptional = async (label, path) => {
+            try {
+                return await fetchAbilityCsvRows(path, label);
+            } catch (error) {
+                console.log("Optional ability CSV skipped:", label, path, error);
+                return [];
+            }
+        };
+
+        const [abilitiesRows, positionRows, additionalRows, baseRows, radarMapRows] = await Promise.all([
+            loadRequired("abilities_20.csv", files.abilities20),
+            loadRequired("position_playstyles.csv", files.positionPlaystyles),
+            loadRequired("additional_questions.csv", files.additionalQuestions),
+            loadRequired("question_templates.csv", files.abilityTemplates),
+            loadRequired("radar_map.csv", files.radarMap)
         ]);
 
+        const [selectMapResult, scoringRows] = await Promise.all([
+            fetchFirstAvailableAbilityCsv([
+                { label: "ability_select_map.csv", path: files.abilitySelectMap },
+                { label: "ability_select_long.csv", path: files.abilitySelectLong }
+            ]),
+            loadOptional("スコアリングルール.csv", files.scoringRules)
+        ]);
+
+        if (!selectMapResult.rows.length) loadFailures.push("ability_select_map.csv または ability_select_long.csv");
+        if (loadFailures.length) {
+            const message = `能力診断用CSVを読み込めませんでした: ${loadFailures.join("、")}`;
+            console.log(message);
+            throw new Error(message);
+        }
+
         const abilities = parseAbilities20(abilitiesRows);
-        const selectMap = parseAbilitySelectMap(selectMapRows, abilities);
+        const selectMap = parseAbilitySelectMap(selectMapResult.rows, abilities);
         const radarMap = parseRadarMap(radarMapRows, abilities);
         const additionalQuestions = parseAdditionalQuestions(additionalRows);
 
@@ -721,7 +742,7 @@ canvas{max-width:100%;}
             additionalQuestions,
             selectMap,
             selectOptions: Object.keys(selectMap),
-            selfRatingOptions: parseSelfRatingOptions(selfRatingRows),
+            selfRatingOptions: selfRatingScores,
             radarMap,
             scoringRows
         };
@@ -734,21 +755,32 @@ canvas{max-width:100%;}
     }
 
     function parseBaseAbilities(rows, abilities) {
-        const headerIndex = findHeaderRow(rows, ["position", "playstyle"]);
-        if (headerIndex < 0) throw new Error("base_abilities.csv format error");
+        let headerIndex = findHeaderRow(rows, ["position", "playstyle"]);
+        if (headerIndex < 0) headerIndex = findHeaderRow(rows, ["ポジション", "プレースタイル"]);
+        if (headerIndex < 0) throw new Error("question_templates.csv format error");
         const headers = rows[headerIndex].map(normalizeCell);
-        return rows.slice(headerIndex + 1)
+        const parsedRows = rows.slice(headerIndex + 1)
             .map((row) => rowToObject(headers, row))
-            .filter((row) => row.position && row.playstyle)
+            .filter((row) => (row.position || row["ポジション"]) && (row.playstyle || row["プレースタイル"] || row.style))
             .map((row) => ({
-                position: row.position,
-                playstyle: row.playstyle,
-                scores: Object.fromEntries(abilities.map((ability) => [ability, clamp(Number(row[ability]) || 0)]))
+                position: row.position || row["ポジション"],
+                playstyle: row.playstyle || row["プレースタイル"] || row.style,
+                scores: Object.fromEntries(abilities.map((ability) => [ability, clamp(Number(getAbilityRowValue(row, ability)) || 0)]))
             }));
+        if (!parsedRows.length) throw new Error("question_templates.csv format error");
+        return parsedRows;
+    }
+
+    function getAbilityRowValue(row, ability) {
+        if (row[ability] !== undefined) return row[ability];
+        const aliasEntry = Object.entries(abilityNameAliases).find(([, normalized]) => normalized === ability);
+        if (aliasEntry && row[aliasEntry[0]] !== undefined) return row[aliasEntry[0]];
+        return "";
     }
 
     function parsePositionPlaystyles(rows) {
-        const headerIndex = findHeaderRow(rows, ["position"]);
+        let headerIndex = findHeaderRow(rows, ["position"]);
+        if (headerIndex < 0) headerIndex = findHeaderRow(rows, ["ポジション"]);
         if (headerIndex < 0) throw new Error("position_playstyles.csv format error");
         const headers = rows[headerIndex].map(normalizeCell);
         const objects = rows.slice(headerIndex + 1).map((row) => rowToObject(headers, row));
@@ -772,22 +804,36 @@ canvas{max-width:100%;}
     }
 
     function parseAdditionalQuestions(rows) {
-        const flatQuestions = rows.flat().map(normalizeCell).filter((value) => value && !["question", "質問"].includes(value));
+        const headerIndex = rows.findIndex((row) => row.some((cell) => ["question", "質問", "質問文"].includes(normalizeCell(cell))));
+        if (headerIndex >= 0) {
+            const headers = rows[headerIndex].map(normalizeCell);
+            const questions = rows.slice(headerIndex + 1)
+                .map((row) => rowToObject(headers, row))
+                .map((row) => row.question || row["質問"] || row["質問文"])
+                .map(normalizeCell)
+                .filter(Boolean);
+            if (questions.length) return questions.slice(0, 5);
+        }
+        const flatQuestions = rows.flat().map(normalizeCell).filter((value) => value && !["question", "質問", "質問文"].includes(value));
         const questions = flatQuestions.filter((value) => value.includes("？") || value.includes("?"));
         return (questions.length ? questions : defaultAdditionalQuestions).slice(0, 5);
     }
 
     function parseAbilitySelectMap(rows, abilities) {
-        const headerIndex = rows.findIndex((row) => row.some((cell) => ["選択項目", "item", "label"].includes(normalizeCell(cell))));
+        const headerIndex = rows.findIndex((row) => row.some((cell) => ["選択項目", "item", "label", "select_item", "能力選択"].includes(normalizeCell(cell))));
         if (headerIndex < 0) return defaultAbilitySelectMap;
         const headers = rows[headerIndex].map(normalizeCell);
         const map = {};
         rows.slice(headerIndex + 1).map((row) => rowToObject(headers, row)).forEach((row) => {
-            const item = row["選択項目"] || row.item || row.label || row.name;
-            const abilityText = row["細かい能力"] || row.abilities || row.ability || row.targets;
+            const item = row["選択項目"] || row["能力選択"] || row.item || row.label || row.name || row.select_item || row.category;
+            const abilityText = row["細かい能力"] || row["能力"] || row.abilities || row.ability || row.ability_name || row.targets;
             if (!item || !abilityText) return;
             const targets = abilityText.split(/[、,\/]/).map(normalizeAbilityName).filter((value) => abilities.includes(value));
-            if (targets.length) map[item] = targets;
+            if (!targets.length) return;
+            if (!map[item]) map[item] = [];
+            targets.forEach((target) => {
+                if (!map[item].includes(target)) map[item].push(target);
+            });
         });
         return Object.keys(map).length ? map : defaultAbilitySelectMap;
     }
@@ -798,18 +844,51 @@ canvas{max-width:100%;}
     }
 
     function parseRadarMap(rows, abilities) {
-        const headerIndex = rows.findIndex((row) => row.some((cell) => ["radar", "項目", "大項目"].includes(normalizeCell(cell))));
+        const headerIndex = rows.findIndex((row) => row.some((cell) => ["radar", "radar_item", "項目", "大項目", "分類"].includes(normalizeCell(cell))));
         if (headerIndex < 0) return radarItemGroups;
         const headers = rows[headerIndex].map(normalizeCell);
         const map = {};
         rows.slice(headerIndex + 1).map((row) => rowToObject(headers, row)).forEach((row) => {
-            const radar = row.radar || row["項目"] || row["大項目"];
-            const abilityText = row.abilities || row["細かい能力"] || row.ability;
+            const radar = row.radar || row.radar_item || row["項目"] || row["大項目"] || row["分類"];
+            const abilityText = row.abilities || row["細かい能力"] || row["能力"] || row.ability || row.ability_name;
             if (!radar || !abilityText) return;
             const targets = abilityText.split(/[、,\/]/).map(normalizeAbilityName).filter((value) => abilities.includes(value));
-            if (targets.length) map[radar] = targets;
+            if (!targets.length) return;
+            if (!map[radar]) map[radar] = [];
+            targets.forEach((target) => {
+                if (!map[radar].includes(target)) map[radar].push(target);
+            });
         });
         return Object.keys(map).length ? map : radarItemGroups;
+    }
+
+    async function fetchAbilityCsvRows(path, label) {
+        const url = `${path}?v=${Date.now()}`;
+        console.log("Ability CSV load start:", label, url);
+        const response = await fetch(url);
+        console.log("Ability CSV fetch result:", label, url, response.status, response.ok);
+        if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+        const rows = parseCsv((await response.text()).replace(/^\uFEFF/, ""));
+        console.log("Ability CSV rows:", label, rows.length);
+        return rows;
+    }
+
+    async function fetchFirstAvailableAbilityCsv(candidates) {
+        const failures = [];
+        for (const candidate of candidates) {
+            try {
+                return {
+                    label: candidate.label,
+                    path: candidate.path,
+                    rows: await fetchAbilityCsvRows(candidate.path, candidate.label)
+                };
+            } catch (error) {
+                failures.push(`${candidate.label}（${candidate.path}）`);
+                console.log("Alternative ability CSV failed:", candidate.label, candidate.path, error);
+            }
+        }
+        console.log("No ability select CSV loaded:", failures.join(" / "));
+        return { label: "", path: "", rows: [] };
     }
 
     async function loadAbilityQuestions() {
