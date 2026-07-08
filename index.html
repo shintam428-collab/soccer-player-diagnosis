@@ -1526,7 +1526,7 @@ canvas{max-width:100%;}
         renderAbilityStep(isStrength ? "能力測定：得意な能力" : "能力測定：苦手な能力", isStrength ? 52 : 66, `
             <div class="question-list">
                 <section class="question-card">
-                    <h3 class="question-card__title">${isStrength ? "得意な能力を最大3つまで選んでください" : "苦手な能力を最大3つまで選んでください"}</h3>
+                    <h3 class="question-card__title">${isStrength ? "得意な能力を選んでください" : "苦手な能力を選んでください"}</h3>
                     <div class="question-card__choices">
                         ${abilityMeasurementData.selectOptions.map((item) => {
                             const disabled = blocked.includes(item);
@@ -1536,7 +1536,7 @@ canvas{max-width:100%;}
                     </div>
                 </section>
             </div>
-            <p id="pageMessage" class="page-message">最大3つまで選べます</p>
+            <p class="self-rating-intro">複数選択できます。選択済みの項目をもう一度押すと解除できます。</p>
             <button type="button" class="next-page-btn" onclick="${isStrength ? "submitAbilityStrengthStep()" : "submitAbilityWeaknessStep()"}">次へ</button>
         `);
     }
@@ -1547,11 +1547,6 @@ canvas{max-width:100%;}
         if (index >= 0) {
             selected.splice(index, 1);
             button.classList.remove("is-selected", "selected");
-            return;
-        }
-        if (selected.length >= 3) {
-            const message = $("pageMessage");
-            if (message) message.classList.add("is-visible");
             return;
         }
         selected.push(item);
