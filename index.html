@@ -142,6 +142,8 @@ button:hover{transform:scale(1.04);}
 }
 .section-card{background:#f8fafc;border-radius:16px;padding:18px;margin-top:18px;box-shadow:0 5px 15px rgba(0,0,0,0.15);}
 .review-card{background:linear-gradient(180deg,#ffffff,#f8fafc);border:1px solid #dbeafe;border-radius:18px;padding:22px;margin:22px auto 0;box-shadow:0 8px 24px rgba(15,23,42,0.14);text-align:center;}
+.review-area{display:none;}
+.review-area.is-visible{display:block;}
 .review-card h3{margin:0 0 8px;color:#0f172a;font-size:22px;}
 .review-card p{margin:0 auto 16px;max-width:560px;color:#475569;line-height:1.75;font-weight:700;}
 .review-card__button{display:inline-flex;align-items:center;justify-content:center;padding:13px 28px;border-radius:999px;background:linear-gradient(180deg,#2563eb,#1d4ed8);color:white!important;text-decoration:none;font-weight:900;box-shadow:0 8px 18px rgba(37,99,235,0.25);transition:transform .18s ease,box-shadow .18s ease;}
@@ -456,6 +458,7 @@ canvas{max-width:100%;}
         <div class="chart-box" id="chartBox">
             <canvas id="radarChart"></canvas>
         </div>
+        <div id="reviewArea" class="review-area"></div>
     </div>
 
     <section id="simplePage" class="simple-page is-hidden">
@@ -1218,6 +1221,7 @@ canvas{max-width:100%;}
         $("simplePage").classList.add("is-hidden");
         $("homePage").classList.add("is-hidden");
         $("chartBox").style.display = "none";
+        hideReviewArea();
     }
 
     function showHomeView() {
@@ -1386,6 +1390,7 @@ canvas{max-width:100%;}
         $("confirmArea").classList.add("is-hidden");
         $("progressArea").style.display = "block";
         $("chartBox").style.display = "none";
+        hideReviewArea();
         $("result").innerHTML = "";
         updateStatus("");
         showPersonalityPage();
@@ -1406,6 +1411,7 @@ canvas{max-width:100%;}
         $("confirmArea").classList.add("is-hidden");
         $("progressArea").style.display = "block";
         $("chartBox").style.display = "none";
+        hideReviewArea();
         $("result").innerHTML = "";
         updateStatus("");
         showAbilityPositionStep();
@@ -1618,6 +1624,7 @@ canvas{max-width:100%;}
         $("quizCard").classList.add("is-hidden");
         $("confirmArea").classList.remove("is-hidden");
         $("chartBox").style.display = "none";
+        hideReviewArea();
         $("confirmList").innerHTML = `
             <li class="confirm-item"><strong>ポジション</strong><br>${escapeHtml(abilityMeasurementState.position)}</li>
             <li class="confirm-item"><strong>プレースタイル</strong><br>${escapeHtml(abilityMeasurementState.playstyle)}</li>
@@ -1778,6 +1785,7 @@ canvas{max-width:100%;}
         $("quizCard").classList.add("is-hidden");
         $("confirmArea").classList.remove("is-hidden");
         $("chartBox").style.display = "none";
+        hideReviewArea();
         $("confirmList").innerHTML = activeQuestions.map((question, index) => {
             const selectedKey = personalityAnswers[question.id];
             const selected = question.choices.find((choice) => choice.key === selectedKey);
@@ -1807,6 +1815,7 @@ canvas{max-width:100%;}
             } catch (error) {
                 console.log(error.message || error);
                 $("chartBox").style.display = "none";
+                hideReviewArea();
                 $("result").innerHTML = `
                     <div class="result-hero">
                         <div class="result-badge">能力測定</div>
@@ -1833,10 +1842,10 @@ canvas{max-width:100%;}
                         <div class="ability-grid">${createAbilityHtml(createOrderedDetailScores(detailScores))}</div>
                     </div>
                 </div>
-                ${createReviewCardHtml()}
                 <button type="button" class="restart-btn" onclick="startAbilityMeasurement()">もう一度測定する</button>
             `;
             drawRadarChart(radarScores);
+            showReviewArea();
             return;
         }
 
@@ -1845,6 +1854,7 @@ canvas{max-width:100%;}
 
         if (!resultType) {
             $("chartBox").style.display = "none";
+            hideReviewArea();
             $("result").innerHTML = `<div class="result-hero"><div class="result-badge">${text.result}</div><h2 class="result-title">${text.noType}</h2><p class="result-description">personality_types.csv: ${escapeHtml(personality.key)}</p></div><button type="button" class="restart-btn" onclick="startDiagnosis()">${text.restart}</button>`;
             return;
         }
@@ -1858,11 +1868,11 @@ canvas{max-width:100%;}
                 ${imagePath ? `<img id="characterImage" class="character-result-image" src="${escapeAttribute(displayImagePath)}" alt="${escapeAttribute(resultType.typeName)}"><p class="image-error-message" id="imageErrorMessage"></p>` : `<p class="image-error-message" style="display:block;">${text.imageEmpty}</p>`}
                 <p class="result-description">${escapeHtml(resultType.description)}</p>
             </div>
-            ${createReviewCardHtml()}
             <button type="button" class="restart-btn" onclick="startDiagnosis()">${text.restart}</button>
         `;
         attachCharacterImageError(imagePath, displayImagePath);
         $("chartBox").style.display = "none";
+        showReviewArea();
     }
 
     function judgePersonality() {
@@ -2050,6 +2060,20 @@ canvas{max-width:100%;}
                 <a class="review-card__button" href="${escapeAttribute(formUrl)}" target="_blank" rel="noopener noreferrer">レビューを書く</a>
             </div>
         `;
+    }
+
+    function showReviewArea() {
+        const reviewArea = $("reviewArea");
+        if (!reviewArea) return;
+        reviewArea.innerHTML = createReviewCardHtml();
+        reviewArea.classList.add("is-visible");
+    }
+
+    function hideReviewArea() {
+        const reviewArea = $("reviewArea");
+        if (!reviewArea) return;
+        reviewArea.innerHTML = "";
+        reviewArea.classList.remove("is-visible");
     }
 
     function toggleDetailAbilities() {
