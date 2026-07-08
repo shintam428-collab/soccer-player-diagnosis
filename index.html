@@ -599,7 +599,6 @@ canvas{max-width:100%;}
         "フィジカル": ["体の強さ"],
         "空中戦": ["ジャンプ", "ヘディング"],
         "ディフェンス": ["対人守備", "守備意識", "予測力"],
-        "スピード": ["最高速度", "推進力", "瞬発力", "アジリティー"],
         "足の速さ": ["最高速度", "推進力"],
         "アジリティー": ["アジリティー", "瞬発力"],
         "パス": ["パス", "センス"],
@@ -753,7 +752,7 @@ canvas{max-width:100%;}
         }
 
         const abilities = parseAbilities20(abilitiesRows);
-        const selectMap = normalizeAbilitySelectMap(parseAbilitySelectMap(selectMapResult.rows, abilities), abilities);
+        const selectMap = filterAbilitySelectMap(normalizeAbilitySelectMap(parseAbilitySelectMap(selectMapResult.rows, abilities), abilities));
         const radarMap = parseRadarMap(radarMapRows, abilities);
         const additionalQuestions = parseAdditionalQuestions(additionalRows);
         const baseAbilities = parseBaseAbilities(baseRows, abilities, "base_ability_values.csv");
@@ -910,12 +909,21 @@ canvas{max-width:100%;}
         return Object.keys(normalizedMap).length ? normalizedMap : defaultAbilitySelectMap;
     }
 
+    function filterAbilitySelectMap(map) {
+        const filtered = { ...map };
+        delete filtered["スピード"];
+        filtered["足の速さ"] = ["最高速度", "推進力"];
+        filtered["アジリティー"] = ["瞬発力"];
+        return filtered;
+    }
+
     function expandAbilityTarget(target) {
         const original = normalizeCell(target);
         const normalized = normalizeAbilityName(original);
         if (original === "パス") return ["パス", "グランダーパス", "ロングパス", "パス精度", "アイデア"];
         if (original === "センス") return ["センス", "アイデア"];
-        if (original === "アジリティー") return ["アジリティー", "瞬発力"];
+        if (original === "足の速さ") return ["最高速度", "推進力"];
+        if (original === "アジリティー") return ["瞬発力"];
         if (original === "パスを受ける動き") return ["パスを受ける動き", "オフザボール", "ポジショニング"];
         return [normalized];
     }
