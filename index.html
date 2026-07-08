@@ -284,7 +284,6 @@ canvas{max-width:100%;}
 .page-message{display:none;margin:16px auto 0;padding:12px 14px;border-radius:12px;background:#fee2e2;color:#991b1b;font-weight:bold;text-align:center;}
 .page-message.is-visible{display:block;}
 .next-page-btn{background:#2563eb!important;font-weight:bold;box-shadow:0 5px 15px rgba(0,0,0,0.18);scroll-margin-top:24px;}
-.submit-page-btn{background:linear-gradient(180deg,#f59e0b,#ea580c)!important;font-weight:bold;box-shadow:0 5px 15px rgba(0,0,0,0.18);scroll-margin-top:24px;}
 .nav-buttons{margin-top:20px;}
 .nav-btn,.back-btn,.diagnose-btn,.restart-btn{font-weight:bold;box-shadow:0 5px 15px rgba(0,0,0,0.18);}
 .nav-btn,.back-btn{background:#64748b!important;}
@@ -292,16 +291,11 @@ canvas{max-width:100%;}
 .restart-btn{background:#2563eb!important;}
 .character-result-image{display:block;width:min(280px,78vw);height:auto;margin:22px auto;border-radius:18px;box-shadow:0 18px 40px rgba(15,23,42,0.2);background:#f8fafc;}
 .image-error-message{display:none;margin:12px auto 0;padding:12px 14px;border-radius:12px;background:#fee2e2;color:#991b1b;font-size:.92rem;line-height:1.6;word-break:break-all;}
-.axis-summary{display:grid;gap:10px;margin:18px 0 8px;}
-.axis-pill{display:flex;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:12px;background:rgba(37,99,235,0.08);color:#1e293b;font-size:.92rem;}
-.axis-pill strong{color:#2563eb;white-space:nowrap;}
 .detail-toggle-btn{display:inline-block;margin:18px auto 0;padding:12px 28px;border-radius:12px;background:#0f766e!important;color:white;font-size:16px;font-weight:bold;box-shadow:0 5px 15px rgba(0,0,0,0.18);width:auto;}
 .detail-ability-area{display:none;margin-top:18px;}
 .detail-ability-area.is-open{display:block;}
 .confirm-list{text-align:left;margin:20px auto;padding:0;list-style:none;}
 .confirm-item{background:#f8fafc;border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 4px 12px rgba(0,0,0,0.12);}
-.confirm-question{font-weight:bold;margin-bottom:8px;color:#111827;}
-.confirm-answer{color:#166534;font-weight:bold;}
 
 /* Home screen: bright MBTI-style type list */
 .start-screen{
@@ -511,7 +505,6 @@ canvas{max-width:100%;}
     const files = {
         personalityQuestions: "./personality_questions.csv",
         personalityTypes: "./personality_types.csv",
-        abilityQuestions: "./questions.csv",
         baseAbilityValues: "./base_ability_values.csv",
         positionPlaystyles: "./position_playstyles.csv",
         additionalQuestions: "./additional_questions.csv",
@@ -545,14 +538,8 @@ canvas{max-width:100%;}
 
     let personalityQuestions = [];
     let personalityTypes = [];
-    let abilityQuestionBank = [];
-    let scoreItems = [];
-    let radarGroups = {};
-    let axisOrder = [];
     let activeQuestions = [];
-    let currentIndex = 0;
     let personalityAnswers = {};
-    let abilityAnswers = {};
     let loadErrors = [];
     let homeTypeCards = [];
     let diagnosisMode = "playstyle";
@@ -632,13 +619,11 @@ canvas{max-width:100%;}
             personalityQuestions = await loadPersonalityQuestions(personalityTypes.map((type) => type.typeName));
             try {
                 abilityMeasurementData = await loadAbilityMeasurementData();
-                abilityQuestionBank = [];
                 console.log("ability measurement CSV loaded");
             } catch (abilityError) {
                 console.log("Ability measurement CSV load failed", abilityError);
                 abilityMeasurementLoadError = abilityError.message || "能力診断用CSVを読み込めませんでした";
             }
-            axisOrder = unique(personalityQuestions.map((question) => question.axis).filter(Boolean));
             $("startBtn").disabled = false;
             $("startBtn").textContent = text.start;
             renderHomeTypeGrid();
@@ -928,11 +913,6 @@ canvas{max-width:100%;}
         return [normalized];
     }
 
-    function parseSelfRatingOptions(rows) {
-        const options = rows.flat().map((cell) => Number(normalizeCell(cell))).filter((value) => Number.isFinite(value));
-        return options.length >= 7 ? options.slice(0, 7) : selfRatingScores;
-    }
-
     function parseRadarMap(rows, abilities) {
         const headerIndex = rows.findIndex((row) => row.some((cell) => ["radar", "radar_item", "項目", "大項目", "分類"].includes(normalizeCell(cell))));
         if (headerIndex < 0) return radarItemGroups;
@@ -982,51 +962,6 @@ canvas{max-width:100%;}
         }
         console.log("No ability select CSV loaded:", failures.join(" / "));
         return { label: "", path: "", rows: [] };
-    }
-
-    async function loadAbilityQuestions() {
-        const rows = await fetchCsvRows(files.abilityQuestions, "questions.csv" + text.dataError);
-        if (rows.length < 3) throwCsvFormatError("questions.csv");
-        buildAbilityMetadata(rows[0], rows[1]);
-        const abilityHeader = rows[1].map(normalizeCell);
-        const questionMap = new Map();
-
-        rows.slice(2).forEach((row, rowIndex) => {
-            const routeGroup = normalizeCell(row[0]);
-            const id = normalizeCell(row[1]);
-            const question = normalizeCell(row[2]);
-            const choice = normalizeCell(row[3]);
-            const choiceText = normalizeCell(row[4]);
-            const selectedGroup = normalizeCell(row[5]);
-            if (!routeGroup || !id || !question || !choice || !choiceText) return;
-
-            const questionKey = `${routeGroup}__${id}__${question}`;
-            if (!questionMap.has(questionKey)) {
-                questionMap.set(questionKey, { section: "ability", routeGroup, id, question, csvOrder: rowIndex, choices: [] });
-            }
-
-            const scores = {};
-            scoreItems.forEach((item) => {
-                const columnIndex = abilityHeader.findIndex((header) => normalizeAbilityName(header) === item);
-                scores[item] = columnIndex >= 0 ? clamp(Number(normalizeCell(row[columnIndex])) || 0) : 0;
-            });
-            questionMap.get(questionKey).choices.push({ key: choice, text: choiceText, selectedGroup, scores });
-        });
-
-        return [...questionMap.values()].sort((a, b) => a.csvOrder - b.csvOrder);
-    }
-
-    function buildAbilityMetadata(mainHeader, detailHeader) {
-        scoreItems = [];
-        radarGroups = radarItemGroups;
-        for (let index = 6; index < detailHeader.length; index++) {
-            const itemName = normalizeAbilityName(detailHeader[index]);
-            if (!itemName) continue;
-            if (!scoreItems.includes(itemName)) scoreItems.push(itemName);
-        }
-        Object.values(radarItemGroups).flat().forEach((itemName) => {
-            if (!scoreItems.includes(itemName)) scoreItems.push(itemName);
-        });
     }
 
     async function fetchCsvRows(path, errorMessage) {
@@ -1432,9 +1367,7 @@ canvas{max-width:100%;}
         }
         diagnosisMode = "playstyle";
         setActiveNav("playstyle");
-        currentIndex = 0;
         personalityAnswers = {};
-        abilityAnswers = {};
         activeQuestions = [...personalityQuestions];
         $("startScreen").classList.add("is-hidden");
         $("simplePage").classList.add("is-hidden");
@@ -1455,7 +1388,6 @@ canvas{max-width:100%;}
         }
         diagnosisMode = "ability";
         setActiveNav("ability");
-        currentIndex = 0;
         resetAbilityMeasurementState();
         $("startScreen").classList.add("is-hidden");
         $("simplePage").classList.add("is-hidden");
@@ -1478,7 +1410,6 @@ canvas{max-width:100%;}
             weaknesses: [],
             ratings: {}
         };
-        abilityAnswers = {};
         activeQuestions = [];
     }
 
@@ -1494,10 +1425,6 @@ canvas{max-width:100%;}
         $("questionButtons").style.display = "block";
         $("backQuestionBtn").style.display = "none";
         window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    function showAbilityPage(options = {}) {
-        showAbilityPositionStep();
     }
 
     function renderAbilityStep(title, progressPercent, html, showBack = true) {
@@ -1695,15 +1622,12 @@ canvas{max-width:100%;}
     }
 
     function createQuestionListHtml(questions, section) {
-        const actionButton = section === "personality"
-            ? `<button type="button" class="next-page-btn" onclick="submitPlaystylePage()">診断する</button>`
-            : `<button type="button" class="submit-page-btn" onclick="submitAbilityPage()">診断する</button>`;
         return `
             <div class="question-list">
                 ${questions.map((question, index) => createQuestionCardHtml(question, index)).join("")}
             </div>
             <p id="pageMessage" class="page-message">すべての質問に回答してください</p>
-            ${actionButton}
+            <button type="button" class="next-page-btn" onclick="submitPlaystylePage()">診断する</button>
         `;
     }
 
@@ -1739,20 +1663,7 @@ canvas{max-width:100%;}
         if (clickedButton && typeof clickedButton.blur === "function") clickedButton.blur();
         const question = findActiveQuestionByDomKey(questionDomKey);
         if (!question) return;
-        if (question.section === "personality") personalityAnswers[question.id] = choiceKey;
-        else {
-            const answerKey = getAbilityAnswerKey(question);
-            const previousKey = abilityAnswers[answerKey];
-            abilityAnswers[answerKey] = choiceKey;
-            if (question.routeGroup === "common" && previousKey !== choiceKey) {
-                const selected = question.choices.find((choice) => choice.key === choiceKey);
-                clearNonCommonAbilityAnswers();
-                abilityAnswers[answerKey] = choiceKey;
-                appendAbilityGroupQuestions(selected?.selectedGroup || "");
-                showAbilityPage({ scrollTop: false, scrollToAfterQuestionKey: questionDomKey });
-                return;
-            }
-        }
+        personalityAnswers[question.id] = choiceKey;
         updateQuestionSelection(questionDomKey, choiceKey);
         blurActiveButton();
         scrollAfterAnswer(questionDomKey);
@@ -1777,7 +1688,7 @@ canvas{max-width:100%;}
             scrollToElementWithOffset(nextCard);
             return;
         }
-        const actionButton = document.querySelector(".next-page-btn, .submit-page-btn");
+        const actionButton = document.querySelector(".next-page-btn");
         if (actionButton) scrollToElementWithOffset(actionButton);
     }
 
@@ -1803,12 +1714,6 @@ canvas{max-width:100%;}
         showConfirm();
     }
 
-    function submitAbilityPage() {
-        const abilityQuestions = activeQuestions.filter((question) => question.section === "ability");
-        if (!validateQuestionsAnswered(abilityQuestions)) return;
-        finishDiagnosisFlow();
-    }
-
     function validateQuestionsAnswered(questions) {
         const missing = questions.find((question) => !getSelectedAnswer(question));
         const message = $("pageMessage");
@@ -1823,7 +1728,7 @@ canvas{max-width:100%;}
     }
 
     function getSelectedAnswer(question) {
-        return question.section === "personality" ? personalityAnswers[question.id] : abilityAnswers[getAbilityAnswerKey(question)];
+        return personalityAnswers[question.id];
     }
 
     function findActiveQuestionByDomKey(questionDomKey) {
@@ -1831,13 +1736,7 @@ canvas{max-width:100%;}
     }
 
     function getQuestionDomKey(question) {
-        return question.section === "personality" ? `personality__${question.id}` : `ability__${getAbilityAnswerKey(question)}`;
-    }
-
-    function clearNonCommonAbilityAnswers() {
-        activeQuestions.filter((question) => question.section === "ability" && question.routeGroup !== "common").forEach((question) => {
-            delete abilityAnswers[getAbilityAnswerKey(question)];
-        });
+        return `personality__${question.id}`;
     }
 
     function cssEscape(value) {
@@ -1862,27 +1761,6 @@ canvas{max-width:100%;}
         if (typeof activeElement.blur === "function") activeElement.blur();
     }
 
-    function appendAbilityStartQuestion() {
-        if (activeQuestions.some((question) => question.section === "ability")) return;
-        activeQuestions = [...personalityQuestions, ...uniqueQuestions(abilityQuestionBank.filter((question) => question.routeGroup === "common"))];
-    }
-
-    function appendAbilityGroupQuestions(group) {
-        const firstAbilityQuestionOnly = activeQuestions.filter((question) => question.section !== "ability" || question.routeGroup === "common");
-        const groupQuestions = uniqueQuestions(abilityQuestionBank.filter((question) => question.routeGroup === group));
-        activeQuestions = [...firstAbilityQuestionOnly.filter((question) => question.section !== "ability"), ...uniqueQuestions([...firstAbilityQuestionOnly.filter((question) => question.section === "ability"), ...groupQuestions])];
-    }
-
-    function uniqueQuestions(questions) {
-        const seen = new Set();
-        return questions.filter((question) => {
-            const key = `${question.id}__${question.question}`;
-            if (seen.has(key)) return false;
-            seen.add(key);
-            return true;
-        });
-    }
-
     function backQuestionFlow() {
         if (diagnosisMode === "ability") {
             showSimplePage("ability", "能力測定", "質問に答えると、あなたの能力値とレーダーチャートを確認できます。", "能力測定を始める", startAbilityMeasurementFlow);
@@ -1896,10 +1774,9 @@ canvas{max-width:100%;}
         $("confirmArea").classList.remove("is-hidden");
         $("chartBox").style.display = "none";
         $("confirmList").innerHTML = activeQuestions.map((question, index) => {
-            const selectedKey = question.section === "personality" ? personalityAnswers[question.id] : abilityAnswers[getAbilityAnswerKey(question)];
+            const selectedKey = personalityAnswers[question.id];
             const selected = question.choices.find((choice) => choice.key === selectedKey);
-            const label = question.section === "personality" ? text.personality : text.ability;
-            return `<li class="confirm-item"><strong>${label}${index + 1}. ${escapeHtml(question.question)}</strong><br>${selected ? `${escapeHtml(selected.key)}. ${escapeHtml(getDisplayChoiceText(selected))}` : text.unanswered}</li>`;
+            return `<li class="confirm-item"><strong>${text.personality}${index + 1}. ${escapeHtml(question.question)}</strong><br>${selected ? `${escapeHtml(selected.key)}. ${escapeHtml(getDisplayChoiceText(selected))}` : text.unanswered}</li>`;
         }).join("");
     }
 
@@ -2066,7 +1943,7 @@ canvas{max-width:100%;}
 
     function convertToRadarScores(scores) {
         const radarScores = {};
-        const groups = diagnosisMode === "ability" && abilityMeasurementData ? abilityMeasurementData.radarMap : radarGroups;
+        const groups = abilityMeasurementData?.radarMap || radarItemGroups;
         Object.entries(groups).forEach(([name, items]) => {
             const validItems = items.filter((item) => Object.prototype.hasOwnProperty.call(scores, item));
             const targetItems = validItems.length ? validItems : items;
@@ -2170,7 +2047,6 @@ canvas{max-width:100%;}
         return personalityTypes.find((type) => type.typeName === key) || personalityTypes.find((type) => type.key === key) || personalityTypes.find((type) => type.axes.join(" \u00d7 ") === key) || null;
     }
 
-    function getAbilityAnswerKey(question) { return `${question.routeGroup}__${question.id}__${question.question}`; }
     function clamp(value) { return Math.max(0, Math.min(100, Math.round(Number(value) || 0))); }
     function normalizeAbilityName(value) {
         const name = normalizeCell(value);
@@ -2222,10 +2098,8 @@ canvas{max-width:100%;}
     window.submitAbilityWeaknessStep = submitAbilityWeaknessStep;
     window.selectSelfRating = selectSelfRating;
     window.submitAbilitySelfRatingStep = submitAbilitySelfRatingStep;
-    window.selectChoice = selectChoiceForCurrentQuestion;
     window.selectChoiceFromButton = selectChoiceFromButton;
     window.submitPlaystylePage = submitPlaystylePage;
-    window.submitAbilityPage = submitAbilityPage;
     window.backQuestion = backQuestionFlow;
     window.returnToQuestions = returnToQuestionsFlow;
     window.finish = finishDiagnosisFlow;
