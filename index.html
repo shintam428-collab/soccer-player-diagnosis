@@ -707,19 +707,19 @@ canvas{max-width:100%;}
             }
         };
 
-        const [abilitiesRows, positionRows, additionalRows, baseRows, radarMapRows] = await Promise.all([
+        const [abilitiesRows, positionRows, additionalRows, radarMapRows] = await Promise.all([
             loadRequired("abilities_20.csv", files.abilities20),
             loadRequired("position_playstyles.csv", files.positionPlaystyles),
             loadRequired("additional_questions.csv", files.additionalQuestions),
-            loadRequired("question_templates.csv", files.abilityTemplates),
             loadRequired("radar_map.csv", files.radarMap)
         ]);
 
-        const [selectMapResult, scoringRows] = await Promise.all([
+        const [selectMapResult, baseRows, scoringRows] = await Promise.all([
             fetchFirstAvailableAbilityCsv([
                 { label: "ability_select_map.csv", path: files.abilitySelectMap },
                 { label: "ability_select_long.csv", path: files.abilitySelectLong }
             ]),
+            loadOptional("question_templates.csv", files.abilityTemplates),
             loadOptional("スコアリングルール.csv", files.scoringRules)
         ]);
 
@@ -734,10 +734,11 @@ canvas{max-width:100%;}
         const selectMap = parseAbilitySelectMap(selectMapResult.rows, abilities);
         const radarMap = parseRadarMap(radarMapRows, abilities);
         const additionalQuestions = parseAdditionalQuestions(additionalRows);
+        const baseAbilities = parseBaseAbilities(baseRows, abilities, "question_templates.csv");
 
         return {
             abilities,
-            baseAbilities: parseBaseAbilities(baseRows, abilities),
+            baseAbilities,
             positionPlaystyles: parsePositionPlaystyles(positionRows),
             additionalQuestions,
             selectMap,
@@ -754,10 +755,14 @@ canvas{max-width:100%;}
         return uniqueFound.length >= 20 ? ability20Names.filter((name) => uniqueFound.includes(name)) : ability20Names;
     }
 
-    function parseBaseAbilities(rows, abilities) {
+    function parseBaseAbilities(rows, abilities, fileName = "question_templates.csv") {
+        if (!rows || !rows.length) return [];
         let headerIndex = findHeaderRow(rows, ["position", "playstyle"]);
         if (headerIndex < 0) headerIndex = findHeaderRow(rows, ["ポジション", "プレースタイル"]);
-        if (headerIndex < 0) throw new Error("question_templates.csv format error");
+        if (headerIndex < 0) {
+            console.log(`${fileName}: position/playstyle列が見つからないため、基礎能力は中立値で計算します。`);
+            return [];
+        }
         const headers = rows[headerIndex].map(normalizeCell);
         const parsedRows = rows.slice(headerIndex + 1)
             .map((row) => rowToObject(headers, row))
@@ -767,7 +772,9 @@ canvas{max-width:100%;}
                 playstyle: row.playstyle || row["プレースタイル"] || row.style,
                 scores: Object.fromEntries(abilities.map((ability) => [ability, clamp(Number(getAbilityRowValue(row, ability)) || 0)]))
             }));
-        if (!parsedRows.length) throw new Error("question_templates.csv format error");
+        if (!parsedRows.length) {
+            console.log(`${fileName}: 有効なポジション×プレースタイル行がないため、基礎能力は中立値で計算します。`);
+        }
         return parsedRows;
     }
 
@@ -781,7 +788,7 @@ canvas{max-width:100%;}
     function parsePositionPlaystyles(rows) {
         let headerIndex = findHeaderRow(rows, ["position"]);
         if (headerIndex < 0) headerIndex = findHeaderRow(rows, ["ポジション"]);
-        if (headerIndex < 0) throw new Error("position_playstyles.csv format error");
+        if (headerIndex < 0) throw new Error("position_playstyles.csv format error: position または ポジション 列が見つかりません");
         const headers = rows[headerIndex].map(normalizeCell);
         const objects = rows.slice(headerIndex + 1).map((row) => rowToObject(headers, row));
         const map = {};
@@ -798,7 +805,7 @@ canvas{max-width:100%;}
             });
         });
         if (!Object.keys(map).length) {
-            throw new Error("position_playstyles.csv format error");
+            throw new Error("position_playstyles.csv format error: ポジションまたはプレースタイルの有効な行が見つかりません");
         }
         return map;
     }
@@ -1887,7 +1894,7 @@ canvas{max-width:100%;}
     function calculateAbilityScores() {
         const data = abilityMeasurementData;
         const baseRow = data.baseAbilities.find((row) => row.position === abilityMeasurementState.position && row.playstyle === abilityMeasurementState.playstyle);
-        const baseScores = baseRow?.scores || Object.fromEntries(data.abilities.map((ability) => [ability, 30]));
+        const baseScores = baseRow?.scores || Object.fromEntries(data.abilities.map((ability) => [ability, 50]));
         const additionalTotal = Object.values(abilityMeasurementState.additionalAnswers).reduce((sum, value) => sum + (Number(value) || 0), 0);
         const scores = Object.fromEntries(data.abilities.map((ability) => [ability, clamp((baseScores[ability] || 0) + additionalTotal)]));
 
