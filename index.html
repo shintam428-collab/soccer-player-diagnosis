@@ -562,25 +562,27 @@ canvas{max-width:100%;}
     ];
 
     const radarItemGroups = {
-        "オフェンス": ["決定力", "オフザボール", "ポジショニング", "ボールキープ"],
-        "ドリブル": ["足元の技術", "ボールコントロール", "ボールキープ", "ドリブル", "アイデア"],
-        "フィジカル": ["体の強さ", "ジャンプ", "ヘディング"],
+        "オフェンス": ["オフェンスセンス", "決定力", "パスを受ける動き", "オフザボール", "ポジショニング"],
+        "ドリブル": ["足元の技術", "ボールコントロール", "ドリブル", "ボールキープ"],
+        "フィジカル": ["体の強さ", "ヘディング", "ジャンプ"],
         "ディフェンス": ["対人守備", "守備意識", "予測力"],
-        "スピード": ["最高速度", "瞬発力", "推進力"],
-        "パス": ["グランダーパス", "ロングパス", "パス精度", "アイデア"]
+        "スピード": ["最高速度", "推進力", "瞬発力", "アジリティー"],
+        "パス": ["パス", "グランダーパス", "ロングパス", "パス精度", "センス", "アイデア"]
     };
 
     const defaultAbilitySelectMap = {
+        "オフェンス": ["オフェンスセンス", "決定力", "パスを受ける動き", "オフザボール", "ポジショニング"],
         "決定力": ["決定力"],
         "パスを受ける動き": ["オフザボール", "ポジショニング"],
         "足元の技術": ["足元の技術", "ボールコントロール"],
-        "ドリブル": ["ボールキープ", "ドリブル"],
+        "ドリブル": ["足元の技術", "ボールコントロール", "ドリブル", "ボールキープ"],
         "フィジカル": ["体の強さ"],
         "空中戦": ["ジャンプ", "ヘディング"],
         "ディフェンス": ["対人守備", "守備意識", "予測力"],
+        "スピード": ["最高速度", "推進力", "瞬発力"],
         "足の速さ": ["最高速度", "推進力"],
         "アジリティー": ["瞬発力"],
-        "パス": ["グランダーパス", "ロングパス", "パス精度"],
+        "パス": ["グランダーパス", "ロングパス", "パス精度", "アイデア"],
         "センス": ["アイデア"]
     };
 
@@ -731,7 +733,7 @@ canvas{max-width:100%;}
         }
 
         const abilities = parseAbilities20(abilitiesRows);
-        const selectMap = parseAbilitySelectMap(selectMapResult.rows, abilities);
+        const selectMap = normalizeAbilitySelectMap(parseAbilitySelectMap(selectMapResult.rows, abilities), abilities);
         const radarMap = parseRadarMap(radarMapRows, abilities);
         const additionalQuestions = parseAdditionalQuestions(additionalRows);
         const baseAbilities = parseBaseAbilities(baseRows, abilities, "question_templates.csv");
@@ -750,6 +752,17 @@ canvas{max-width:100%;}
     }
 
     function parseAbilities20(rows) {
+        const headerIndex = rows.findIndex((row) => row.some((cell) => ["ability", "ability_name", "能力", "能力名", "細かい能力"].includes(normalizeCell(cell))));
+        if (headerIndex >= 0) {
+            const headers = rows[headerIndex].map(normalizeCell);
+            const abilityColumn = ["ability", "ability_name", "能力", "能力名", "細かい能力"].find((header) => headers.includes(header));
+            const parsed = rows.slice(headerIndex + 1)
+                .map((row) => rowToObject(headers, row))
+                .map((row) => normalizeAbilityName(row[abilityColumn]))
+                .filter((value) => value && !isMetaPlaystyleColumn(value));
+            const uniqueParsed = unique(parsed);
+            if (uniqueParsed.length >= 6) return uniqueParsed;
+        }
         const found = rows.flat().map(normalizeAbilityName).filter((value) => ability20Names.includes(value));
         const uniqueFound = unique(found);
         return uniqueFound.length >= 20 ? ability20Names.filter((name) => uniqueFound.includes(name)) : ability20Names;
@@ -850,7 +863,7 @@ canvas{max-width:100%;}
             const item = row["選択項目"] || row["能力選択"] || row.item || row.label || row.name || row.select_item || row.category;
             const abilityText = row["細かい能力"] || row["能力"] || row.abilities || row.ability || row.ability_name || row.targets;
             if (!item || !abilityText) return;
-            const targets = abilityText.split(/[、,\/]/).map(normalizeAbilityName).filter((value) => abilities.includes(value));
+            const targets = abilityText.split(/[、,\/]/).map(normalizeCell).filter(Boolean);
             if (!targets.length) return;
             if (!map[item]) map[item] = [];
             targets.forEach((target) => {
@@ -858,6 +871,32 @@ canvas{max-width:100%;}
             });
         });
         return Object.keys(map).length ? map : defaultAbilitySelectMap;
+    }
+
+    function normalizeAbilitySelectMap(map, abilities) {
+        const normalizedMap = {};
+        [...Object.entries(defaultAbilitySelectMap), ...Object.entries(map)].forEach(([item, targets]) => {
+            const normalizedTargets = targets
+                .flatMap((target) => expandAbilityTarget(target))
+                .map(normalizeAbilityName)
+                .filter((target) => abilities.includes(target));
+            if (!normalizedTargets.length) return;
+            if (!normalizedMap[item]) normalizedMap[item] = [];
+            normalizedTargets.forEach((target) => {
+                if (!normalizedMap[item].includes(target)) normalizedMap[item].push(target);
+            });
+        });
+        return Object.keys(normalizedMap).length ? normalizedMap : defaultAbilitySelectMap;
+    }
+
+    function expandAbilityTarget(target) {
+        const original = normalizeCell(target);
+        const normalized = normalizeAbilityName(original);
+        if (original === "パス") return ["パス", "グランダーパス", "ロングパス", "パス精度", "アイデア"];
+        if (original === "センス") return ["センス", "アイデア"];
+        if (original === "アジリティー") return ["アジリティー", "瞬発力"];
+        if (original === "パスを受ける動き") return ["パスを受ける動き", "オフザボール", "ポジショニング"];
+        return [normalized];
     }
 
     function parseSelfRatingOptions(rows) {
@@ -874,7 +913,10 @@ canvas{max-width:100%;}
             const radar = row.radar || row.radar_item || row["項目"] || row["大項目"] || row["分類"];
             const abilityText = row.abilities || row["細かい能力"] || row["能力"] || row.ability || row.ability_name;
             if (!radar || !abilityText) return;
-            const targets = abilityText.split(/[、,\/]/).map(normalizeAbilityName).filter((value) => abilities.includes(value));
+            const targets = abilityText.split(/[、,\/]/)
+                .flatMap((value) => expandAbilityTarget(value))
+                .map(normalizeAbilityName)
+                .filter((value) => abilities.includes(value));
             if (!targets.length) return;
             if (!map[radar]) map[radar] = [];
             targets.forEach((target) => {
@@ -1556,7 +1598,7 @@ canvas{max-width:100%;}
     }
 
     function showAbilitySelfRatingStep() {
-        const ratingItems = abilityMeasurementData.selectOptions.filter((item) => !abilityMeasurementState.weaknesses.includes(item));
+        const ratingItems = abilityMeasurementData.abilities;
         renderAbilityStep("能力測定：自己評価", 82, `
             <div class="question-list">
                 ${ratingItems.map((item) => `
@@ -1587,7 +1629,7 @@ canvas{max-width:100%;}
     }
 
     function submitAbilitySelfRatingStep() {
-        const ratingItems = abilityMeasurementData.selectOptions.filter((item) => !abilityMeasurementState.weaknesses.includes(item));
+        const ratingItems = abilityMeasurementData.abilities;
         const missing = ratingItems.find((item) => abilityMeasurementState.ratings[item] === undefined);
         if (missing) {
             const message = $("pageMessage");
@@ -1845,8 +1887,8 @@ canvas{max-width:100%;}
                 <div class="section-card">
                     <h3>${text.abilityTitle}</h3>
                     <div class="ability-grid">${createAbilityHtml(radarScores)}</div>
-                    <button type="button" id="detailToggleBtn" class="detail-toggle-btn" onclick="toggleDetailAbilities()">細かい能力を見る</button>
-                    <div id="detailAbilityArea" class="detail-ability-area">
+                    <button type="button" id="detailToggleBtn" class="detail-toggle-btn" onclick="toggleDetailAbilities()">細かい能力を閉じる</button>
+                    <div id="detailAbilityArea" class="detail-ability-area is-open">
                         <h3>${text.detailTitle}</h3>
                         <div class="ability-grid">${createAbilityHtml(createOrderedDetailScores(detailScores))}</div>
                     </div>
@@ -1911,18 +1953,30 @@ canvas{max-width:100%;}
         const baseRow = data.baseAbilities.find((row) => row.position === abilityMeasurementState.position && row.playstyle === abilityMeasurementState.playstyle);
         const baseScores = baseRow?.scores || Object.fromEntries(data.abilities.map((ability) => [ability, 50]));
         const additionalTotal = Object.values(abilityMeasurementState.additionalAnswers).reduce((sum, value) => sum + (Number(value) || 0), 0);
-        const scores = Object.fromEntries(data.abilities.map((ability) => [ability, clamp((baseScores[ability] || 0) + additionalTotal)]));
+        const strengthAbilities = getStrengthAbilitySet();
+        const scores = {};
 
-        data.selectOptions.forEach((item) => {
-            if (abilityMeasurementState.weaknesses.includes(item)) return;
-            const rating = Number(abilityMeasurementState.ratings[item]) || 0;
-            const multiplier = abilityMeasurementState.strengths.includes(item) ? 3 : 1;
-            const targets = data.selectMap[item] || [];
-            targets.forEach((ability) => {
-                scores[ability] = Math.min(100, (scores[ability] || 0) + rating * multiplier);
-            });
+        data.abilities.forEach((ability) => {
+            const baseValue = Number(baseScores[ability]) || 0;
+            const rating = Number(abilityMeasurementState.ratings[ability]) || 0;
+            const multiplier = strengthAbilities.has(ability) ? 3 : 1;
+            scores[ability] = Math.min(100, Math.round(baseValue + additionalTotal + rating * multiplier));
         });
         return scores;
+    }
+
+    function getStrengthAbilitySet() {
+        const data = abilityMeasurementData;
+        const strengthAbilities = new Set();
+        abilityMeasurementState.strengths.forEach((item) => {
+            const targets = data.selectMap[item] || defaultAbilitySelectMap[item] || [];
+            targets
+                .flatMap((target) => expandAbilityTarget(target))
+                .map(normalizeAbilityName)
+                .filter((target) => data.abilities.includes(target))
+                .forEach((target) => strengthAbilities.add(target));
+        });
+        return strengthAbilities;
     }
 
     function convertToRadarScores(scores) {
