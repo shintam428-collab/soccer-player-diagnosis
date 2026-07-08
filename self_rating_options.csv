@@ -1,0 +1,8 @@
+﻿choice_id,display_order,left_label,right_label,score,circle_size,side,notes
+1,1,そう思う,そう思わない,10,large,agree,一番左の大きい丸
+2,2,そう思う,そう思わない,8,medium,agree,左寄りの丸
+3,3,そう思う,そう思わない,7,small,agree,少し左寄りの丸
+4,4,そう思う,そう思わない,5,small,neutral,真ん中の丸
+5,5,そう思う,そう思わない,4,small,disagree,少し右寄りの丸
+6,6,そう思う,そう思わない,2,medium,disagree,右寄りの丸
+7,7,そう思う,そう思わない,1,large,disagree,一番右の大きい丸

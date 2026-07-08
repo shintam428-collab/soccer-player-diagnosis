@@ -1,0 +1,7 @@
+﻿category,target,ask_self_rating,multiplier,max_add,formula,max_score,notes
+base,全能力,no,0,0,基礎能力 = CSVのポジション×プレースタイルの値,60,基礎能力は30〜60点
+additional,全能力,no,0,10,追加後能力 = 基礎能力 + 追加質問合計点,70,追加質問5問の合計点を20個すべてに加点
+strong,得意能力,yes,3,30,最終能力 = 追加後能力 + 自己評価点 × 3,100,得意は最大3つまで
+normal,普通能力,yes,1,10,最終能力 = 追加後能力 + 自己評価点 × 1,80,得意・苦手に選ばれていない能力
+weak,苦手能力,no,0,0,最終能力 = 追加後能力,70,苦手は最大3つまで。自己評価なし
+cap,全能力,no,0,0,"finalScore = Math.min(finalScore, 100)",100,最後に100点を超えないようにする
