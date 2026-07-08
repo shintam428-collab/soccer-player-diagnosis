@@ -262,6 +262,12 @@ canvas{max-width:100%;}
 .choice-text{flex:1;}
 .choice-btn.is-selected,
 .choice-btn.selected{border-color:#16a34a;background:#dcfce7!important;box-shadow:0 0 0 3px rgba(34,197,94,0.25);}
+.choice-btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important;}
+.rating-scale{display:flex;align-items:center;justify-content:space-between;gap:14px;color:#334155;font-weight:800;}
+.rating-dots{display:flex;align-items:center;justify-content:center;gap:10px;flex:1;}
+.rating-dot{width:30px;height:30px;min-width:30px;margin:0;padding:0;border-radius:50%;border:2px solid #94a3b8;background:white!important;box-shadow:0 4px 10px rgba(15,23,42,0.12);}
+.rating-dot:hover{transform:scale(1.08);border-color:#2563eb;}
+.rating-dot.is-selected{background:#2563eb!important;border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,0.18);}
 .question-list{display:grid;gap:18px;text-align:left;margin-top:18px;}
 .question-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:18px;box-shadow:0 5px 14px rgba(15,23,42,0.08);scroll-margin-top:110px;}
 .question-card__title{font-size:18px;font-weight:800;line-height:1.65;color:#0f172a;margin:0 0 14px;}
@@ -356,6 +362,9 @@ canvas{max-width:100%;}
     .type-card__image{padding:2px;}
     .type-card__name{font-size:13px;}
     .question-card{scroll-margin-top:120px;}
+    .rating-scale{display:block;text-align:center;}
+    .rating-dots{margin:12px 0;gap:8px;}
+    .rating-dot{width:26px;height:26px;min-width:26px;}
     .type-detail-card.is-open{display:block;}
     .type-detail-card__image{width:120px;margin:0 auto 14px;display:block;}
     .type-detail-card__body h3{text-align:center;font-size:22px;}
@@ -488,7 +497,15 @@ canvas{max-width:100%;}
     const files = {
         personalityQuestions: "./personality_questions.csv",
         personalityTypes: "./personality_types.csv",
-        abilityQuestions: "./questions.csv"
+        abilityQuestions: "./questions.csv",
+        baseAbilities: "./base_abilities.csv",
+        positionPlaystyles: "./position_playstyles.csv",
+        additionalQuestions: "./additional_questions.csv",
+        abilitySelectMap: "./ability_select_map.csv",
+        selfRatingOptions: "./self_rating_options.csv",
+        radarMap: "./radar_map.csv",
+        abilities20: "./abilities_20.csv",
+        scoringRules: "./scoring_rules.csv"
     };
     const text = {
         loading: "\u8aad\u307f\u8fbc\u307f\u4e2d...",
@@ -525,23 +542,58 @@ canvas{max-width:100%;}
     let loadErrors = [];
     let homeTypeCards = [];
     let diagnosisMode = "playstyle";
+    let abilityMeasurementData = null;
+    let abilityMeasurementLoadError = "";
+    let abilityMeasurementState = {};
 
     const abilityNameAliases = {
         "ボールコントロール": "タッチ精度",
         "フライパス": "ロングパス",
         "フィジカル": "体の強さ",
         "ボール奪取": "ボールハント",
-        "アグレッシブネス": "闘争心"
+        "アグレッシブネス": "闘争心",
+        "パス制度": "パス精度"
     };
 
+    const ability20Names = [
+        "決定力","オフザボール","ポジショニング","ボールキープ","足元の技術",
+        "ボールコントロール","ドリブル","アイデア","体の強さ","ジャンプ",
+        "ヘディング","対人守備","守備意識","予測力","最高速度",
+        "瞬発力","推進力","グランダーパス","ロングパス","パス精度"
+    ];
+
     const radarItemGroups = {
-        "オフェンス": ["オフェンスセンス", "決定力"],
-        "ドリブル": ["タッチ精度", "ドリブル", "ボールキープ"],
-        "フィジカル": ["体の強さ", "ヘディング", "ジャンプ力"],
-        "ディフェンス": ["ボールハント", "闘争心", "守備意識"],
-        "スピード": ["スピード", "瞬発力"],
-        "パス": ["グランダーパス", "ロングパス", "カーブ"]
+        "オフェンス": ["決定力", "オフザボール", "ポジショニング", "ボールキープ"],
+        "ドリブル": ["足元の技術", "ボールコントロール", "ボールキープ", "ドリブル", "アイデア"],
+        "フィジカル": ["体の強さ", "ジャンプ", "ヘディング"],
+        "ディフェンス": ["対人守備", "守備意識", "予測力"],
+        "スピード": ["最高速度", "瞬発力", "推進力"],
+        "パス": ["グランダーパス", "ロングパス", "パス精度", "アイデア"]
     };
+
+    const defaultAbilitySelectMap = {
+        "決定力": ["決定力"],
+        "パスを受ける動き": ["オフザボール", "ポジショニング"],
+        "足元の技術": ["足元の技術", "ボールコントロール"],
+        "ドリブル": ["ボールキープ", "ドリブル"],
+        "フィジカル": ["体の強さ"],
+        "空中戦": ["ジャンプ", "ヘディング"],
+        "ディフェンス": ["対人守備", "守備意識", "予測力"],
+        "足の速さ": ["最高速度", "推進力"],
+        "アジリティー": ["瞬発力"],
+        "パス": ["グランダーパス", "ロングパス", "パス精度"],
+        "センス": ["アイデア"]
+    };
+
+    const defaultAdditionalQuestions = [
+        "視野の広さに自信がありますか？",
+        "サッカーIQに自信がありますか？",
+        "両足でボールを蹴れますか？",
+        "身体的な強みに自信がありますか？",
+        "サッカーが好きですか？"
+    ];
+
+    const selfRatingScores = [10, 8, 7, 5, 4, 2, 1];
 
     const typeAccents = ["#f97316","#eab308","#ef4444","#dc2626","#0ea5e9","#2563eb","#b45309","#7c3aed","#14b8a6","#8b5cf6","#22c55e","#16a34a","#06b6d4","#4f46e5","#15803d","#0f766e"];
 
@@ -557,10 +609,15 @@ canvas{max-width:100%;}
 
         try {
             personalityTypes = await loadPersonalityTypes();
-            [personalityQuestions, abilityQuestionBank] = await Promise.all([
-                loadPersonalityQuestions(personalityTypes.map((type) => type.typeName)),
-                loadAbilityQuestions()
-            ]);
+            personalityQuestions = await loadPersonalityQuestions(personalityTypes.map((type) => type.typeName));
+            try {
+                abilityMeasurementData = await loadAbilityMeasurementData();
+                abilityQuestionBank = [];
+                console.log("ability measurement CSV loaded");
+            } catch (abilityError) {
+                console.log("Ability measurement CSV load failed", abilityError);
+                abilityMeasurementLoadError = "能力診断用CSVを読み込めませんでした";
+            }
             axisOrder = unique(personalityQuestions.map((question) => question.axis).filter(Boolean));
             $("startBtn").disabled = false;
             $("startBtn").textContent = text.start;
@@ -568,7 +625,6 @@ canvas{max-width:100%;}
             updateStatus("");
             console.log("personality_questions.csv loaded:", personalityQuestions.length);
             console.log("personality_types.csv loaded:", personalityTypes.length);
-            console.log("questions.csv ability questions loaded:", abilityQuestionBank.length);
         } catch (error) {
             console.log("Diagnosis CSV load failed", error);
             updateStatus(loadErrors.join("<br>") || text.dataError);
@@ -630,6 +686,130 @@ canvas{max-width:100%;}
                 description: row.description,
                 axes: [row.axis_attack_support, row.axis_intuition_calm, row.axis_speed_physical, row.axis_free_leader]
             }));
+    }
+
+    async function loadAbilityMeasurementData() {
+        const [
+            baseRows,
+            positionRows,
+            additionalRows,
+            selectMapRows,
+            selfRatingRows,
+            radarMapRows,
+            abilitiesRows,
+            scoringRows
+        ] = await Promise.all([
+            fetchCsvRows(files.baseAbilities, "能力診断用CSVを読み込めませんでした"),
+            fetchCsvRows(files.positionPlaystyles, "能力診断用CSVを読み込めませんでした"),
+            fetchCsvRows(files.additionalQuestions, "能力診断用CSVを読み込めませんでした"),
+            fetchCsvRows(files.abilitySelectMap, "能力診断用CSVを読み込めませんでした"),
+            fetchCsvRows(files.selfRatingOptions, "能力診断用CSVを読み込めませんでした"),
+            fetchCsvRows(files.radarMap, "能力診断用CSVを読み込めませんでした"),
+            fetchCsvRows(files.abilities20, "能力診断用CSVを読み込めませんでした"),
+            fetchCsvRows(files.scoringRules, "能力診断用CSVを読み込めませんでした")
+        ]);
+
+        const abilities = parseAbilities20(abilitiesRows);
+        const selectMap = parseAbilitySelectMap(selectMapRows, abilities);
+        const radarMap = parseRadarMap(radarMapRows, abilities);
+        const additionalQuestions = parseAdditionalQuestions(additionalRows);
+
+        return {
+            abilities,
+            baseAbilities: parseBaseAbilities(baseRows, abilities),
+            positionPlaystyles: parsePositionPlaystyles(positionRows),
+            additionalQuestions,
+            selectMap,
+            selectOptions: Object.keys(selectMap),
+            selfRatingOptions: parseSelfRatingOptions(selfRatingRows),
+            radarMap,
+            scoringRows
+        };
+    }
+
+    function parseAbilities20(rows) {
+        const found = rows.flat().map(normalizeAbilityName).filter((value) => ability20Names.includes(value));
+        const uniqueFound = unique(found);
+        return uniqueFound.length >= 20 ? ability20Names.filter((name) => uniqueFound.includes(name)) : ability20Names;
+    }
+
+    function parseBaseAbilities(rows, abilities) {
+        const headerIndex = findHeaderRow(rows, ["position", "playstyle"]);
+        if (headerIndex < 0) throw new Error("base_abilities.csv format error");
+        const headers = rows[headerIndex].map(normalizeCell);
+        return rows.slice(headerIndex + 1)
+            .map((row) => rowToObject(headers, row))
+            .filter((row) => row.position && row.playstyle)
+            .map((row) => ({
+                position: row.position,
+                playstyle: row.playstyle,
+                scores: Object.fromEntries(abilities.map((ability) => [ability, clamp(Number(row[ability]) || 0)]))
+            }));
+    }
+
+    function parsePositionPlaystyles(rows) {
+        const headerIndex = findHeaderRow(rows, ["position"]);
+        if (headerIndex < 0) throw new Error("position_playstyles.csv format error");
+        const headers = rows[headerIndex].map(normalizeCell);
+        const objects = rows.slice(headerIndex + 1).map((row) => rowToObject(headers, row));
+        const map = {};
+        objects.forEach((row) => {
+            const position = row.position || row["ポジション"];
+            const playstyle = row.playstyle || row["プレースタイル"] || row.style;
+            if (!position) return;
+            if (!map[position]) map[position] = [];
+            if (playstyle && !map[position].includes(playstyle)) map[position].push(playstyle);
+            headers.forEach((header) => {
+                if (["position", "ポジション", "playstyle", "プレースタイル", "style"].includes(header)) return;
+                const value = normalizeCell(row[header]);
+                if (value && !map[position].includes(value)) map[position].push(value);
+            });
+        });
+        if (!Object.keys(map).length) {
+            throw new Error("position_playstyles.csv format error");
+        }
+        return map;
+    }
+
+    function parseAdditionalQuestions(rows) {
+        const flatQuestions = rows.flat().map(normalizeCell).filter((value) => value && !["question", "質問"].includes(value));
+        const questions = flatQuestions.filter((value) => value.includes("？") || value.includes("?"));
+        return (questions.length ? questions : defaultAdditionalQuestions).slice(0, 5);
+    }
+
+    function parseAbilitySelectMap(rows, abilities) {
+        const headerIndex = rows.findIndex((row) => row.some((cell) => ["選択項目", "item", "label"].includes(normalizeCell(cell))));
+        if (headerIndex < 0) return defaultAbilitySelectMap;
+        const headers = rows[headerIndex].map(normalizeCell);
+        const map = {};
+        rows.slice(headerIndex + 1).map((row) => rowToObject(headers, row)).forEach((row) => {
+            const item = row["選択項目"] || row.item || row.label || row.name;
+            const abilityText = row["細かい能力"] || row.abilities || row.ability || row.targets;
+            if (!item || !abilityText) return;
+            const targets = abilityText.split(/[、,\/]/).map(normalizeAbilityName).filter((value) => abilities.includes(value));
+            if (targets.length) map[item] = targets;
+        });
+        return Object.keys(map).length ? map : defaultAbilitySelectMap;
+    }
+
+    function parseSelfRatingOptions(rows) {
+        const options = rows.flat().map((cell) => Number(normalizeCell(cell))).filter((value) => Number.isFinite(value));
+        return options.length >= 7 ? options.slice(0, 7) : selfRatingScores;
+    }
+
+    function parseRadarMap(rows, abilities) {
+        const headerIndex = rows.findIndex((row) => row.some((cell) => ["radar", "項目", "大項目"].includes(normalizeCell(cell))));
+        if (headerIndex < 0) return radarItemGroups;
+        const headers = rows[headerIndex].map(normalizeCell);
+        const map = {};
+        rows.slice(headerIndex + 1).map((row) => rowToObject(headers, row)).forEach((row) => {
+            const radar = row.radar || row["項目"] || row["大項目"];
+            const abilityText = row.abilities || row["細かい能力"] || row.ability;
+            if (!radar || !abilityText) return;
+            const targets = abilityText.split(/[、,\/]/).map(normalizeAbilityName).filter((value) => abilities.includes(value));
+            if (targets.length) map[radar] = targets;
+        });
+        return Object.keys(map).length ? map : radarItemGroups;
     }
 
     async function loadAbilityQuestions() {
@@ -956,6 +1136,10 @@ canvas{max-width:100%;}
 
     function showAbilityMeasurementTop() {
         diagnosisMode = "ability";
+        if (!abilityMeasurementData) {
+            showSimplePage("ability", "能力測定", abilityMeasurementLoadError || "能力診断用CSVを読み込めませんでした");
+            return;
+        }
         showSimplePage("ability", "能力測定", "質問に答えると、あなたの能力値とレーダーチャートを確認できます。", "能力測定を始める", startAbilityMeasurementFlow);
     }
 
@@ -1080,15 +1264,14 @@ canvas{max-width:100%;}
     }
 
     function startAbilityMeasurementFlow() {
-        if (!abilityQuestionBank.length) {
-            showSimplePage("ability", "能力測定", text.dataError);
+        if (!abilityMeasurementData) {
+            showSimplePage("ability", "能力測定", abilityMeasurementLoadError || "能力診断用CSVを読み込めませんでした");
             return;
         }
         diagnosisMode = "ability";
         setActiveNav("ability");
         currentIndex = 0;
-        abilityAnswers = {};
-        activeQuestions = [];
+        resetAbilityMeasurementState();
         $("startScreen").classList.add("is-hidden");
         $("simplePage").classList.add("is-hidden");
         $("quizArea").classList.remove("is-hidden");
@@ -1098,7 +1281,20 @@ canvas{max-width:100%;}
         $("chartBox").style.display = "none";
         $("result").innerHTML = "";
         updateStatus("");
-        showAbilityPage();
+        showAbilityPositionStep();
+    }
+
+    function resetAbilityMeasurementState() {
+        abilityMeasurementState = {
+            position: "",
+            playstyle: "",
+            additionalAnswers: {},
+            strengths: [],
+            weaknesses: [],
+            ratings: {}
+        };
+        abilityAnswers = {};
+        activeQuestions = [];
     }
 
     function showPersonalityPage() {
@@ -1116,26 +1312,200 @@ canvas{max-width:100%;}
     }
 
     function showAbilityPage(options = {}) {
+        showAbilityPositionStep();
+    }
+
+    function renderAbilityStep(title, progressPercent, html, showBack = true) {
         blurActiveButton();
         clearChoiceButtonStates();
-        appendAbilityStartQuestion();
-        const commonQuestion = activeQuestions.find((question) => question.section === "ability" && question.routeGroup === "common");
-        const commonAnswer = commonQuestion ? abilityAnswers[getAbilityAnswerKey(commonQuestion)] : "";
-        const selectedCommonChoice = commonQuestion?.choices.find((choice) => choice.key === commonAnswer);
-        if (selectedCommonChoice?.selectedGroup) appendAbilityGroupQuestions(selectedCommonChoice.selectedGroup);
-        const abilityQuestions = activeQuestions.filter((question) => question.section === "ability");
-        $("progressText").textContent = diagnosisMode === "ability" ? "能力測定" : `${text.ability} 2 / 2`;
-        $("progressFill").style.width = "100%";
-        $("question").textContent = text.ability;
-        $("choices").innerHTML = createQuestionListHtml(abilityQuestions, "ability");
+        $("progressText").textContent = title;
+        $("progressFill").style.width = `${progressPercent}%`;
+        $("question").textContent = title;
+        $("choices").innerHTML = html;
         $("result").innerHTML = "";
         $("questionButtons").style.display = "block";
-        $("backQuestionBtn").style.display = "inline-block";
-        if (options.scrollToAfterQuestionKey) {
-            setTimeout(() => scrollAfterAnswer(options.scrollToAfterQuestionKey), 0);
-        } else if (options.scrollTop !== false) {
-            window.scrollTo({ top: 0, behavior: "smooth" });
+        $("backQuestionBtn").style.display = showBack ? "inline-block" : "none";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function showAbilityPositionStep() {
+        const positions = Object.keys(abilityMeasurementData.positionPlaystyles);
+        renderAbilityStep("能力測定：ポジション選択", 12, `
+            <div class="question-list">
+                <section class="question-card">
+                    <h3 class="question-card__title">あなたのポジションを選んでください</h3>
+                    <div class="question-card__choices">
+                        ${positions.map((position) => `<button type="button" class="choice-btn" onclick="selectAbilityPosition('${escapeAttribute(position)}')"><span class="choice-text">${escapeHtml(position)}</span></button>`).join("")}
+                    </div>
+                </section>
+            </div>
+        `, false);
+    }
+
+    function selectAbilityPosition(position) {
+        abilityMeasurementState.position = position;
+        abilityMeasurementState.playstyle = "";
+        showAbilityPlaystyleStep();
+    }
+
+    function showAbilityPlaystyleStep() {
+        const playstyles = abilityMeasurementData.positionPlaystyles[abilityMeasurementState.position] || [];
+        renderAbilityStep("能力測定：プレースタイル選択", 24, `
+            <div class="question-list">
+                <section class="question-card">
+                    <h3 class="question-card__title">${escapeHtml(abilityMeasurementState.position)} のプレースタイルを選んでください</h3>
+                    <div class="question-card__choices">
+                        ${playstyles.map((playstyle) => `<button type="button" class="choice-btn" onclick="selectAbilityPlaystyle('${escapeAttribute(playstyle)}')"><span class="choice-text">${escapeHtml(playstyle)}</span></button>`).join("")}
+                    </div>
+                </section>
+            </div>
+        `);
+    }
+
+    function selectAbilityPlaystyle(playstyle) {
+        abilityMeasurementState.playstyle = playstyle;
+        showAbilityAdditionalStep();
+    }
+
+    function showAbilityAdditionalStep() {
+        const options = [
+            { label: "とても当てはまる", value: 2 },
+            { label: "少し当てはまる", value: 1 },
+            { label: "あまり当てはまらない", value: 0 }
+        ];
+        renderAbilityStep("能力測定：追加質問", 38, `
+            <div class="question-list">
+                ${abilityMeasurementData.additionalQuestions.map((question, index) => `
+                    <section class="question-card" data-additional-index="${index}">
+                        <h3 class="question-card__title">Q${index + 1}. ${escapeHtml(question)}</h3>
+                        <div class="question-card__choices">
+                            ${options.map((option) => `<button type="button" class="choice-btn${abilityMeasurementState.additionalAnswers[index] === option.value ? " is-selected selected" : ""}" onclick="selectAdditionalAnswer(${index}, ${option.value}, this)"><span class="choice-text">${escapeHtml(option.label)}</span></button>`).join("")}
+                        </div>
+                    </section>
+                `).join("")}
+            </div>
+            <p id="pageMessage" class="page-message">すべての質問に回答してください</p>
+            <button type="button" class="next-page-btn" onclick="submitAbilityAdditionalStep()">次へ</button>
+        `);
+    }
+
+    function selectAdditionalAnswer(index, value, button) {
+        abilityMeasurementState.additionalAnswers[index] = value;
+        const card = button.closest(".question-card");
+        card.querySelectorAll(".choice-btn").forEach((item) => item.classList.remove("is-selected", "selected"));
+        button.classList.add("is-selected", "selected");
+        const nextCard = card.nextElementSibling;
+        if (nextCard?.classList.contains("question-card")) scrollToElementWithOffset(nextCard);
+    }
+
+    function submitAbilityAdditionalStep() {
+        if (abilityMeasurementData.additionalQuestions.some((_, index) => abilityMeasurementState.additionalAnswers[index] === undefined)) {
+            const message = $("pageMessage");
+            if (message) message.classList.add("is-visible");
+            return;
         }
+        showAbilitySelectStep("strengths");
+    }
+
+    function showAbilitySelectStep(kind) {
+        const isStrength = kind === "strengths";
+        const selected = abilityMeasurementState[kind];
+        const blocked = isStrength ? abilityMeasurementState.weaknesses : abilityMeasurementState.strengths;
+        renderAbilityStep(isStrength ? "能力測定：得意な能力" : "能力測定：苦手な能力", isStrength ? 52 : 66, `
+            <div class="question-list">
+                <section class="question-card">
+                    <h3 class="question-card__title">${isStrength ? "得意な能力を最大3つまで選んでください" : "苦手な能力を最大3つまで選んでください"}</h3>
+                    <div class="question-card__choices">
+                        ${abilityMeasurementData.selectOptions.map((item) => {
+                            const disabled = blocked.includes(item);
+                            const active = selected.includes(item);
+                            return `<button type="button" class="choice-btn${active ? " is-selected selected" : ""}" ${disabled ? "disabled" : ""} onclick="toggleAbilitySelect('${kind}', '${escapeAttribute(item)}', this)"><span class="choice-text">${escapeHtml(item)}${disabled ? "（反対側で選択済み）" : ""}</span></button>`;
+                        }).join("")}
+                    </div>
+                </section>
+            </div>
+            <p id="pageMessage" class="page-message">最大3つまで選べます</p>
+            <button type="button" class="next-page-btn" onclick="${isStrength ? "submitAbilityStrengthStep()" : "submitAbilityWeaknessStep()"}">次へ</button>
+        `);
+    }
+
+    function toggleAbilitySelect(kind, item, button) {
+        const selected = abilityMeasurementState[kind];
+        const index = selected.indexOf(item);
+        if (index >= 0) {
+            selected.splice(index, 1);
+            button.classList.remove("is-selected", "selected");
+            return;
+        }
+        if (selected.length >= 3) {
+            const message = $("pageMessage");
+            if (message) message.classList.add("is-visible");
+            return;
+        }
+        selected.push(item);
+        button.classList.add("is-selected", "selected");
+    }
+
+    function submitAbilityStrengthStep() {
+        showAbilitySelectStep("weaknesses");
+    }
+
+    function submitAbilityWeaknessStep() {
+        showAbilitySelfRatingStep();
+    }
+
+    function showAbilitySelfRatingStep() {
+        const ratingItems = abilityMeasurementData.selectOptions.filter((item) => !abilityMeasurementState.weaknesses.includes(item));
+        renderAbilityStep("能力測定：自己評価", 82, `
+            <div class="question-list">
+                ${ratingItems.map((item) => `
+                    <section class="question-card" data-rating-item="${escapeAttribute(item)}">
+                        <h3 class="question-card__title">同じ年代・同じレベルの周りの人と比べて、あなたの${escapeHtml(item)}は高いと思いますか？</h3>
+                        <div class="rating-scale">
+                            <span>そう思う</span>
+                            <div class="rating-dots">
+                                ${abilityMeasurementData.selfRatingOptions.map((score, index) => `<button type="button" class="rating-dot${abilityMeasurementState.ratings[item] === score ? " is-selected" : ""}" aria-label="${index + 1}番目" onclick="selectSelfRating('${escapeAttribute(item)}', ${score}, this)"></button>`).join("")}
+                            </div>
+                            <span>そう思わない</span>
+                        </div>
+                    </section>
+                `).join("")}
+            </div>
+            <p id="pageMessage" class="page-message">すべての自己評価に回答してください</p>
+            <button type="button" class="next-page-btn" onclick="submitAbilitySelfRatingStep()">回答確認へ</button>
+        `);
+    }
+
+    function selectSelfRating(item, score, button) {
+        abilityMeasurementState.ratings[item] = score;
+        const card = button.closest(".question-card");
+        card.querySelectorAll(".rating-dot").forEach((dot) => dot.classList.remove("is-selected"));
+        button.classList.add("is-selected");
+        const nextCard = card.nextElementSibling;
+        if (nextCard?.classList.contains("question-card")) scrollToElementWithOffset(nextCard);
+    }
+
+    function submitAbilitySelfRatingStep() {
+        const ratingItems = abilityMeasurementData.selectOptions.filter((item) => !abilityMeasurementState.weaknesses.includes(item));
+        const missing = ratingItems.find((item) => abilityMeasurementState.ratings[item] === undefined);
+        if (missing) {
+            const message = $("pageMessage");
+            if (message) message.classList.add("is-visible");
+            return;
+        }
+        showAbilityConfirm();
+    }
+
+    function showAbilityConfirm() {
+        $("quizCard").classList.add("is-hidden");
+        $("confirmArea").classList.remove("is-hidden");
+        $("chartBox").style.display = "none";
+        $("confirmList").innerHTML = `
+            <li class="confirm-item"><strong>ポジション</strong><br>${escapeHtml(abilityMeasurementState.position)}</li>
+            <li class="confirm-item"><strong>プレースタイル</strong><br>${escapeHtml(abilityMeasurementState.playstyle)}</li>
+            <li class="confirm-item"><strong>得意な能力</strong><br>${escapeHtml(abilityMeasurementState.strengths.join("、") || "なし")}</li>
+            <li class="confirm-item"><strong>苦手な能力</strong><br>${escapeHtml(abilityMeasurementState.weaknesses.join("、") || "なし")}</li>
+        `;
     }
 
     function createQuestionListHtml(questions, section) {
@@ -1350,7 +1720,7 @@ canvas{max-width:100%;}
     function returnToQuestionsFlow() {
         $("confirmArea").classList.add("is-hidden");
         $("quizCard").classList.remove("is-hidden");
-        if (diagnosisMode === "ability") showAbilityPage();
+        if (diagnosisMode === "ability") showAbilitySelfRatingStep();
         else showPersonalityPage();
     }
 
@@ -1374,7 +1744,7 @@ canvas{max-width:100%;}
                 <div class="section-card">
                     <h3>${text.abilityTitle}</h3>
                     <div class="ability-grid">${createAbilityHtml(radarScores)}</div>
-                    <button type="button" id="detailToggleBtn" class="detail-toggle-btn" onclick="toggleDetailAbilities()">${text.detailOpen}</button>
+                    <button type="button" id="detailToggleBtn" class="detail-toggle-btn" onclick="toggleDetailAbilities()">細かい能力を見る</button>
                     <div id="detailAbilityArea" class="detail-ability-area">
                         <h3>${text.detailTitle}</h3>
                         <div class="ability-grid">${createAbilityHtml(createOrderedDetailScores(detailScores))}</div>
@@ -1436,19 +1806,28 @@ canvas{max-width:100%;}
     }
 
     function calculateAbilityScores() {
-        const scores = Object.fromEntries(scoreItems.map((item) => [item, 0]));
-        activeQuestions.filter((question) => question.section === "ability").forEach((question) => {
-            const selectedKey = abilityAnswers[getAbilityAnswerKey(question)];
-            const selected = question.choices.find((choice) => choice.key === selectedKey);
-            if (!selected) return;
-            scoreItems.forEach((item) => scores[item] = clamp(scores[item] + (selected.scores[item] || 0)));
+        const data = abilityMeasurementData;
+        const baseRow = data.baseAbilities.find((row) => row.position === abilityMeasurementState.position && row.playstyle === abilityMeasurementState.playstyle);
+        const baseScores = baseRow?.scores || Object.fromEntries(data.abilities.map((ability) => [ability, 30]));
+        const additionalTotal = Object.values(abilityMeasurementState.additionalAnswers).reduce((sum, value) => sum + (Number(value) || 0), 0);
+        const scores = Object.fromEntries(data.abilities.map((ability) => [ability, clamp((baseScores[ability] || 0) + additionalTotal)]));
+
+        data.selectOptions.forEach((item) => {
+            if (abilityMeasurementState.weaknesses.includes(item)) return;
+            const rating = Number(abilityMeasurementState.ratings[item]) || 0;
+            const multiplier = abilityMeasurementState.strengths.includes(item) ? 3 : 1;
+            const targets = data.selectMap[item] || [];
+            targets.forEach((ability) => {
+                scores[ability] = Math.min(100, (scores[ability] || 0) + rating * multiplier);
+            });
         });
         return scores;
     }
 
     function convertToRadarScores(scores) {
         const radarScores = {};
-        Object.entries(radarGroups).forEach(([name, items]) => {
+        const groups = diagnosisMode === "ability" && abilityMeasurementData ? abilityMeasurementData.radarMap : radarGroups;
+        Object.entries(groups).forEach(([name, items]) => {
             const validItems = items.filter((item) => Object.prototype.hasOwnProperty.call(scores, item));
             const targetItems = validItems.length ? validItems : items;
             const total = targetItems.reduce((sum, item) => sum + (Number(scores[item]) || 0), 0);
@@ -1461,7 +1840,7 @@ canvas{max-width:100%;}
         const canvas = $("radarChart");
         const chartBox = $("chartBox");
         const ctx = canvas.getContext("2d");
-        const labels = Object.keys(radarGroups);
+        const labels = Object.keys(scores);
         const values = labels.map((label) => clamp(scores[label] || 0));
         const size = Math.min(360, Math.max(280, chartBox.clientWidth || 320));
         const scale = window.devicePixelRatio || 1;
@@ -1533,7 +1912,8 @@ canvas{max-width:100%;}
 
     function createOrderedDetailScores(scores) {
         const orderedScores = {};
-        unique(Object.values(radarItemGroups).flat()).forEach((item) => orderedScores[item] = clamp(scores[item] || 0));
+        const abilities = abilityMeasurementData?.abilities || ability20Names;
+        abilities.forEach((item) => orderedScores[item] = clamp(scores[item] || 0));
         return orderedScores;
     }
 
@@ -1543,7 +1923,7 @@ canvas{max-width:100%;}
         if (!detailArea || !toggleButton) return;
         const isOpen = detailArea.classList.contains("is-open");
         detailArea.classList.toggle("is-open", !isOpen);
-        toggleButton.textContent = isOpen ? text.detailOpen : text.detailClose;
+        toggleButton.textContent = isOpen ? "細かい能力を見る" : "細かい能力を閉じる";
     }
 
     function findPersonalityType(key) {
@@ -1593,6 +1973,15 @@ canvas{max-width:100%;}
     window.showAbilityMeasurementTop = showAbilityMeasurementTop;
     window.showPersonalityComingSoon = showPersonalityComingSoon;
     window.showAllDiagnosisComingSoon = showAllDiagnosisComingSoon;
+    window.selectAbilityPosition = selectAbilityPosition;
+    window.selectAbilityPlaystyle = selectAbilityPlaystyle;
+    window.selectAdditionalAnswer = selectAdditionalAnswer;
+    window.submitAbilityAdditionalStep = submitAbilityAdditionalStep;
+    window.toggleAbilitySelect = toggleAbilitySelect;
+    window.submitAbilityStrengthStep = submitAbilityStrengthStep;
+    window.submitAbilityWeaknessStep = submitAbilityWeaknessStep;
+    window.selectSelfRating = selectSelfRating;
+    window.submitAbilitySelfRatingStep = submitAbilitySelfRatingStep;
     window.selectChoice = selectChoiceForCurrentQuestion;
     window.selectChoiceFromButton = selectChoiceFromButton;
     window.submitPlaystylePage = submitPlaystylePage;
