@@ -394,16 +394,16 @@ canvas{max-width:100%;}
     <div class="site-header__inner">
         <div class="site-brand">サッカースタイル診断</div>
         <nav class="site-nav" aria-label="目的別メニュー">
-            <button type="button" class="site-nav__button" data-nav="home" onclick="showHomeView()">ホーム</button>
+            <button type="button" class="site-nav__button is-active" data-nav="home" onclick="showHomeView()">ホーム</button>
             <button type="button" class="site-nav__button" data-nav="personality" onclick="showPersonalityComingSoon()">性格診断</button>
             <button type="button" class="site-nav__button" data-nav="ability" onclick="showAbilityMeasurementTop()">能力測定</button>
-            <button type="button" class="site-nav__button is-active" data-nav="playstyle" onclick="showPlaystyleTop()">プレースタイル診断</button>
+            <button type="button" class="site-nav__button" data-nav="playstyle" onclick="showPlaystyleTop()">プレースタイル診断</button>
         </nav>
     </div>
 </header>
 
 <div class="page-content">
-    <section id="startScreen" class="start-screen">
+    <section id="startScreen" class="start-screen is-hidden">
         <div class="start-screen__overlay" aria-hidden="true"></div>
         <div class="start-screen__grass" aria-hidden="true"></div>
         <div class="start-screen__content">
@@ -458,7 +458,7 @@ canvas{max-width:100%;}
         </div>
     </section>
 
-    <section id="homePage" class="home-page is-hidden">
+    <section id="homePage" class="home-page">
         <div class="home-shell">
             <div class="home-hero">
                 <img class="home-hero__image" src="home-hero.png" alt="サッカー診断のメインビジュアル">
@@ -628,6 +628,7 @@ canvas{max-width:100%;}
             $("startBtn").textContent = text.start;
             renderHomeTypeGrid();
             updateStatus("");
+            showHomeView();
             console.log("personality_questions.csv loaded:", personalityQuestions.length);
             console.log("personality_types.csv loaded:", personalityTypes.length);
         } catch (error) {
@@ -635,6 +636,7 @@ canvas{max-width:100%;}
             updateStatus(loadErrors.join("<br>") || text.dataError);
             $("startBtn").disabled = true;
             $("startBtn").textContent = text.loadError;
+            showHomeView();
         }
     }
 
