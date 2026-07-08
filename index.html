@@ -790,18 +790,20 @@ canvas{max-width:100%;}
 
     function parseBaseAbilities(rows, abilities, fileName = "question_templates.csv") {
         if (!rows || !rows.length) throw new Error(`${fileName} format error: CSVが空です`);
-        let headerIndex = findHeaderRow(rows, ["position", "playstyle"]);
-        if (headerIndex < 0) headerIndex = findHeaderRow(rows, ["ポジション", "プレースタイル"]);
-        if (headerIndex < 0) {
-            throw new Error(`${fileName} format error: ポジション と プレースタイル 列が見つかりません`);
-        }
+        const positionColumns = ["position", "ポジション", "ポジション名", "ポジション分類", "position_name", "position_group", "pos"];
+        const playstyleColumns = ["playstyle", "style", "プレースタイル", "プレイスタイル", "プレースタイル名", "プレイスタイル名", "スタイル", "型", "タイプ"];
+        const headerInfo = findFlexibleHeaderRow(rows, [positionColumns, playstyleColumns]);
+        if (!headerInfo) throw new Error(`${fileName} format error: ポジション列（例: ポジション / ポジション名 / ポジション分類）とプレースタイル列（例: プレースタイル / プレイスタイル / プレースタイル名）が見つかりません`);
+        const headerIndex = headerInfo.index;
         const headers = rows[headerIndex].map(normalizeCell);
+        const positionColumn = findHeaderAlias(headers, positionColumns);
+        const playstyleColumn = findHeaderAlias(headers, playstyleColumns);
         const parsedRows = rows.slice(headerIndex + 1)
             .map((row) => rowToObject(headers, row))
-            .filter((row) => (row.position || row["ポジション"]) && (row.playstyle || row["プレースタイル"] || row.style))
+            .filter((row) => row[positionColumn] && row[playstyleColumn])
             .map((row) => ({
-                position: row.position || row["ポジション"],
-                playstyle: row.playstyle || row["プレースタイル"] || row.style,
+                position: row[positionColumn],
+                playstyle: row[playstyleColumn],
                 scores: Object.fromEntries(abilities.map((ability) => [ability, clamp(Number(getAbilityRowValue(row, ability)) || 0)]))
             }));
         if (!parsedRows.length) {
@@ -1061,6 +1063,19 @@ canvas{max-width:100%;}
             const normalized = row.map(normalizeCell);
             return requiredColumns.every((column) => normalized.includes(column));
         });
+    }
+
+    function findFlexibleHeaderRow(rows, requiredColumnGroups) {
+        for (let index = 0; index < rows.length; index++) {
+            const normalized = rows[index].map(normalizeCell);
+            const hasAllGroups = requiredColumnGroups.every((aliases) => aliases.some((alias) => normalized.includes(alias)));
+            if (hasAllGroups) return { index, headers: normalized };
+        }
+        return null;
+    }
+
+    function findHeaderAlias(headers, aliases) {
+        return aliases.find((alias) => headers.includes(alias)) || "";
     }
 
     function rowToObject(headers, row) {
