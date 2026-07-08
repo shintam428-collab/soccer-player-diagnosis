@@ -141,6 +141,11 @@ button:hover{transform:scale(1.04);}
     text-align:left;
 }
 .section-card{background:#f8fafc;border-radius:16px;padding:18px;margin-top:18px;box-shadow:0 5px 15px rgba(0,0,0,0.15);}
+.review-card{background:linear-gradient(180deg,#ffffff,#f8fafc);border:1px solid #dbeafe;border-radius:18px;padding:22px;margin:22px auto 0;box-shadow:0 8px 24px rgba(15,23,42,0.14);text-align:center;}
+.review-card h3{margin:0 0 8px;color:#0f172a;font-size:22px;}
+.review-card p{margin:0 auto 16px;max-width:560px;color:#475569;line-height:1.75;font-weight:700;}
+.review-card__button{display:inline-flex;align-items:center;justify-content:center;padding:13px 28px;border-radius:999px;background:linear-gradient(180deg,#2563eb,#1d4ed8);color:white!important;text-decoration:none;font-weight:900;box-shadow:0 8px 18px rgba(37,99,235,0.25);transition:transform .18s ease,box-shadow .18s ease;}
+.review-card__button:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(37,99,235,0.32);}
 .ability-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:15px;}
 .ability-item{background:white;border-radius:12px;padding:12px;text-align:left;box-shadow:0 3px 10px rgba(0,0,0,0.12);}
 .ability-name{display:flex;justify-content:space-between;gap:10px;font-weight:bold;margin-bottom:6px;}
@@ -352,6 +357,9 @@ canvas{max-width:100%;}
     #question{font-size:20px;}
     button{font-size:16px;}
     .ability-grid{grid-template-columns:1fr;}
+    .review-card{padding:18px 14px;border-radius:16px;}
+    .review-card h3{font-size:19px;}
+    .review-card__button{width:100%;max-width:280px;}
     .result-title span{font-size:32px;}
     .start-screen{min-height:calc(100vh - 24px);padding:24px 16px;border-radius:18px;}
     .start-hero-panel{margin-bottom:26px;padding:32px 18px;border-radius:24px;}
@@ -1825,6 +1833,7 @@ canvas{max-width:100%;}
                         <div class="ability-grid">${createAbilityHtml(createOrderedDetailScores(detailScores))}</div>
                     </div>
                 </div>
+                ${createReviewCardHtml()}
                 <button type="button" class="restart-btn" onclick="startAbilityMeasurement()">もう一度測定する</button>
             `;
             drawRadarChart(radarScores);
@@ -1849,6 +1858,7 @@ canvas{max-width:100%;}
                 ${imagePath ? `<img id="characterImage" class="character-result-image" src="${escapeAttribute(displayImagePath)}" alt="${escapeAttribute(resultType.typeName)}"><p class="image-error-message" id="imageErrorMessage"></p>` : `<p class="image-error-message" style="display:block;">${text.imageEmpty}</p>`}
                 <p class="result-description">${escapeHtml(resultType.description)}</p>
             </div>
+            ${createReviewCardHtml()}
             <button type="button" class="restart-btn" onclick="startDiagnosis()">${text.restart}</button>
         `;
         attachCharacterImageError(imagePath, displayImagePath);
@@ -2029,6 +2039,17 @@ canvas{max-width:100%;}
         const abilities = abilityMeasurementData?.abilities || ability20Names;
         abilities.forEach((item) => orderedScores[item] = clamp(scores[item] || 0));
         return orderedScores;
+    }
+
+    function createReviewCardHtml() {
+        const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdOeGtQ2z28QWagcLrtyNbJnNXXWF46c7apcg_dXMol1XE8rA/viewform?usp=publish-editor";
+        return `
+            <div class="review-card">
+                <h3>この診断の感想を教えてください</h3>
+                <p>今後の改善のために、評価や感想を送ってもらえると嬉しいです。</p>
+                <a class="review-card__button" href="${escapeAttribute(formUrl)}" target="_blank" rel="noopener noreferrer">レビューを書く</a>
+            </div>
+        `;
     }
 
     function toggleDetailAbilities() {
