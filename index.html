@@ -797,17 +797,32 @@ canvas{max-width:100%;}
             const playstyle = row.playstyle || row["プレースタイル"] || row.style;
             if (!position) return;
             if (!map[position]) map[position] = [];
-            if (playstyle && !map[position].includes(playstyle)) map[position].push(playstyle);
+            if (isValidPlaystyleName(playstyle) && !map[position].includes(playstyle)) map[position].push(playstyle);
             headers.forEach((header) => {
                 if (["position", "ポジション", "playstyle", "プレースタイル", "style"].includes(header)) return;
+                if (isMetaPlaystyleColumn(header)) return;
                 const value = normalizeCell(row[header]);
-                if (value && !map[position].includes(value)) map[position].push(value);
+                if (isValidPlaystyleName(value) && !map[position].includes(value)) map[position].push(value);
             });
         });
         if (!Object.keys(map).length) {
             throw new Error("position_playstyles.csv format error: ポジションまたはプレースタイルの有効な行が見つかりません");
         }
         return map;
+    }
+
+    function isMetaPlaystyleColumn(header) {
+        const name = normalizeCell(header).toLowerCase();
+        return !name || ["id", "no", "number", "score", "point", "points", "value", "order"].includes(name) || /番号|点数|得点|スコア|順番|並び|id/i.test(name);
+    }
+
+    function isValidPlaystyleName(value) {
+        const textValue = normalizeCell(value);
+        if (!textValue) return false;
+        if (/^[+-]?\d+(\.\d+)?$/.test(textValue)) return false;
+        if (/^(id|no|score|point|points|value|order)$/i.test(textValue)) return false;
+        if (/^(番号|点数|得点|スコア|順番|並び)$/.test(textValue)) return false;
+        return true;
     }
 
     function parseAdditionalQuestions(rows) {
