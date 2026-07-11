@@ -140,6 +140,9 @@ button:hover{transform:scale(1.04);}
     text-align:left;
 }
 .section-card{background:#f8fafc;border-radius:16px;padding:18px;margin-top:18px;box-shadow:0 5px 15px rgba(0,0,0,0.15);}
+.overall-card{margin:22px auto 0;padding:26px 18px;border-radius:22px;background:linear-gradient(135deg,#eff6ff,#ecfeff 55%,#fef9c3);border:2px solid rgba(37,99,235,0.2);box-shadow:0 16px 34px rgba(15,23,42,0.18);text-align:center;}
+.overall-card__label{margin:0;color:#1e293b;font-size:20px;font-weight:900;line-height:1.7;}
+.overall-card__score{margin:4px 0;color:#f97316;font-size:clamp(72px,14vw,124px);font-weight:1000;line-height:1;text-shadow:0 8px 20px rgba(249,115,22,0.24);}
 .review-card{background:linear-gradient(135deg,#fff7cc 0%,#e0f2fe 55%,#ffffff 100%);border:2px solid rgba(250,204,21,0.75);border-radius:24px;padding:34px 26px;margin:34px auto 0;box-shadow:0 18px 42px rgba(15,23,42,0.22),0 0 0 6px rgba(255,255,255,0.45);text-align:center;max-width:760px;}
 .review-area{display:none;}
 .review-area.is-visible{display:block;}
@@ -576,8 +579,22 @@ canvas{max-width:100%;}
         "ドリブル": ["足元の技術", "ボールコントロール", "ドリブル", "ボールキープ"],
         "フィジカル": ["体の強さ", "ヘディング", "ジャンプ"],
         "ディフェンス": ["対人守備", "守備意識", "予測力"],
-        "スピード": ["最高速度", "推進力", "瞬発力", "アジリティー"],
+        "足の速さ": ["最高速度", "推進力", "瞬発力", "アジリティー"],
         "パス": ["パス", "センス"]
+    };
+
+    const overallWeightsByPosition = {
+        "GK": { "オフェンス": 0, "ドリブル": 0, "フィジカル": 0.2, "ディフェンス": 0.5, "足の速さ": 0.1, "パス": 0.2 },
+        "CB": { "オフェンス": 0.05, "ドリブル": 0.05, "フィジカル": 0.25, "ディフェンス": 0.45, "足の速さ": 0.1, "パス": 0.1 },
+        "守備型SB": { "オフェンス": 0.05, "ドリブル": 0.1, "フィジカル": 0.2, "ディフェンス": 0.35, "足の速さ": 0.15, "パス": 0.15 },
+        "攻撃型SB": { "オフェンス": 0.1, "ドリブル": 0.15, "フィジカル": 0.15, "ディフェンス": 0.25, "足の速さ": 0.2, "パス": 0.15 },
+        "WB": { "オフェンス": 0.1, "ドリブル": 0.15, "フィジカル": 0.15, "ディフェンス": 0.25, "足の速さ": 0.2, "パス": 0.15 },
+        "アンカー": { "オフェンス": 0.05, "ドリブル": 0.05, "フィジカル": 0.2, "ディフェンス": 0.4, "足の速さ": 0.05, "パス": 0.25 },
+        "ボランチ": { "オフェンス": 0.1, "ドリブル": 0.1, "フィジカル": 0.15, "ディフェンス": 0.25, "足の速さ": 0.1, "パス": 0.3 },
+        "サイド": { "オフェンス": 0.2, "ドリブル": 0.25, "フィジカル": 0.1, "ディフェンス": 0.1, "足の速さ": 0.25, "パス": 0.1 },
+        "WG": { "オフェンス": 0.25, "ドリブル": 0.25, "フィジカル": 0.05, "ディフェンス": 0.05, "足の速さ": 0.25, "パス": 0.15 },
+        "トップ下": { "オフェンス": 0.25, "ドリブル": 0.2, "フィジカル": 0.05, "ディフェンス": 0.05, "足の速さ": 0.1, "パス": 0.35 },
+        "CF": { "オフェンス": 0.35, "ドリブル": 0.15, "フィジカル": 0.15, "ディフェンス": 0.05, "足の速さ": 0.15, "パス": 0.15 }
     };
 
     const defaultAbilitySelectMap = {
@@ -924,7 +941,7 @@ canvas{max-width:100%;}
         const headers = rows[headerIndex].map(normalizeCell);
         const map = {};
         rows.slice(headerIndex + 1).map((row) => rowToObject(headers, row)).forEach((row) => {
-            const radar = row.radar || row.radar_item || row["項目"] || row["大項目"] || row["分類"];
+            const radar = normalizeRadarName(row.radar || row.radar_item || row["項目"] || row["大項目"] || row["分類"]);
             const abilityText = row.abilities || row["細かい能力"] || row["能力"] || row.ability || row.ability_name;
             if (!radar || !abilityText) return;
             const targets = abilityText.split(/[、,\/]/)
@@ -1815,11 +1832,17 @@ canvas{max-width:100%;}
                 return;
             }
             const radarScores = convertToRadarScores(detailScores);
+            const overallScore = calculateOverallScore(radarScores);
             $("result").innerHTML = `
                 <div class="result-hero">
                     <div class="result-badge">能力測定</div>
                     <h2 class="result-title"><span>あなたの能力値</span></h2>
                     <p class="result-description">回答から計算した能力バランスです。</p>
+                </div>
+                <div class="overall-card">
+                    <p class="overall-card__label">あなたの総合値は</p>
+                    <div class="overall-card__score">${overallScore}</div>
+                    <p class="overall-card__label">です</p>
                 </div>
                 <div class="section-card">
                     <h3>${text.abilityTitle}</h3>
@@ -1950,12 +1973,44 @@ canvas{max-width:100%;}
         const radarScores = {};
         const groups = abilityMeasurementData?.radarMap || radarItemGroups;
         Object.entries(groups).forEach(([name, items]) => {
+            const displayName = normalizeRadarName(name);
             const validItems = items.filter((item) => Object.prototype.hasOwnProperty.call(scores, item));
             const targetItems = validItems.length ? validItems : items;
             const total = targetItems.reduce((sum, item) => sum + (Number(scores[item]) || 0), 0);
-            radarScores[name] = clamp(Math.round(total / targetItems.length));
+            radarScores[displayName] = clamp(Math.round(total / targetItems.length));
         });
         return radarScores;
+    }
+
+    function calculateOverallScore(radarScores) {
+        const positionKey = getOverallPositionKey(abilityMeasurementState.position, abilityMeasurementState.playstyle);
+        const weights = overallWeightsByPosition[positionKey] || overallWeightsByPosition["ボランチ"];
+        const total = Object.entries(weights).reduce((sum, [item, weight]) => {
+            const value = Number(radarScores[item] ?? radarScores[normalizeRadarName(item)] ?? 0);
+            return sum + value * weight;
+        }, 0);
+        return clamp(total);
+    }
+
+    function getOverallPositionKey(position, playstyle = "") {
+        const value = `${normalizeCell(position)} ${normalizeCell(playstyle)}`.replace(/\s+/g, "");
+        if (/GK|ゴールキーパー/i.test(value)) return "GK";
+        if (/CB|センターバック|センター?バック/i.test(value)) return "CB";
+        if (/守備型.*(SB|サイドバック)|守備.*(SB|サイドバック)/i.test(value)) return "守備型SB";
+        if (/攻撃型.*(SB|サイドバック)|攻撃.*(SB|サイドバック)/i.test(value)) return "攻撃型SB";
+        if (/WB|ウィングバック|ウイングバック/i.test(value)) return "WB";
+        if (/アンカー/i.test(value)) return "アンカー";
+        if (/ボランチ|CMF|DMF/i.test(value)) return "ボランチ";
+        if (/トップ下|OMF/i.test(value)) return "トップ下";
+        if (/WG|ウイング|ウィング/i.test(value)) return "WG";
+        if (/CF|センターフォワード|フォワード/i.test(value)) return "CF";
+        if (/サイド|RMF|LMF|RWG|LWG/i.test(value)) return "サイド";
+        return "ボランチ";
+    }
+
+    function normalizeRadarName(name) {
+        const value = normalizeCell(name);
+        return value === "スピード" ? "足の速さ" : value;
     }
 
     function drawRadarChart(scores) {
