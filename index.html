@@ -758,7 +758,8 @@ canvas{max-width:100%;}
             throw new Error(message);
         }
 
-        const abilities = parseAbilities20(abilitiesRows);
+        const baseAbilityNames = parseBaseAbilityNames(baseRows, "base_ability_values.csv");
+        const abilities = baseAbilityNames.length ? baseAbilityNames : parseAbilities20(abilitiesRows);
         const selectMap = filterAbilitySelectMap(normalizeAbilitySelectMap(parseAbilitySelectMap(selectMapResult.rows, abilities), abilities));
         const radarMap = parseRadarMap(radarMapRows, abilities);
         const additionalQuestions = parseAdditionalQuestions(additionalRows);
@@ -792,6 +793,20 @@ canvas{max-width:100%;}
         const found = rows.flat().map(normalizeAbilityName).filter((value) => ability20Names.includes(value));
         const uniqueFound = unique(found);
         return uniqueFound.length >= 20 ? ability20Names.filter((name) => uniqueFound.includes(name)) : ability20Names;
+    }
+
+    function parseBaseAbilityNames(rows, fileName = "base_ability_values.csv") {
+        if (!rows || !rows.length) return [];
+        const positionColumns = ["position", "ポジション", "ポジション名", "ポジション分類", "position_name", "position_group", "pos"];
+        const playstyleColumns = ["playstyle", "style", "プレースタイル", "プレイスタイル", "プレースタイル名", "プレイスタイル名", "スタイル", "型", "タイプ"];
+        const headerInfo = findFlexibleHeaderRow(rows, [positionColumns, playstyleColumns]);
+        if (!headerInfo) return [];
+        const metaColumns = new Set([...positionColumns, ...playstyleColumns]);
+        const abilityNames = headerInfo.headers
+            .map(normalizeAbilityName)
+            .filter((header) => header && !metaColumns.has(header) && !isMetaPlaystyleColumn(header));
+        console.log(`${fileName} ability columns:`, abilityNames);
+        return unique(abilityNames);
     }
 
     function parseBaseAbilities(rows, abilities, fileName = "question_templates.csv") {
