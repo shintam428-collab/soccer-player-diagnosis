@@ -157,7 +157,7 @@ button:hover{transform:scale(1.04);}
 .ability-player-card .overall-card__score{margin:0;font-size:74px;color:#facc15;text-shadow:0 6px 20px rgba(0,0,0,0.55);letter-spacing:0;}
 .ability-player-card__position{margin-top:8px;display:inline-flex;align-items:center;justify-content:center;min-width:78px;padding:7px 14px;border-radius:999px;background:rgba(2,6,23,0.72);border:1px solid rgba(255,255,255,0.24);font-size:18px;font-weight:1000;color:white;text-shadow:0 2px 8px rgba(0,0,0,0.65);}
 .ability-player-card__radar{position:relative;z-index:2;width:170px;margin-top:10px;}
-.ability-player-card__radar .chart-box{margin:0;background:rgba(2,6,23,0.5);border:1px solid rgba(255,255,255,0.18);border-radius:16px;padding:4px;box-shadow:0 10px 22px rgba(2,6,23,0.24);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+.ability-player-card__radar .chart-box{margin:0;background:transparent;border:0;border-radius:16px;padding:0;box-shadow:none;}
 .ability-player-card__bottom{position:relative;z-index:2;margin-top:auto;padding:16px;border-radius:20px;background:rgba(2,6,23,0.66);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);text-align:center;}
 .ability-player-card__name{margin:0 0 12px;font-size:24px;font-weight:1000;color:white;}
 .player-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;}
@@ -2108,12 +2108,13 @@ canvas{max-width:100%;}
         const ctx = canvas.getContext("2d");
         const labels = Object.keys(scores);
         const values = labels.map((label) => clamp(scores[label] || 0));
-        const maxChartSize = canvas.closest(".ability-player-card") ? 170 : 320;
-        const minChartSize = canvas.closest(".ability-player-card") ? 130 : 240;
+        const isPlayerCardChart = Boolean(canvas.closest(".ability-player-card"));
+        const maxChartSize = isPlayerCardChart ? 170 : 320;
+        const minChartSize = isPlayerCardChart ? 130 : 240;
         const size = Math.min(maxChartSize, Math.max(minChartSize, chartBox.clientWidth || 300));
         const scale = window.devicePixelRatio || 1;
         const center = size / 2;
-        const radius = size * 0.34;
+        const radius = size * (isPlayerCardChart ? 0.41 : 0.34);
         chartBox.style.display = "block";
         canvas.width = size * scale;
         canvas.height = size * scale;
@@ -2121,42 +2122,45 @@ canvas{max-width:100%;}
         canvas.style.height = `${size}px`;
         ctx.setTransform(scale, 0, 0, scale, 0, 0);
         ctx.clearRect(0, 0, size, size);
-        ctx.strokeStyle = "rgba(148,163,184,0.55)";
+        ctx.strokeStyle = isPlayerCardChart ? "rgba(255,255,255,0.18)" : "rgba(148,163,184,0.55)";
         ctx.lineWidth = 1;
         for (let level = 1; level <= 5; level++) drawRadarShape(ctx, labels.length, center, radius * level / 5);
-        ctx.strokeStyle = "rgba(148,163,184,0.35)";
+        ctx.strokeStyle = isPlayerCardChart ? "rgba(255,255,255,0.16)" : "rgba(148,163,184,0.35)";
         labels.forEach((_, index) => {
             const point = radarPoint(index, labels.length, center, radius);
             ctx.beginPath(); ctx.moveTo(center, center); ctx.lineTo(point.x, point.y); ctx.stroke();
         });
-        const isPlayerCardChart = Boolean(canvas.closest(".ability-player-card"));
-        ctx.fillStyle = isPlayerCardChart ? "#f8fafc" : "#1f2937";
-        ctx.font = "12px Arial, sans-serif";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        labels.forEach((label, index) => {
-            const point = radarPoint(index, labels.length, center, radius + 34);
-            ctx.fillText(label, point.x, point.y);
-        });
+        if (!isPlayerCardChart) {
+            ctx.fillStyle = "#1f2937";
+            ctx.font = "12px Arial, sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            labels.forEach((label, index) => {
+                const point = radarPoint(index, labels.length, center, radius + 34);
+                ctx.fillText(label, point.x, point.y);
+            });
+        }
         ctx.beginPath();
         values.forEach((value, index) => {
             const point = radarPoint(index, values.length, center, radius * value / 100);
             if (index === 0) ctx.moveTo(point.x, point.y); else ctx.lineTo(point.x, point.y);
         });
         ctx.closePath();
-        ctx.fillStyle = "rgba(37,99,235,0.22)";
-        ctx.strokeStyle = "#2563eb";
-        ctx.lineWidth = 3;
+        ctx.fillStyle = isPlayerCardChart ? "rgba(56,189,248,0.22)" : "rgba(37,99,235,0.22)";
+        ctx.strokeStyle = isPlayerCardChart ? "#67e8f9" : "#2563eb";
+        ctx.lineWidth = isPlayerCardChart ? 2.5 : 3;
         ctx.fill(); ctx.stroke();
-        ctx.fillStyle = "#2563eb";
+        ctx.fillStyle = isPlayerCardChart ? "#e0f2fe" : "#2563eb";
         values.forEach((value, index) => {
             const point = radarPoint(index, values.length, center, radius * value / 100);
-            ctx.beginPath(); ctx.arc(point.x, point.y, 4, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(point.x, point.y, isPlayerCardChart ? 3 : 4, 0, Math.PI * 2); ctx.fill();
         });
-        ctx.font = "bold 13px Arial, sans-serif";
-        ctx.textAlign = "left";
-        ctx.fillStyle = isPlayerCardChart ? "#f8fafc" : "#1f2937";
-        ctx.fillText(text.you, 18, 24);
+        if (!isPlayerCardChart) {
+            ctx.font = "bold 13px Arial, sans-serif";
+            ctx.textAlign = "left";
+            ctx.fillStyle = "#1f2937";
+            ctx.fillText(text.you, 18, 24);
+        }
     }
 
     function moveRadarChartIntoPlayerCard() {
