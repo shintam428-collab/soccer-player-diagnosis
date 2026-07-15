@@ -621,6 +621,8 @@ canvas{max-width:100%;}
         "パス": ["パス", "センス"]
     };
 
+    const abilityPositionOrder = ["CF", "OMF", "WG", "SA", "WB", "CMF", "DMF", "SB", "CB", "GK"];
+
     const overallWeightsByPosition = {
         "GK": { "オフェンス": 0, "ドリブル": 0, "フィジカル": 0.15, "ディフェンス": 0.65, "足の速さ": 0.05, "パス": 0.15 },
         "CB": { "オフェンス": 0.01, "ドリブル": 0.02, "フィジカル": 0.28, "ディフェンス": 0.6, "足の速さ": 0.06, "パス": 0.03 },
@@ -886,13 +888,13 @@ canvas{max-width:100%;}
         const objects = rows.slice(headerIndex + 1).map((row) => rowToObject(headers, row));
         const map = {};
         objects.forEach((row) => {
-            const position = row.position || row["ポジション"];
-            const playstyle = row.playstyle || row["プレースタイル"] || row.style;
+            const position = normalizePositionCode(row.position || row["ポジション"]);
+            const playstyle = row.playstyle || row["プレースタイル"] || row["プレイスタイル"] || row["プレースタイル名"] || row["プレイスタイル名"] || row.style;
             if (!position) return;
             if (!map[position]) map[position] = [];
             if (isValidPlaystyleName(playstyle) && !map[position].includes(playstyle)) map[position].push(playstyle);
             headers.forEach((header) => {
-                if (["position", "ポジション", "playstyle", "プレースタイル", "style"].includes(header)) return;
+                if (["position", "ポジション", "playstyle", "プレースタイル", "プレイスタイル", "プレースタイル名", "プレイスタイル名", "style"].includes(header)) return;
                 if (isMetaPlaystyleColumn(header)) return;
                 const value = normalizeCell(row[header]);
                 if (isValidPlaystyleName(value) && !map[position].includes(value)) map[position].push(value);
@@ -902,6 +904,19 @@ canvas{max-width:100%;}
             throw new Error("position_playstyles.csv format error: ポジションまたはプレースタイルの有効な行が見つかりません");
         }
         return map;
+    }
+
+    function normalizePositionCode(position) {
+        const value = normalizeCell(position).toUpperCase();
+        const aliases = {
+            "トップ下": "OMF",
+            "ボランチ": "CMF",
+            "アンカー": "DMF",
+            "攻撃型SB": "SB",
+            "守備型SB": "SB",
+            "サイド": "SA"
+        };
+        return aliases[normalizeCell(position)] || value;
     }
 
     function isMetaPlaystyleColumn(header) {
@@ -1525,7 +1540,10 @@ canvas{max-width:100%;}
     }
 
     function showAbilityPositionStep() {
-        const positions = Object.keys(abilityMeasurementData.positionPlaystyles);
+        const availablePositions = Object.keys(abilityMeasurementData.positionPlaystyles);
+        const orderedPositions = abilityPositionOrder.filter((position) => availablePositions.includes(position));
+        const extraPositions = availablePositions.filter((position) => !orderedPositions.includes(position));
+        const positions = [...orderedPositions, ...extraPositions];
         renderAbilityStep("能力測定：ポジション選択", 12, `
             <div class="question-list">
                 <section class="question-card">
@@ -1539,7 +1557,7 @@ canvas{max-width:100%;}
     }
 
     function selectAbilityPosition(position) {
-        abilityMeasurementState.position = position;
+        abilityMeasurementState.position = normalizePositionCode(position);
         abilityMeasurementState.playstyle = "";
         showAbilityPlaystyleStep();
     }
@@ -2020,11 +2038,30 @@ canvas{max-width:100%;}
 
     function findBaseAbilityRow() {
         const normalizeKey = (value) => normalizeCell(value).replace(/\s+/g, "");
-        const selectedPosition = normalizeKey(abilityMeasurementState.position);
+        const selectedPositions = getBasePositionCandidates(abilityMeasurementState.position, abilityMeasurementState.playstyle).map(normalizeKey);
         const selectedPlaystyle = normalizeKey(abilityMeasurementState.playstyle);
         return abilityMeasurementData.baseAbilities.find((row) => {
-            return normalizeKey(row.position) === selectedPosition && normalizeKey(row.playstyle) === selectedPlaystyle;
+            return selectedPositions.includes(normalizeKey(row.position)) && normalizeKey(row.playstyle) === selectedPlaystyle;
         }) || null;
+    }
+
+    function getBasePositionCandidates(position, playstyle = "") {
+        const code = normalizePositionCode(position);
+        const style = normalizeCell(playstyle);
+        const sbType = getSbCalculationType(style);
+        const candidatesByCode = {
+            CF: ["CF", "センターフォワード", "フォワード"],
+            OMF: ["OMF", "トップ下"],
+            WG: ["WG", "ウイング", "ウィング", "RWG", "LWG"],
+            SA: ["SA", "サイド", "RMF", "LMF"],
+            WB: ["WB", "ウィングバック", "ウイングバック"],
+            CMF: ["CMF", "ボランチ"],
+            DMF: ["DMF", "アンカー"],
+            SB: ["SB", sbType, "サイドバック"],
+            CB: ["CB", "センターバック"],
+            GK: ["GK", "ゴールキーパー"]
+        };
+        return unique([code, ...(candidatesByCode[code] || [])]);
     }
 
     function getStrengthAbilitySet() {
@@ -2083,6 +2120,17 @@ canvas{max-width:100%;}
     }
 
     function getOverallPositionKey(position, playstyle = "") {
+        const code = normalizePositionCode(position);
+        if (code === "CF") return "CF";
+        if (code === "OMF") return "トップ下";
+        if (code === "WG") return "WG";
+        if (code === "SA") return "サイド";
+        if (code === "WB") return "WB";
+        if (code === "CMF") return "ボランチ";
+        if (code === "DMF") return "アンカー";
+        if (code === "SB") return getSbCalculationType(playstyle);
+        if (code === "CB") return "CB";
+        if (code === "GK") return "GK";
         const value = `${normalizeCell(position)} ${normalizeCell(playstyle)}`.replace(/\s+/g, "");
         if (/GK|ゴールキーパー/i.test(value)) return "GK";
         if (/CB|センターバック|センター?バック/i.test(value)) return "CB";
@@ -2096,6 +2144,13 @@ canvas{max-width:100%;}
         if (/CF|センターフォワード|フォワード/i.test(value)) return "CF";
         if (/サイド|RMF|LMF|RWG|LWG/i.test(value)) return "サイド";
         return "ボランチ";
+    }
+
+    function getSbCalculationType(playstyle = "") {
+        const style = normalizeCell(playstyle).replace(/\s+/g, "");
+        if (/対人守備|ビルドアップ|守備/i.test(style)) return "守備型SB";
+        if (/インナーラップ|オーバーラップ|クロス|攻撃/i.test(style)) return "攻撃型SB";
+        return "攻撃型SB";
     }
 
     function normalizeRadarName(name) {
