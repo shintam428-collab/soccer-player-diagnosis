@@ -1508,16 +1508,12 @@ canvas{max-width:100%;}
             return;
         }
         diagnosisMode = "ability";
+        hideAllViews();
         setActiveNav("ability");
         resetAbilityMeasurementState();
-        $("startScreen").classList.add("is-hidden");
-        $("simplePage").classList.add("is-hidden");
         $("quizArea").classList.remove("is-hidden");
         $("quizCard").classList.remove("is-hidden");
-        $("confirmArea").classList.add("is-hidden");
         $("progressArea").style.display = "block";
-        $("chartBox").style.display = "none";
-        hideReviewArea();
         $("result").innerHTML = "";
         updateStatus("");
         showAbilityPositionStep();
