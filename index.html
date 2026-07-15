@@ -307,6 +307,14 @@ canvas{max-width:100%;}
 .rating-dot:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 8px 18px rgba(15,23,42,0.18);}
 .rating-dot.is-selected{background:#eef2ff!important;background:color-mix(in srgb,var(--dot-color) 22%,white)!important;border-width:5px;box-shadow:0 0 0 5px rgba(37,99,235,0.12),0 10px 22px rgba(15,23,42,0.18);}
 .self-rating-intro{margin:0 0 4px;padding:14px 16px;border-radius:14px;background:rgba(37,99,235,0.08);color:#1e293b;font-weight:800;text-align:center;line-height:1.7;}
+.ability-flow-intro{margin:0 auto 16px;text-align:center;}
+.ability-flow-intro__lead{margin:0 auto 14px;max-width:620px;color:#475569;font-size:16px;line-height:1.75;font-weight:700;}
+.ability-flow-intro__title{margin:0 0 10px;color:#1e3a8a;font-size:18px;font-weight:1000;letter-spacing:0;}
+.ability-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 auto 16px;}
+.ability-flow-card{display:flex;flex-direction:column;min-height:138px;padding:14px 12px;border-radius:16px;background:linear-gradient(180deg,#ffffff,#eff6ff);border:1px solid #dbeafe;box-shadow:0 8px 18px rgba(37,99,235,0.09);text-align:left;}
+.ability-flow-card__number{display:inline-flex;align-items:center;justify-content:center;width:42px;height:28px;margin-bottom:9px;border-radius:999px;background:#2563eb;color:#fff;font-size:13px;font-weight:1000;letter-spacing:.04em;}
+.ability-flow-card__title{margin:0 0 6px;color:#0f172a;font-size:15px;font-weight:900;line-height:1.45;}
+.ability-flow-card__text{margin:0;color:#475569;font-size:12px;font-weight:700;line-height:1.65;}
 .question-list{display:grid;gap:18px;text-align:left;margin-top:18px;}
 .question-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:18px;box-shadow:0 5px 14px rgba(15,23,42,0.08);scroll-margin-top:110px;}
 .question-card__title{font-size:18px;font-weight:800;line-height:1.65;color:#0f172a;margin:0 0 14px;}
@@ -384,6 +392,15 @@ canvas{max-width:100%;}
     .home-action-card__title{font-size:19px;}
     #question{font-size:20px;}
     button{font-size:16px;}
+    .ability-flow-intro{margin-bottom:12px;}
+    .ability-flow-intro__lead{font-size:14px;line-height:1.65;margin-bottom:10px;}
+    .ability-flow-intro__title{font-size:16px;margin-bottom:8px;}
+    .ability-flow{grid-template-columns:1fr;gap:8px;margin-bottom:12px;}
+    .ability-flow-card{min-height:auto;padding:12px;}
+    .ability-flow-card__number{width:38px;height:26px;margin-bottom:7px;font-size:12px;}
+    .ability-flow-card__title{font-size:14px;margin-bottom:4px;}
+    .ability-flow-card__text{font-size:12px;line-height:1.55;}
+    .question-list{margin-top:12px;gap:12px;}
     .ability-grid{grid-template-columns:1fr;}
     .player-card-editor,.ability-player-card{width:min(100%,430px);max-width:100%;margin-left:auto;margin-right:auto;}
     .player-card-editor{grid-template-columns:1fr;gap:10px;}
@@ -1360,10 +1377,10 @@ canvas{max-width:100%;}
     function showAbilityMeasurementTop() {
         diagnosisMode = "ability";
         if (!abilityMeasurementData) {
-            showSimplePage("ability", "能力測定", abilityMeasurementLoadError || "能力診断用CSVを読み込めませんでした");
+            showSimplePage("ability", "能力診断", abilityMeasurementLoadError || "能力診断用CSVを読み込めませんでした");
             return;
         }
-        showSimplePage("ability", "能力測定", "質問に答えると、あなたの能力値とレーダーチャートを確認できます。", "能力測定を始める", startAbilityMeasurementFlow);
+        startAbilityMeasurementFlow();
     }
 
     function renderHomeTypeGrid() {
@@ -1487,7 +1504,7 @@ canvas{max-width:100%;}
 
     function startAbilityMeasurementFlow() {
         if (!abilityMeasurementData) {
-            showSimplePage("ability", "能力測定", abilityMeasurementLoadError || "能力診断用CSVを読み込めませんでした");
+            showSimplePage("ability", "能力診断", abilityMeasurementLoadError || "能力診断用CSVを読み込めませんでした");
             return;
         }
         diagnosisMode = "ability";
@@ -1550,7 +1567,8 @@ canvas{max-width:100%;}
         const orderedPositions = abilityPositionOrder.filter((position) => availablePositions.includes(position));
         const extraPositions = availablePositions.filter((position) => !orderedPositions.includes(position));
         const positions = [...orderedPositions, ...extraPositions];
-        renderAbilityStep("能力測定：ポジション選択", 12, `
+        renderAbilityStep("能力診断", 12, `
+            ${createAbilityFlowIntroHtml()}
             <div class="question-list">
                 <section class="question-card">
                     <h3 class="question-card__title">あなたのポジションを選んでください</h3>
@@ -1560,6 +1578,30 @@ canvas{max-width:100%;}
                 </section>
             </div>
         `, false);
+    }
+
+    function createAbilityFlowIntroHtml() {
+        const steps = [
+            ["01", "ポジションを選ぶ", "普段プレーするポジションとプレースタイルを選択します。"],
+            ["02", "質問に答える", "身体能力やプレーに関する質問に回答します。"],
+            ["03", "能力を自己評価する", "得意・苦手な能力を選び、自分の能力を評価します。"],
+            ["04", "診断結果を見る", "総合値と6つの能力をレーダーチャートで確認できます。"]
+        ];
+        return `
+            <div class="ability-flow-intro">
+                <p class="ability-flow-intro__lead">ポジションや得意な能力から、あなたのサッカー能力を診断します。</p>
+                <h3 class="ability-flow-intro__title">診断の流れ</h3>
+                <div class="ability-flow">
+                    ${steps.map(([number, title, description]) => `
+                        <section class="ability-flow-card">
+                            <span class="ability-flow-card__number">${number}</span>
+                            <h3 class="ability-flow-card__title">${escapeHtml(title)}</h3>
+                            <p class="ability-flow-card__text">${escapeHtml(description)}</p>
+                        </section>
+                    `).join("")}
+                </div>
+            </div>
+        `;
     }
 
     function selectAbilityPosition(position) {
@@ -1867,7 +1909,7 @@ canvas{max-width:100%;}
 
     function backQuestionFlow() {
         if (diagnosisMode === "ability") {
-            showSimplePage("ability", "能力測定", "質問に答えると、あなたの能力値とレーダーチャートを確認できます。", "能力測定を始める", startAbilityMeasurementFlow);
+            startAbilityMeasurementFlow();
             return;
         }
         showPlaystyleTop();
