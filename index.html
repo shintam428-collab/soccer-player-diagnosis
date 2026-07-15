@@ -143,6 +143,23 @@ button:hover{transform:scale(1.04);}
 .overall-card{margin:22px auto 0;padding:26px 18px;border-radius:22px;background:linear-gradient(135deg,#eff6ff,#ecfeff 55%,#fef9c3);border:2px solid rgba(37,99,235,0.2);box-shadow:0 16px 34px rgba(15,23,42,0.18);text-align:center;}
 .overall-card__label{margin:0;color:#1e293b;font-size:20px;font-weight:900;line-height:1.7;}
 .overall-card__score{margin:4px 0;color:#f97316;font-size:clamp(72px,14vw,124px);font-weight:1000;line-height:1;text-shadow:0 8px 20px rgba(249,115,22,0.24);}
+.ability-player-card{position:relative;margin:22px auto 0;padding:22px;border-radius:26px;background:linear-gradient(135deg,#0f172a,#1e3a8a 48%,#0f766e);box-shadow:0 22px 48px rgba(15,23,42,0.28);color:white;overflow:hidden;text-align:left;}
+.ability-player-card::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 78% 20%,rgba(255,255,255,0.18),transparent 30%),linear-gradient(180deg,rgba(255,255,255,0.08),transparent 45%);pointer-events:none;}
+.ability-player-card__top{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(130px,32%);gap:16px;align-items:start;}
+.ability-player-card .overall-card{margin:0;padding:18px 14px;background:rgba(255,255,255,0.94);border-color:rgba(255,255,255,0.55);box-shadow:0 14px 28px rgba(15,23,42,0.22);}
+.ability-player-card__position{margin-top:12px;display:inline-flex;align-items:center;justify-content:center;padding:8px 16px;border-radius:999px;background:rgba(15,23,42,0.56);border:1px solid rgba(255,255,255,0.22);font-size:18px;font-weight:900;color:white;}
+.ability-player-card__photo-block{position:relative;z-index:1;text-align:center;}
+.ability-player-card__photo{width:100%;max-width:210px;aspect-ratio:3/4;object-fit:cover;object-position:center center;border-radius:20px;background:linear-gradient(180deg,#e2e8f0,#94a3b8);box-shadow:0 18px 36px rgba(2,6,23,0.35);display:block;margin:0 auto;}
+.ability-player-card__upload{display:inline-flex;align-items:center;justify-content:center;margin:10px auto 0;padding:9px 12px;border-radius:999px;background:rgba(255,255,255,0.92);color:#0f172a;font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 8px 16px rgba(15,23,42,0.22);}
+.ability-player-card__upload input{display:none;}
+.ability-player-card__radar{position:relative;z-index:1;margin-top:16px;max-width:380px;}
+.ability-player-card__radar .chart-box{margin:0;background:rgba(255,255,255,0.94);border-radius:18px;padding:10px;box-shadow:0 12px 28px rgba(15,23,42,0.22);}
+.ability-player-card__bottom{position:relative;z-index:1;margin-top:18px;padding:16px;border-radius:18px;background:rgba(2,6,23,0.54);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);text-align:center;}
+.ability-player-card__name{margin:0 0 12px;font-size:24px;font-weight:1000;color:white;}
+.player-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;}
+.player-stat-item{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,0.12);color:white;}
+.player-stat-label{font-size:13px;font-weight:800;opacity:.9;}
+.player-stat-value{font-size:19px;font-weight:1000;color:#facc15;}
 .review-card{background:linear-gradient(135deg,#fff7cc 0%,#e0f2fe 55%,#ffffff 100%);border:2px solid rgba(250,204,21,0.75);border-radius:24px;padding:34px 26px;margin:34px auto 0;box-shadow:0 18px 42px rgba(15,23,42,0.22),0 0 0 6px rgba(255,255,255,0.45);text-align:center;max-width:760px;}
 .review-area{display:none;}
 .review-area.is-visible{display:block;}
@@ -361,6 +378,21 @@ canvas{max-width:100%;}
     #question{font-size:20px;}
     button{font-size:16px;}
     .ability-grid{grid-template-columns:1fr;}
+    .ability-player-card{padding:16px;border-radius:22px;}
+    .ability-player-card__top{grid-template-columns:1fr 118px;gap:10px;}
+    .ability-player-card .overall-card{padding:14px 10px;}
+    .ability-player-card .overall-card__label{font-size:15px;}
+    .ability-player-card .overall-card__score{font-size:58px;}
+    .ability-player-card__position{font-size:14px;padding:7px 12px;}
+    .ability-player-card__photo{max-width:118px;border-radius:16px;}
+    .ability-player-card__upload{font-size:11px;padding:7px 8px;}
+    .ability-player-card__radar{max-width:none;margin-top:14px;}
+    .ability-player-card__radar .chart-box{padding:6px;}
+    .ability-player-card__name{font-size:20px;}
+    .player-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}
+    .player-stat-item{padding:7px 8px;}
+    .player-stat-label{font-size:12px;}
+    .player-stat-value{font-size:18px;}
     .review-card{padding:28px 16px;border-radius:20px;margin-top:28px;}
     .review-card p{font-size:15px;line-height:1.8;}
     .review-card__button{width:100%;max-width:320px;min-height:58px;font-size:17px;}
@@ -1256,6 +1288,7 @@ canvas{max-width:100%;}
         $("confirmArea").classList.add("is-hidden");
         $("simplePage").classList.add("is-hidden");
         $("homePage").classList.add("is-hidden");
+        resetRadarChartLocation();
         $("chartBox").style.display = "none";
         hideReviewArea();
     }
@@ -1866,14 +1899,28 @@ canvas{max-width:100%;}
                     <h2 class="result-title"><span>あなたの能力値</span></h2>
                     <p class="result-description">回答から計算した能力バランスです。</p>
                 </div>
-                <div class="overall-card">
-                    <p class="overall-card__label">あなたの総合値は</p>
-                    <div class="overall-card__score">${overallScore}</div>
-                    <p class="overall-card__label">です</p>
+                <div class="ability-player-card">
+                    <div class="ability-player-card__top">
+                        <div>
+                            <div class="overall-card">
+                                <p class="overall-card__label">あなたの総合値は</p>
+                                <div class="overall-card__score">${overallScore}</div>
+                                <p class="overall-card__label">です</p>
+                            </div>
+                            <div class="ability-player-card__position">${escapeHtml(abilityMeasurementState.position)}</div>
+                            <div id="playerCardRadarSlot" class="ability-player-card__radar"></div>
+                        </div>
+                        <div class="ability-player-card__photo-block">
+                            <img id="userPhotoPreview" class="ability-player-card__photo" alt="ユーザー写真プレビュー">
+                            <label class="ability-player-card__upload">写真を選ぶ<input type="file" accept="image/*" onchange="handleUserPhotoUpload(event)"></label>
+                        </div>
+                    </div>
+                    <div class="ability-player-card__bottom">
+                        <h3 class="ability-player-card__name">あなた</h3>
+                        <div class="player-stat-grid">${createPlayerStatHtml(radarScores)}</div>
+                    </div>
                 </div>
                 <div class="section-card">
-                    <h3>${text.abilityTitle}</h3>
-                    <div class="ability-grid">${createAbilityHtml(radarScores)}</div>
                     <button type="button" id="detailToggleBtn" class="detail-toggle-btn" onclick="toggleDetailAbilities()">細かい能力を閉じる</button>
                     <div id="detailAbilityArea" class="detail-ability-area is-open">
                         <h3>${text.detailTitle}</h3>
@@ -1882,7 +1929,9 @@ canvas{max-width:100%;}
                 </div>
                 <button type="button" class="restart-btn" onclick="startAbilityMeasurement()">もう一度測定する</button>
             `;
+            moveRadarChartIntoPlayerCard();
             drawRadarChart(radarScores);
+            initializeUserPhotoPreview();
             showReviewArea();
             return;
         }
@@ -2050,7 +2099,7 @@ canvas{max-width:100%;}
         const ctx = canvas.getContext("2d");
         const labels = Object.keys(scores);
         const values = labels.map((label) => clamp(scores[label] || 0));
-        const size = Math.min(360, Math.max(280, chartBox.clientWidth || 320));
+        const size = Math.min(320, Math.max(240, chartBox.clientWidth || 300));
         const scale = window.devicePixelRatio || 1;
         const center = size / 2;
         const radius = size * 0.34;
@@ -2097,6 +2146,46 @@ canvas{max-width:100%;}
         ctx.fillText(text.you, 18, 24);
     }
 
+    function moveRadarChartIntoPlayerCard() {
+        const slot = $("playerCardRadarSlot");
+        const chartBox = $("chartBox");
+        if (slot && chartBox && chartBox.parentElement !== slot) slot.appendChild(chartBox);
+    }
+
+    function initializeUserPhotoPreview() {
+        const image = $("userPhotoPreview");
+        if (!image) return;
+        image.src = createDefaultUserPhotoSvg();
+    }
+
+    function createDefaultUserPhotoSvg() {
+        const svg = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 320">
+                <defs>
+                    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+                        <stop offset="0" stop-color="#dbeafe"/>
+                        <stop offset="1" stop-color="#94a3b8"/>
+                    </linearGradient>
+                </defs>
+                <rect width="240" height="320" fill="url(#bg)"/>
+                <circle cx="120" cy="104" r="46" fill="#f8fafc"/>
+                <path d="M52 260c10-60 45-92 68-92s58 32 68 92" fill="#1e3a8a"/>
+                <path d="M86 210h68l-14 70h-40z" fill="#2563eb"/>
+                <text x="120" y="296" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#fff">PHOTO</text>
+            </svg>
+        `;
+        return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+    }
+
+    function handleUserPhotoUpload(event) {
+        const file = event.target.files && event.target.files[0];
+        const image = $("userPhotoPreview");
+        if (!file || !image) return;
+        const reader = new FileReader();
+        reader.onload = () => { image.src = String(reader.result || ""); };
+        reader.readAsDataURL(file);
+    }
+
     function drawRadarShape(ctx, sides, center, radius) {
         ctx.beginPath();
         for (let index = 0; index < sides; index++) {
@@ -2116,6 +2205,21 @@ canvas{max-width:100%;}
             const score = clamp(value);
             return `<div class="ability-item"><div class="ability-name"><span>${escapeHtml(name)}</span><span>${score}</span></div><div class="ability-bar"><div class="ability-bar-fill" style="width:${score}%"></div></div></div>`;
         }).join("");
+    }
+
+    function createPlayerStatHtml(scores) {
+        return ["オフェンス", "ドリブル", "フィジカル", "ディフェンス", "足の速さ", "パス"].map((name) => {
+            const value = clamp(scores[name] || 0);
+            return `<div class="player-stat-item"><span class="player-stat-label">${escapeHtml(name)}</span><span class="player-stat-value">${value}</span></div>`;
+        }).join("");
+    }
+
+    function resetRadarChartLocation() {
+        const quizArea = $("quizArea");
+        const reviewArea = $("reviewArea");
+        const chartBox = $("chartBox");
+        if (!quizArea || !reviewArea || !chartBox) return;
+        if (chartBox.parentElement !== quizArea) quizArea.insertBefore(chartBox, reviewArea);
     }
 
     function createOrderedDetailScores(scores) {
@@ -2219,6 +2323,7 @@ canvas{max-width:100%;}
     window.returnToQuestions = returnToQuestionsFlow;
     window.finish = finishDiagnosisFlow;
     window.toggleDetailAbilities = toggleDetailAbilities;
+    window.handleUserPhotoUpload = handleUserPhotoUpload;
     window.showHomeTypeDetail = showHomeTypeDetail;
     window.closeHomeTypeDetail = closeHomeTypeDetail;
     window.handleHomeTypeImageError = handleHomeTypeImageError;
