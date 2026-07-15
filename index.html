@@ -143,18 +143,23 @@ button:hover{transform:scale(1.04);}
 .overall-card{margin:22px auto 0;padding:26px 18px;border-radius:22px;background:linear-gradient(135deg,#eff6ff,#ecfeff 55%,#fef9c3);border:2px solid rgba(37,99,235,0.2);box-shadow:0 16px 34px rgba(15,23,42,0.18);text-align:center;}
 .overall-card__label{margin:0;color:#1e293b;font-size:20px;font-weight:900;line-height:1.7;}
 .overall-card__score{margin:4px 0;color:#f97316;font-size:clamp(72px,14vw,124px);font-weight:1000;line-height:1;text-shadow:0 8px 20px rgba(249,115,22,0.24);}
-.ability-player-card{position:relative;margin:22px auto 0;padding:22px;border-radius:26px;background:linear-gradient(135deg,#0f172a,#1e3a8a 48%,#0f766e);box-shadow:0 22px 48px rgba(15,23,42,0.28);color:white;overflow:hidden;text-align:left;}
-.ability-player-card::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 78% 20%,rgba(255,255,255,0.18),transparent 30%),linear-gradient(180deg,rgba(255,255,255,0.08),transparent 45%);pointer-events:none;}
-.ability-player-card__top{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(130px,32%);gap:16px;align-items:start;}
-.ability-player-card .overall-card{margin:0;padding:18px 14px;background:rgba(255,255,255,0.94);border-color:rgba(255,255,255,0.55);box-shadow:0 14px 28px rgba(15,23,42,0.22);}
-.ability-player-card__position{margin-top:12px;display:inline-flex;align-items:center;justify-content:center;padding:8px 16px;border-radius:999px;background:rgba(15,23,42,0.56);border:1px solid rgba(255,255,255,0.22);font-size:18px;font-weight:900;color:white;}
-.ability-player-card__photo-block{position:relative;z-index:1;text-align:center;}
-.ability-player-card__photo{width:100%;max-width:210px;aspect-ratio:3/4;object-fit:cover;object-position:center center;border-radius:20px;background:linear-gradient(180deg,#e2e8f0,#94a3b8);box-shadow:0 18px 36px rgba(2,6,23,0.35);display:block;margin:0 auto;}
-.ability-player-card__upload{display:inline-flex;align-items:center;justify-content:center;margin:10px auto 0;padding:9px 12px;border-radius:999px;background:rgba(255,255,255,0.92);color:#0f172a;font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 8px 16px rgba(15,23,42,0.22);}
-.ability-player-card__upload input{display:none;}
-.ability-player-card__radar{position:relative;z-index:1;margin-top:16px;max-width:380px;}
-.ability-player-card__radar .chart-box{margin:0;background:rgba(255,255,255,0.94);border-radius:18px;padding:10px;box-shadow:0 12px 28px rgba(15,23,42,0.22);}
-.ability-player-card__bottom{position:relative;z-index:1;margin-top:18px;padding:16px;border-radius:18px;background:rgba(2,6,23,0.54);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);text-align:center;}
+.player-card-editor{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:22px auto 0;}
+.player-card-editor__control{display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:16px;background:#f8fafc;border:1px solid #e2e8f0;box-shadow:0 8px 18px rgba(15,23,42,0.08);color:#0f172a;font-weight:900;text-align:left;}
+.player-card-editor__control input[type="text"]{width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:12px;padding:12px 13px;font-size:16px;font-weight:800;color:#0f172a;background:white;}
+.player-card-editor__file{display:inline-flex;align-items:center;justify-content:center;min-height:46px;border-radius:12px;background:#2563eb;color:white;font-weight:900;cursor:pointer;}
+.player-card-editor__file input{display:none;}
+.ability-player-card{position:relative;width:min(100%,430px);min-height:690px;margin:22px auto 0;padding:18px;border-radius:30px;background:#020617;box-shadow:0 26px 58px rgba(15,23,42,0.36);color:white;overflow:hidden;text-align:left;}
+.ability-player-card::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,0.55),rgba(0,0,0,0.18) 42%,rgba(0,0,0,0.08)),linear-gradient(180deg,rgba(2,6,23,0.42),rgba(2,6,23,0.06) 42%,rgba(2,6,23,0.88) 72%,rgba(2,6,23,0.96));z-index:1;pointer-events:none;}
+.ability-player-card::after{content:"";position:absolute;inset:10px;border:1px solid rgba(255,255,255,0.24);border-radius:24px;z-index:3;pointer-events:none;}
+.ability-player-card__photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;display:block;background:linear-gradient(180deg,#e2e8f0,#94a3b8);z-index:0;}
+.ability-player-card__top{position:relative;z-index:2;display:block;min-height:420px;}
+.ability-player-card .overall-card{width:145px;margin:0;padding:12px 10px;background:rgba(2,6,23,0.68);border:1px solid rgba(255,255,255,0.24);box-shadow:0 12px 26px rgba(2,6,23,0.35);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+.ability-player-card .overall-card__label{color:white;font-size:13px;line-height:1.35;}
+.ability-player-card .overall-card__score{font-size:58px;color:#facc15;text-shadow:0 5px 18px rgba(0,0,0,0.42);}
+.ability-player-card__position{margin-top:8px;display:inline-flex;align-items:center;justify-content:center;min-width:78px;padding:7px 14px;border-radius:999px;background:rgba(2,6,23,0.72);border:1px solid rgba(255,255,255,0.24);font-size:18px;font-weight:1000;color:white;text-shadow:0 2px 8px rgba(0,0,0,0.65);}
+.ability-player-card__radar{position:relative;z-index:2;width:250px;margin-top:12px;}
+.ability-player-card__radar .chart-box{margin:0;background:rgba(2,6,23,0.55);border:1px solid rgba(255,255,255,0.2);border-radius:18px;padding:6px;box-shadow:0 12px 28px rgba(2,6,23,0.28);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+.ability-player-card__bottom{position:relative;z-index:2;margin-top:auto;padding:16px;border-radius:20px;background:rgba(2,6,23,0.66);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);text-align:center;}
 .ability-player-card__name{margin:0 0 12px;font-size:24px;font-weight:1000;color:white;}
 .player-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;}
 .player-stat-item{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,0.12);color:white;}
@@ -378,15 +383,14 @@ canvas{max-width:100%;}
     #question{font-size:20px;}
     button{font-size:16px;}
     .ability-grid{grid-template-columns:1fr;}
-    .ability-player-card{padding:16px;border-radius:22px;}
-    .ability-player-card__top{grid-template-columns:1fr 118px;gap:10px;}
-    .ability-player-card .overall-card{padding:14px 10px;}
-    .ability-player-card .overall-card__label{font-size:15px;}
-    .ability-player-card .overall-card__score{font-size:58px;}
-    .ability-player-card__position{font-size:14px;padding:7px 12px;}
-    .ability-player-card__photo{max-width:118px;border-radius:16px;}
-    .ability-player-card__upload{font-size:11px;padding:7px 8px;}
-    .ability-player-card__radar{max-width:none;margin-top:14px;}
+    .player-card-editor{grid-template-columns:1fr;gap:10px;}
+    .ability-player-card{min-height:640px;padding:14px;border-radius:24px;}
+    .ability-player-card__top{min-height:390px;}
+    .ability-player-card .overall-card{width:128px;padding:10px 8px;}
+    .ability-player-card .overall-card__label{font-size:12px;}
+    .ability-player-card .overall-card__score{font-size:50px;}
+    .ability-player-card__position{font-size:15px;padding:6px 11px;}
+    .ability-player-card__radar{width:min(100%,235px);margin-top:10px;}
     .ability-player-card__radar .chart-box{padding:6px;}
     .ability-player-card__name{font-size:20px;}
     .player-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}
@@ -1899,7 +1903,18 @@ canvas{max-width:100%;}
                     <h2 class="result-title"><span>あなたの能力値</span></h2>
                     <p class="result-description">回答から計算した能力バランスです。</p>
                 </div>
+                <div class="player-card-editor">
+                    <label class="player-card-editor__control">
+                        自分の写真を選択
+                        <span class="player-card-editor__file">写真を選ぶ<input type="file" accept="image/*" onchange="handleUserPhotoUpload(event)"></span>
+                    </label>
+                    <label class="player-card-editor__control">
+                        自分の名前を入力
+                        <input type="text" id="playerNameInput" placeholder="名前を入力" oninput="handlePlayerNameInput(event)">
+                    </label>
+                </div>
                 <div class="ability-player-card">
+                    <img id="userPhotoPreview" class="ability-player-card__photo" alt="ユーザー写真プレビュー">
                     <div class="ability-player-card__top">
                         <div>
                             <div class="overall-card">
@@ -1910,17 +1925,15 @@ canvas{max-width:100%;}
                             <div class="ability-player-card__position">${escapeHtml(abilityMeasurementState.position)}</div>
                             <div id="playerCardRadarSlot" class="ability-player-card__radar"></div>
                         </div>
-                        <div class="ability-player-card__photo-block">
-                            <img id="userPhotoPreview" class="ability-player-card__photo" alt="ユーザー写真プレビュー">
-                            <label class="ability-player-card__upload">写真を選ぶ<input type="file" accept="image/*" onchange="handleUserPhotoUpload(event)"></label>
-                        </div>
                     </div>
                     <div class="ability-player-card__bottom">
-                        <h3 class="ability-player-card__name">あなた</h3>
+                        <h3 id="playerCardName" class="ability-player-card__name">YOUR NAME</h3>
                         <div class="player-stat-grid">${createPlayerStatHtml(radarScores)}</div>
                     </div>
                 </div>
                 <div class="section-card">
+                    <h3>6項目の詳しい表示</h3>
+                    <div class="ability-grid">${createAbilityHtml(radarScores)}</div>
                     <button type="button" id="detailToggleBtn" class="detail-toggle-btn" onclick="toggleDetailAbilities()">細かい能力を閉じる</button>
                     <div id="detailAbilityArea" class="detail-ability-area is-open">
                         <h3>${text.detailTitle}</h3>
@@ -2099,7 +2112,9 @@ canvas{max-width:100%;}
         const ctx = canvas.getContext("2d");
         const labels = Object.keys(scores);
         const values = labels.map((label) => clamp(scores[label] || 0));
-        const size = Math.min(320, Math.max(240, chartBox.clientWidth || 300));
+        const maxChartSize = canvas.closest(".ability-player-card") ? 250 : 320;
+        const minChartSize = canvas.closest(".ability-player-card") ? 220 : 240;
+        const size = Math.min(maxChartSize, Math.max(minChartSize, chartBox.clientWidth || 300));
         const scale = window.devicePixelRatio || 1;
         const center = size / 2;
         const radius = size * 0.34;
@@ -2118,7 +2133,8 @@ canvas{max-width:100%;}
             const point = radarPoint(index, labels.length, center, radius);
             ctx.beginPath(); ctx.moveTo(center, center); ctx.lineTo(point.x, point.y); ctx.stroke();
         });
-        ctx.fillStyle = "#1f2937";
+        const isPlayerCardChart = Boolean(canvas.closest(".ability-player-card"));
+        ctx.fillStyle = isPlayerCardChart ? "#f8fafc" : "#1f2937";
         ctx.font = "12px Arial, sans-serif";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -2143,6 +2159,7 @@ canvas{max-width:100%;}
         });
         ctx.font = "bold 13px Arial, sans-serif";
         ctx.textAlign = "left";
+        ctx.fillStyle = isPlayerCardChart ? "#f8fafc" : "#1f2937";
         ctx.fillText(text.you, 18, 24);
     }
 
@@ -2184,6 +2201,13 @@ canvas{max-width:100%;}
         const reader = new FileReader();
         reader.onload = () => { image.src = String(reader.result || ""); };
         reader.readAsDataURL(file);
+    }
+
+    function handlePlayerNameInput(event) {
+        const nameElement = $("playerCardName");
+        if (!nameElement) return;
+        const value = normalizeCell(event.target.value);
+        nameElement.textContent = value || "YOUR NAME";
     }
 
     function drawRadarShape(ctx, sides, center, radius) {
@@ -2324,6 +2348,7 @@ canvas{max-width:100%;}
     window.finish = finishDiagnosisFlow;
     window.toggleDetailAbilities = toggleDetailAbilities;
     window.handleUserPhotoUpload = handleUserPhotoUpload;
+    window.handlePlayerNameInput = handlePlayerNameInput;
     window.showHomeTypeDetail = showHomeTypeDetail;
     window.closeHomeTypeDetail = closeHomeTypeDetail;
     window.handleHomeTypeImageError = handleHomeTypeImageError;
