@@ -398,6 +398,10 @@ canvas{max-width:100%;}
 .type-detail-card__key{margin:0 0 10px;color:#2563eb;font-weight:bold;line-height:1.6;}
 .type-detail-card__description{margin:0;color:#334155;line-height:1.8;}
 .type-detail-card__close{margin-top:14px;padding:10px 18px;border-radius:10px;background:#334155!important;color:#fff;font-size:14px;width:auto;}
+.site-footer{position:relative;z-index:1;width:100%;max-width:1120px;margin:28px auto 0;padding:20px 16px;color:#475569;text-align:center;font-size:13px;font-weight:700;}
+.site-footer__links{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;}
+.site-footer a{color:#2563eb;text-decoration:none;font-weight:900;}
+.site-footer a:hover{text-decoration:underline;}
 @media(max-width:600px){
     body{width:100%;max-width:100%;padding:112px 10px 12px;margin:0;overflow-x:hidden;}
     .page-content,.quiz-area,#quizArea,#quizCard,#result{width:100%;max-width:100%;margin-left:auto;margin-right:auto;}
@@ -469,6 +473,8 @@ canvas{max-width:100%;}
     .type-card{padding:7px;}
     .type-card__image{padding:2px;}
     .type-card__name{font-size:13px;}
+    .site-footer{margin-top:18px;padding:18px 10px;font-size:12px;}
+    .site-footer__links{gap:10px 12px;}
     .question-card{scroll-margin-top:120px;}
     .rating-scale{display:flex;align-items:center;justify-content:center;gap:6px;text-align:center;font-size:13px;white-space:nowrap;}
     .rating-dots{margin:0;gap:4px;flex:0 1 auto;}
@@ -2629,6 +2635,14 @@ canvas{max-width:100%;}
 })();
 </script>
 
+<footer class="site-footer">
+    <nav class="site-footer__links" aria-label="フッターリンク">
+        <a href="privacy.html">プライバシーポリシー</a>
+        <a href="disclaimer.html">免責事項</a>
+        <a href="operator.html">運営者情報</a>
+        <a href="contact.html">お問い合わせ</a>
+    </nav>
+</footer>
 
 </body>
 </html>
