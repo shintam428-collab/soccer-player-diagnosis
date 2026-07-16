@@ -2291,6 +2291,18 @@ canvas{max-width:100%;}
         return value === "スピード" ? "足の速さ" : value;
     }
 
+    function getRadarLabelAbbreviation(label) {
+        const labels = {
+            "オフェンス": "OFE",
+            "ドリブル": "DRI",
+            "フィジカル": "PHY",
+            "ディフェンス": "DEF",
+            "足の速さ": "SPD",
+            "パス": "PAS"
+        };
+        return labels[normalizeRadarName(label)] || label;
+    }
+
     function drawRadarChart(scores) {
         const canvas = $("radarChart");
         const chartBox = $("chartBox");
@@ -2326,7 +2338,7 @@ canvas{max-width:100%;}
             ctx.textBaseline = "middle";
             labels.forEach((label, index) => {
                 const point = radarPoint(index, labels.length, center, radius + 34);
-                ctx.fillText(label, point.x, point.y);
+                ctx.fillText(getRadarLabelAbbreviation(label), point.x, point.y);
             });
         }
         ctx.beginPath();
