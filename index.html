@@ -308,14 +308,31 @@ canvas{max-width:100%;}
 .rating-dot:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 8px 18px rgba(15,23,42,0.18);}
 .rating-dot.is-selected{background:#eef2ff!important;background:color-mix(in srgb,var(--dot-color) 22%,white)!important;border-width:5px;box-shadow:0 0 0 5px rgba(37,99,235,0.12),0 10px 22px rgba(15,23,42,0.18);}
 .self-rating-intro{margin:0 0 4px;padding:14px 16px;border-radius:14px;background:rgba(37,99,235,0.08);color:#1e293b;font-weight:800;text-align:center;line-height:1.7;}
-.ability-flow-intro{margin:0 auto 16px;text-align:center;}
-.ability-flow-intro__lead{margin:0 auto 14px;max-width:620px;color:#475569;font-size:16px;line-height:1.75;font-weight:700;}
-.ability-flow-intro__title{margin:0 0 10px;color:#1e3a8a;font-size:18px;font-weight:1000;letter-spacing:0;}
-.ability-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 auto 16px;}
-.ability-flow-card{display:flex;flex-direction:column;min-height:138px;padding:14px 12px;border-radius:16px;background:linear-gradient(180deg,#ffffff,#eff6ff);border:1px solid #dbeafe;box-shadow:0 8px 18px rgba(37,99,235,0.09);text-align:left;}
-.ability-flow-card__number{display:inline-flex;align-items:center;justify-content:center;width:42px;height:28px;margin-bottom:9px;border-radius:999px;background:#2563eb;color:#fff;font-size:13px;font-weight:1000;letter-spacing:.04em;}
-.ability-flow-card__title{margin:0 0 6px;color:#0f172a;font-size:15px;font-weight:900;line-height:1.45;}
-.ability-flow-card__text{margin:0;color:#475569;font-size:12px;font-weight:700;line-height:1.65;}
+.card.ability-entry-card{max-width:1120px;margin:0 auto;padding:0;background:transparent;box-shadow:none;border-radius:0;}
+.ability-flow-intro{margin:0 auto 14px;text-align:center;}
+.ability-flow-intro__heading{margin:0;color:#0f172a;font-size:clamp(36px,7vw,64px);font-weight:1000;line-height:1.15;letter-spacing:0;}
+.ability-flow-intro__lead{margin:12px auto 24px;max-width:680px;color:#475569;font-size:clamp(16px,2.4vw,21px);line-height:1.75;font-weight:800;}
+.ability-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:0 auto 16px;}
+.ability-flow-card{--step-main:#38bdf8;--step-soft:#e0f2fe;position:relative;min-height:310px;border-radius:24px;background:#fff;border:1px solid rgba(226,232,240,0.9);box-shadow:0 12px 26px rgba(15,23,42,0.1);overflow:hidden;text-align:left;}
+.ability-flow-card::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:var(--step-main);}
+.ability-flow-card--position{--step-main:#0ea5e9;--step-soft:#e0f7ff;}
+.ability-flow-card--question{--step-main:#10b981;--step-soft:#dcfce7;}
+.ability-flow-card--result{--step-main:#8b5cf6;--step-soft:#ede9fe;}
+.ability-flow-card__visual{position:relative;height:142px;background:linear-gradient(135deg,var(--step-soft),#fff);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.ability-flow-card__visual::after{content:"";position:absolute;left:-8%;right:-8%;bottom:-34px;height:72px;background:#fff;border-radius:50% 50% 0 0/72% 72% 0 0;}
+.ability-flow-illust{position:relative;z-index:1;width:92px;height:92px;border-radius:24px;background:rgba(255,255,255,0.72);box-shadow:inset 0 0 0 2px rgba(255,255,255,0.8),0 12px 26px rgba(15,23,42,0.12);}
+.ability-flow-illust--field::before{content:"";position:absolute;inset:18px;border:3px solid var(--step-main);border-radius:12px;}
+.ability-flow-illust--field::after{content:"";position:absolute;left:50%;top:18px;bottom:18px;border-left:3px solid var(--step-main);}
+.ability-flow-illust--field span{position:absolute;width:12px;height:12px;border-radius:50%;background:var(--step-main);box-shadow:28px 18px 0 var(--step-main),-20px 36px 0 var(--step-main);left:26px;top:26px;}
+.ability-flow-illust--check::before{content:"";position:absolute;left:24px;top:18px;width:44px;height:56px;border-radius:8px;background:#fff;border:3px solid var(--step-main);}
+.ability-flow-illust--check::after{content:"";position:absolute;left:35px;top:36px;width:30px;height:16px;border-left:5px solid var(--step-main);border-bottom:5px solid var(--step-main);transform:rotate(-45deg);}
+.ability-flow-illust--radar::before{content:"";position:absolute;left:21px;top:18px;width:50px;height:50px;border-radius:50%;border:3px solid var(--step-main);}
+.ability-flow-illust--radar::after{content:"";position:absolute;left:34px;top:28px;width:30px;height:32px;background:color-mix(in srgb,var(--step-main) 45%,transparent);clip-path:polygon(50% 0,100% 40%,78% 100%,18% 92%,0 34%);}
+.ability-flow-card__body{position:relative;z-index:1;padding:18px 20px 22px;text-align:center;}
+.ability-flow-card__number{display:block;margin:0 0 8px;color:var(--step-main);font-size:13px;font-weight:1000;letter-spacing:.12em;}
+.ability-flow-card__title{margin:0 0 10px;color:#0f172a;font-size:21px;font-weight:1000;line-height:1.35;}
+.ability-flow-card__text{margin:0;color:#475569;font-size:14px;font-weight:700;line-height:1.75;}
+.ability-start-label{margin:12px auto 6px;color:#2563eb;font-size:13px;font-weight:1000;letter-spacing:.08em;text-align:center;}
 .question-list{display:grid;gap:18px;text-align:left;margin-top:18px;}
 .question-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:18px;box-shadow:0 5px 14px rgba(15,23,42,0.08);scroll-margin-top:110px;}
 .question-card__title{font-size:18px;font-weight:800;line-height:1.65;color:#0f172a;margin:0 0 14px;}
@@ -398,14 +415,19 @@ canvas{max-width:100%;}
     .home-action-card__title{font-size:19px;}
     #question{font-size:20px;}
     button{font-size:16px;}
-    .ability-flow-intro{margin-bottom:12px;}
-    .ability-flow-intro__lead{font-size:14px;line-height:1.65;margin-bottom:10px;}
-    .ability-flow-intro__title{font-size:16px;margin-bottom:8px;}
-    .ability-flow{grid-template-columns:1fr;gap:8px;margin-bottom:12px;}
-    .ability-flow-card{min-height:auto;padding:12px;}
-    .ability-flow-card__number{width:38px;height:26px;margin-bottom:7px;font-size:12px;}
-    .ability-flow-card__title{font-size:14px;margin-bottom:4px;}
-    .ability-flow-card__text{font-size:12px;line-height:1.55;}
+    .card.ability-entry-card{width:100%;max-width:100%;margin:0 auto;padding:0;}
+    .ability-flow-intro{margin-bottom:10px;}
+    .ability-flow-intro__heading{font-size:clamp(34px,10vw,48px);}
+    .ability-flow-intro__lead{font-size:15px;line-height:1.65;margin:10px auto 16px;}
+    .ability-flow{grid-template-columns:1fr;gap:12px;margin-bottom:12px;}
+    .ability-flow-card{min-height:auto;border-radius:20px;}
+    .ability-flow-card__visual{height:104px;}
+    .ability-flow-illust{width:70px;height:70px;border-radius:18px;}
+    .ability-flow-card__body{padding:14px 16px 18px;}
+    .ability-flow-card__number{font-size:12px;margin-bottom:6px;}
+    .ability-flow-card__title{font-size:18px;margin-bottom:6px;}
+    .ability-flow-card__text{font-size:13px;line-height:1.6;}
+    .ability-start-label{margin-top:8px;}
     .question-list{margin-top:12px;gap:12px;}
     .question-page-navigation{margin-top:22px;gap:10px;}
     .question-page-next-btn,.question-page-back-btn{min-width:0;flex:1;padding:13px 18px;font-size:15px;}
@@ -1558,6 +1580,9 @@ canvas{max-width:100%;}
     function renderAbilityStep(title, progressPercent, html, showBack = true) {
         blurActiveButton();
         clearChoiceButtonStates();
+        $("quizCard").classList.remove("ability-entry-card");
+        $("progressArea").style.display = "block";
+        $("question").style.display = "";
         $("progressText").textContent = title;
         $("progressFill").style.width = `${progressPercent}%`;
         $("question").textContent = title;
@@ -1587,7 +1612,7 @@ canvas{max-width:100%;}
             ${createAbilityFlowIntroHtml()}
             <div class="question-list">
                 <section class="question-card">
-                    <h3 class="question-card__title">あなたのポジションを選んでください</h3>
+                    <h3 class="question-card__title">あなたのポジションは？</h3>
                     <div class="question-card__choices">
                         ${positions.map((position) => `<button type="button" class="choice-btn${abilityMeasurementState.position === position ? " is-selected selected" : ""}" onclick="selectAbilityPosition('${escapeAttribute(position)}', this)"><span class="choice-text">${escapeHtml(position)}</span></button>`).join("")}
                     </div>
@@ -1596,28 +1621,36 @@ canvas{max-width:100%;}
             <p id="pageMessage" class="page-message">ポジションを選択してください</p>
             ${createAbilityPageNavigation("次へ", "submitAbilityPositionStep()", false)}
         `, false);
+        $("quizCard").classList.add("ability-entry-card");
+        $("progressArea").style.display = "none";
+        $("question").style.display = "none";
     }
 
     function createAbilityFlowIntroHtml() {
         const steps = [
-            ["01", "ポジションを選ぶ", "普段プレーするポジションとプレースタイルを選択します。"],
-            ["02", "質問に答える", "身体能力やプレーに関する質問に回答します。"],
-            ["03", "能力を自己評価する", "得意・苦手な能力を選び、自分の能力を評価します。"],
-            ["04", "診断結果を見る", "総合値と6つの能力をレーダーチャートで確認できます。"]
+            ["01", "ポジションを選ぶ", "普段プレーするポジションと、プレースタイルを選択します。", "position"],
+            ["02", "質問に答える", "身体能力や得意・苦手なプレーについて回答し、自分の能力を評価します。", "question"],
+            ["03", "診断結果を見る", "総合値と6つの能力を、レーダーチャートで確認できます。", "result"]
         ];
         return `
             <div class="ability-flow-intro">
-                <p class="ability-flow-intro__lead">ポジションや得意な能力から、あなたのサッカー能力を診断します。</p>
-                <h3 class="ability-flow-intro__title">診断の流れ</h3>
+                <h2 class="ability-flow-intro__heading">サッカー能力診断</h2>
+                <p class="ability-flow-intro__lead">あなたのプレーを、6つの能力で数値化します。</p>
                 <div class="ability-flow">
-                    ${steps.map(([number, title, description]) => `
-                        <section class="ability-flow-card">
-                            <span class="ability-flow-card__number">${number}</span>
-                            <h3 class="ability-flow-card__title">${escapeHtml(title)}</h3>
-                            <p class="ability-flow-card__text">${escapeHtml(description)}</p>
+                    ${steps.map(([number, title, description, type]) => `
+                        <section class="ability-flow-card ability-flow-card--${type}">
+                            <div class="ability-flow-card__visual">
+                                <span class="ability-flow-illust ability-flow-illust--${type === "position" ? "field" : type === "question" ? "check" : "radar"}"><span></span></span>
+                            </div>
+                            <div class="ability-flow-card__body">
+                                <span class="ability-flow-card__number">STEP ${number}</span>
+                                <h3 class="ability-flow-card__title">${escapeHtml(title)}</h3>
+                                <p class="ability-flow-card__text">${escapeHtml(description)}</p>
+                            </div>
                         </section>
                     `).join("")}
                 </div>
+                <p class="ability-start-label">ここから診断スタート</p>
             </div>
         `;
     }
