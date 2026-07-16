@@ -332,7 +332,10 @@ canvas{max-width:100%;}
 .ability-flow-card__number{display:block;margin:0 0 8px;color:var(--step-main);font-size:13px;font-weight:1000;letter-spacing:.12em;}
 .ability-flow-card__title{margin:0 0 10px;color:#0f172a;font-size:21px;font-weight:1000;line-height:1.35;}
 .ability-flow-card__text{margin:0;color:#475569;font-size:14px;font-weight:700;line-height:1.75;}
-.ability-start-label{margin:12px auto 6px;color:#2563eb;font-size:13px;font-weight:1000;letter-spacing:.08em;text-align:center;}
+.ability-start-area{margin:16px auto 8px;text-align:center;}
+.ability-start-area__hint{margin:0 0 8px;color:#64748b;font-size:13px;font-weight:800;letter-spacing:0;}
+.start-diagnosis-btn{display:inline-flex!important;align-items:center;justify-content:center;gap:8px;width:auto;min-width:220px;max-width:none;margin:0 auto;padding:14px 28px;border-radius:999px;background:linear-gradient(135deg,#2563eb,#22c55e)!important;color:#fff;font-size:18px;font-weight:900;text-decoration:none;box-shadow:0 10px 24px rgba(37,99,235,0.25);transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;}
+.start-diagnosis-btn:hover{transform:translateY(-2px);filter:brightness(1.04);box-shadow:0 14px 28px rgba(37,99,235,0.32);}
 .question-list{display:grid;gap:18px;text-align:left;margin-top:18px;}
 .question-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:18px;box-shadow:0 5px 14px rgba(15,23,42,0.08);scroll-margin-top:110px;}
 .question-card__title{font-size:18px;font-weight:800;line-height:1.65;color:#0f172a;margin:0 0 14px;}
@@ -427,7 +430,9 @@ canvas{max-width:100%;}
     .ability-flow-card__number{font-size:12px;margin-bottom:6px;}
     .ability-flow-card__title{font-size:18px;margin-bottom:6px;}
     .ability-flow-card__text{font-size:13px;line-height:1.6;}
-    .ability-start-label{margin-top:8px;}
+    .ability-start-area{margin:14px auto 8px;}
+    .ability-start-area__hint{font-size:12px;}
+    .start-diagnosis-btn{min-width:210px;min-height:50px;padding:14px 24px;font-size:16px;}
     .question-list{margin-top:12px;gap:12px;}
     .question-page-navigation{margin-top:22px;gap:10px;}
     .question-page-next-btn,.question-page-back-btn{min-width:0;flex:1;padding:13px 18px;font-size:15px;}
@@ -1650,9 +1655,17 @@ canvas{max-width:100%;}
                         </section>
                     `).join("")}
                 </div>
-                <p class="ability-start-label">ここから診断スタート</p>
+                <div class="ability-start-area">
+                    <p class="ability-start-area__hint">準備ができたらスタート</p>
+                    <button type="button" class="start-diagnosis-btn" onclick="scrollToAbilityFirstQuestion()">診断を始める →</button>
+                </div>
             </div>
         `;
+    }
+
+    function scrollToAbilityFirstQuestion() {
+        const firstQuestion = document.querySelector(".question-card");
+        if (firstQuestion) scrollToElementWithOffset(firstQuestion);
     }
 
     function selectAbilityPosition(position, button = null) {
@@ -2589,6 +2602,7 @@ canvas{max-width:100%;}
     window.showPlaystyleTop = showPlaystyleTop;
     window.showAbilityMeasurementTop = showAbilityMeasurementTop;
     window.showAllDiagnosisComingSoon = showAllDiagnosisComingSoon;
+    window.scrollToAbilityFirstQuestion = scrollToAbilityFirstQuestion;
     window.selectAbilityPosition = selectAbilityPosition;
     window.submitAbilityPositionStep = submitAbilityPositionStep;
     window.selectAbilityPlaystyle = selectAbilityPlaystyle;
