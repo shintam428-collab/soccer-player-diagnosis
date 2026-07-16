@@ -2303,13 +2303,36 @@ canvas{max-width:100%;}
         return labels[normalizeRadarName(label)] || label;
     }
 
+    function drawRadarAxisLabel(ctx, label, x, y, isPlayerCardChart) {
+        const textLabel = getRadarLabelAbbreviation(label);
+        if (isPlayerCardChart) {
+            ctx.save();
+            ctx.font = "900 10px Arial, sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            const metrics = ctx.measureText(textLabel);
+            const width = metrics.width + 8;
+            const height = 14;
+            ctx.fillStyle = "rgba(0,0,0,0.55)";
+            ctx.beginPath();
+            ctx.roundRect(x - width / 2, y - height / 2, width, height, 4);
+            ctx.fill();
+            ctx.fillStyle = "#ffffff";
+            ctx.fillText(textLabel, x, y);
+            ctx.restore();
+            return;
+        }
+        ctx.fillText(textLabel, x, y);
+    }
+
     function drawRadarChart(scores) {
         const canvas = $("radarChart");
         const chartBox = $("chartBox");
         const ctx = canvas.getContext("2d");
-        const labels = Object.keys(scores);
-        const values = labels.map((label) => clamp(scores[label] || 0));
         const isPlayerCardChart = Boolean(canvas.closest(".ability-player-card"));
+        const cardRadarOrder = ["オフェンス", "ドリブル", "フィジカル", "ディフェンス", "足の速さ", "パス"];
+        const labels = isPlayerCardChart ? cardRadarOrder : Object.keys(scores);
+        const values = labels.map((label) => clamp(scores[label] || 0));
         const maxChartSize = isPlayerCardChart ? 170 : 320;
         const minChartSize = isPlayerCardChart ? 130 : 240;
         const size = Math.min(maxChartSize, Math.max(minChartSize, chartBox.clientWidth || 300));
@@ -2331,16 +2354,15 @@ canvas{max-width:100%;}
             const point = radarPoint(index, labels.length, center, radius);
             ctx.beginPath(); ctx.moveTo(center, center); ctx.lineTo(point.x, point.y); ctx.stroke();
         });
-        if (!isPlayerCardChart) {
-            ctx.fillStyle = "#1f2937";
-            ctx.font = "12px Arial, sans-serif";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            labels.forEach((label, index) => {
-                const point = radarPoint(index, labels.length, center, radius + 34);
-                ctx.fillText(getRadarLabelAbbreviation(label), point.x, point.y);
-            });
-        }
+        ctx.fillStyle = isPlayerCardChart ? "#ffffff" : "#1f2937";
+        ctx.font = isPlayerCardChart ? "900 10px Arial, sans-serif" : "12px Arial, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        labels.forEach((label, index) => {
+            const labelRadius = isPlayerCardChart ? Math.min(radius + 7, center - 8) : radius + 34;
+            const point = radarPoint(index, labels.length, center, labelRadius);
+            drawRadarAxisLabel(ctx, label, point.x, point.y, isPlayerCardChart);
+        });
         ctx.beginPath();
         values.forEach((value, index) => {
             const point = radarPoint(index, values.length, center, radius * value / 100);
