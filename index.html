@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -173,6 +173,14 @@ button:hover{transform:scale(1.04);}
 .review-card p{margin:0 auto 24px;max-width:620px;color:#334155;line-height:1.9;font-size:17px;font-weight:800;text-align:center;}
 .review-card__button{display:inline-flex;align-items:center;justify-content:center;min-height:56px;padding:16px 42px;border-radius:999px;background:linear-gradient(180deg,#fb923c,#f97316);color:white!important;text-decoration:none;font-size:18px;font-weight:900;box-shadow:0 12px 24px rgba(249,115,22,0.36),inset 0 1px 0 rgba(255,255,255,0.35);transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;}
 .review-card__button:hover{transform:translateY(-3px);filter:brightness(1.04);box-shadow:0 18px 32px rgba(249,115,22,0.42),inset 0 1px 0 rgba(255,255,255,0.4);}
+.affiliate-area{display:none;margin:34px auto 0;max-width:760px;}
+.affiliate-area.is-visible{display:block;}
+.affiliate-card{padding:26px 22px;border-radius:22px;background:rgba(255,255,255,0.94);border:1px solid #e2e8f0;box-shadow:0 14px 34px rgba(15,23,42,0.12);text-align:center;color:#0f172a;}
+.affiliate-card h3{margin:0 0 10px;font-size:clamp(22px,4vw,30px);font-weight:900;color:#0f172a;}
+.affiliate-card__notice{margin:0 0 18px;color:#475569;font-size:14px;font-weight:800;line-height:1.7;}
+.affiliate-ad{display:flex;align-items:center;justify-content:center;max-width:100%;overflow:hidden;}
+.affiliate-ad img{max-width:100%;height:auto;}
+.affiliate-ad a{max-width:100%;}
 .ability-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:15px;}
 .ability-item{background:white;border-radius:12px;padding:12px;text-align:left;box-shadow:0 3px 10px rgba(0,0,0,0.12);}
 .ability-name{display:flex;justify-content:space-between;gap:10px;font-weight:bold;margin-bottom:6px;}
@@ -462,6 +470,9 @@ canvas{max-width:100%;}
     .review-card{padding:28px 16px;border-radius:20px;margin-top:28px;}
     .review-card p{font-size:15px;line-height:1.8;}
     .review-card__button{width:100%;max-width:320px;min-height:58px;font-size:17px;}
+    .affiliate-area{margin-top:28px;}
+    .affiliate-card{padding:22px 14px;border-radius:18px;}
+    .affiliate-card__notice{font-size:13px;}
     .result-title span{font-size:32px;}
     .start-screen{min-height:calc(100vh - 24px);padding:24px 16px;border-radius:18px;}
     .start-hero-panel{margin-bottom:26px;padding:32px 18px;border-radius:24px;}
@@ -562,6 +573,15 @@ canvas{max-width:100%;}
             <canvas id="radarChart"></canvas>
         </div>
         <div id="reviewArea" class="review-area"></div>
+        <div id="affiliateArea" class="affiliate-area">
+            <div class="affiliate-card">
+                <h3>おすすめサッカーアイテム</h3>
+                <p class="affiliate-card__notice">当サイトはアフィリエイト広告を利用しています。</p>
+                <div class="affiliate-ad">
+                    <span class="a8ad 4AAa5ow-g7-vpxXcWh"></span><script type="text/javascript" src="//statics.a8.net/ad/ad.js"></script><script type="text/javascript">a8adscript('body').showAd({"req": {"mat":"4B81T8+6OJ56A+4ABU+BWGDT","alt":"商品リンク","id":"4AAa5ow-g7-vpxXcWh"},"goods": {"ejp":"h"+"ttps://www.supersports.com/ja-jp/xebio/products/A-10780149601/","imu":"h"+"ttps://www.supersports.com/ec/img/1/8940302/7801496_l.jpg"}});</script>
+                </div>
+            </div>
+        </div>
     </div>
 
     <section id="simplePage" class="simple-page is-hidden">
@@ -1374,6 +1394,7 @@ canvas{max-width:100%;}
         resetRadarChartLocation();
         $("chartBox").style.display = "none";
         hideReviewArea();
+        hideAffiliateArea();
     }
 
     function showHomeView() {
@@ -1539,6 +1560,7 @@ canvas{max-width:100%;}
         $("progressArea").style.display = "block";
         $("chartBox").style.display = "none";
         hideReviewArea();
+        hideAffiliateArea();
         $("result").innerHTML = "";
         updateStatus("");
         showPersonalityPage();
@@ -2088,6 +2110,7 @@ canvas{max-width:100%;}
                 console.log(error.message || error);
                 $("chartBox").style.display = "none";
                 hideReviewArea();
+                hideAffiliateArea();
                 $("result").innerHTML = `
                     <div class="result-hero">
                         <div class="result-badge">能力測定</div>
@@ -2147,6 +2170,7 @@ canvas{max-width:100%;}
             drawRadarChart(radarScores);
             initializeUserPhotoPreview();
             showReviewArea();
+            showAffiliateArea();
             return;
         }
 
@@ -2156,6 +2180,7 @@ canvas{max-width:100%;}
         if (!resultType) {
             $("chartBox").style.display = "none";
             hideReviewArea();
+            hideAffiliateArea();
             $("result").innerHTML = `<div class="result-hero"><div class="result-badge">${text.result}</div><h2 class="result-title">${text.noType}</h2><p class="result-description">personality_types.csv: ${escapeHtml(personality.key)}</p></div><button type="button" class="restart-btn" onclick="startDiagnosis()">${text.restart}</button>`;
             return;
         }
@@ -2174,6 +2199,7 @@ canvas{max-width:100%;}
         attachCharacterImageError(imagePath, displayImagePath);
         $("chartBox").style.display = "none";
         showReviewArea();
+        showAffiliateArea();
     }
 
     function judgePersonality() {
@@ -2552,6 +2578,33 @@ canvas{max-width:100%;}
         if (!reviewArea) return;
         reviewArea.innerHTML = "";
         reviewArea.classList.remove("is-visible");
+    }
+
+    function showAffiliateArea() {
+        const affiliateArea = $("affiliateArea");
+        if (!affiliateArea) return;
+        affiliateArea.classList.add("is-visible");
+        ensureAffiliateLinksOpenNewTab();
+    }
+
+    function hideAffiliateArea() {
+        const affiliateArea = $("affiliateArea");
+        if (!affiliateArea) return;
+        affiliateArea.classList.remove("is-visible");
+    }
+
+    function ensureAffiliateLinksOpenNewTab() {
+        const affiliateArea = $("affiliateArea");
+        if (!affiliateArea) return;
+        const updateLinks = () => {
+            affiliateArea.querySelectorAll("a").forEach((link) => {
+                link.setAttribute("target", "_blank");
+                link.setAttribute("rel", "noopener noreferrer");
+            });
+        };
+        updateLinks();
+        window.setTimeout(updateLinks, 800);
+        window.setTimeout(updateLinks, 2000);
     }
 
     function toggleDetailAbilities() {
