@@ -322,6 +322,11 @@ canvas{max-width:100%;}
 .question-card .choice-btn{width:100%;max-width:none;margin:0;}
 .page-message{display:none;margin:16px auto 0;padding:12px 14px;border-radius:12px;background:#fee2e2;color:#991b1b;font-weight:bold;text-align:center;}
 .page-message.is-visible{display:block;}
+.question-page-navigation{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:28px;}
+.question-page-navigation--end{justify-content:flex-end;}
+.question-page-next-btn,.question-page-back-btn{width:auto;min-width:150px;max-width:none;margin:0;padding:14px 28px;border-radius:999px;color:white;font-weight:900;box-shadow:0 8px 18px rgba(15,23,42,0.16);scroll-margin-top:24px;}
+.question-page-next-btn{background:linear-gradient(135deg,#7c3aed,#9333ea)!important;}
+.question-page-back-btn{background:#64748b!important;}
 .next-page-btn{background:#2563eb!important;font-weight:bold;box-shadow:0 5px 15px rgba(0,0,0,0.18);scroll-margin-top:24px;}
 .nav-buttons{margin-top:20px;}
 .nav-btn,.back-btn,.diagnose-btn,.restart-btn{font-weight:bold;box-shadow:0 5px 15px rgba(0,0,0,0.18);}
@@ -401,6 +406,9 @@ canvas{max-width:100%;}
     .ability-flow-card__title{font-size:14px;margin-bottom:4px;}
     .ability-flow-card__text{font-size:12px;line-height:1.55;}
     .question-list{margin-top:12px;gap:12px;}
+    .question-page-navigation{margin-top:22px;gap:10px;}
+    .question-page-next-btn,.question-page-back-btn{min-width:0;flex:1;padding:13px 18px;font-size:15px;}
+    .question-page-navigation--end .question-page-next-btn{flex:0 1 auto;min-width:150px;}
     .ability-grid{grid-template-columns:1fr;}
     .player-card-editor,.ability-player-card{width:min(100%,430px);max-width:100%;margin-left:auto;margin-right:auto;}
     .player-card-editor{grid-template-columns:1fr;gap:10px;}
@@ -1521,6 +1529,7 @@ canvas{max-width:100%;}
 
     function resetAbilityMeasurementState() {
         abilityMeasurementState = {
+            step: "",
             position: "",
             playstyle: "",
             additionalAnswers: {},
@@ -1553,12 +1562,22 @@ canvas{max-width:100%;}
         $("question").textContent = title;
         $("choices").innerHTML = html;
         $("result").innerHTML = "";
-        $("questionButtons").style.display = "block";
+        $("questionButtons").style.display = "none";
         $("backQuestionBtn").style.display = showBack ? "inline-block" : "none";
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
+    function createAbilityPageNavigation(nextLabel, nextHandler, showBack = true) {
+        return `
+            <div class="question-page-navigation${showBack ? "" : " question-page-navigation--end"}">
+                ${showBack ? `<button type="button" class="question-page-back-btn" onclick="backAbilityStep()">戻る</button>` : ""}
+                <button type="button" class="question-page-next-btn" onclick="${nextHandler}">${escapeHtml(nextLabel)}</button>
+            </div>
+        `;
+    }
+
     function showAbilityPositionStep() {
+        abilityMeasurementState.step = "position";
         const availablePositions = Object.keys(abilityMeasurementData.positionPlaystyles);
         const orderedPositions = abilityPositionOrder.filter((position) => availablePositions.includes(position));
         const extraPositions = availablePositions.filter((position) => !orderedPositions.includes(position));
@@ -1569,10 +1588,12 @@ canvas{max-width:100%;}
                 <section class="question-card">
                     <h3 class="question-card__title">あなたのポジションを選んでください</h3>
                     <div class="question-card__choices">
-                        ${positions.map((position) => `<button type="button" class="choice-btn" onclick="selectAbilityPosition('${escapeAttribute(position)}')"><span class="choice-text">${escapeHtml(position)}</span></button>`).join("")}
+                        ${positions.map((position) => `<button type="button" class="choice-btn${abilityMeasurementState.position === position ? " is-selected selected" : ""}" onclick="selectAbilityPosition('${escapeAttribute(position)}', this)"><span class="choice-text">${escapeHtml(position)}</span></button>`).join("")}
                     </div>
                 </section>
             </div>
+            <p id="pageMessage" class="page-message">ポジションを選択してください</p>
+            ${createAbilityPageNavigation("次へ", "submitAbilityPositionStep()", false)}
         `, false);
     }
 
@@ -1600,32 +1621,70 @@ canvas{max-width:100%;}
         `;
     }
 
-    function selectAbilityPosition(position) {
+    function selectAbilityPosition(position, button = null) {
         abilityMeasurementState.position = normalizePositionCode(position);
         abilityMeasurementState.playstyle = "";
+        if (button) {
+            const card = button.closest(".question-card");
+            card.querySelectorAll(".choice-btn").forEach((item) => item.classList.remove("is-selected", "selected"));
+            button.classList.add("is-selected", "selected");
+        }
+        const message = $("pageMessage");
+        if (message) message.classList.remove("is-visible");
+    }
+
+    function submitAbilityPositionStep() {
+        if (!abilityMeasurementState.position) {
+            const message = $("pageMessage");
+            if (message) message.classList.add("is-visible");
+            const card = document.querySelector(".question-card");
+            if (card) scrollToElementWithOffset(card);
+            return;
+        }
         showAbilityPlaystyleStep();
     }
 
     function showAbilityPlaystyleStep() {
+        abilityMeasurementState.step = "playstyle";
         const playstyles = abilityMeasurementData.positionPlaystyles[abilityMeasurementState.position] || [];
         renderAbilityStep("能力測定：プレースタイル選択", 24, `
             <div class="question-list">
                 <section class="question-card">
                     <h3 class="question-card__title">${escapeHtml(abilityMeasurementState.position)} のプレースタイルを選んでください</h3>
                     <div class="question-card__choices">
-                        ${playstyles.map((playstyle) => `<button type="button" class="choice-btn" onclick="selectAbilityPlaystyle('${escapeAttribute(playstyle)}')"><span class="choice-text">${escapeHtml(playstyle)}</span></button>`).join("")}
+                        ${playstyles.map((playstyle) => `<button type="button" class="choice-btn${abilityMeasurementState.playstyle === playstyle ? " is-selected selected" : ""}" onclick="selectAbilityPlaystyle('${escapeAttribute(playstyle)}', this)"><span class="choice-text">${escapeHtml(playstyle)}</span></button>`).join("")}
                     </div>
                 </section>
             </div>
+            <p id="pageMessage" class="page-message">プレースタイルを選択してください</p>
+            ${createAbilityPageNavigation("次へ", "submitAbilityPlaystyleStep()")}
         `);
     }
 
-    function selectAbilityPlaystyle(playstyle) {
+    function selectAbilityPlaystyle(playstyle, button = null) {
         abilityMeasurementState.playstyle = playstyle;
+        if (button) {
+            const card = button.closest(".question-card");
+            card.querySelectorAll(".choice-btn").forEach((item) => item.classList.remove("is-selected", "selected"));
+            button.classList.add("is-selected", "selected");
+        }
+        const message = $("pageMessage");
+        if (message) message.classList.remove("is-visible");
+    }
+
+    function submitAbilityPlaystyleStep() {
+        if (!abilityMeasurementState.playstyle) {
+            const message = $("pageMessage");
+            if (message) message.classList.add("is-visible");
+            const card = document.querySelector(".question-card");
+            if (card) scrollToElementWithOffset(card);
+            return;
+        }
         showAbilityAdditionalStep();
     }
 
     function showAbilityAdditionalStep() {
+        abilityMeasurementState.step = "additional";
         const options = [
             { label: "とても当てはまる", value: 2 },
             { label: "少し当てはまる", value: 1 },
@@ -1643,7 +1702,7 @@ canvas{max-width:100%;}
                 `).join("")}
             </div>
             <p id="pageMessage" class="page-message">すべての質問に回答してください</p>
-            <button type="button" class="next-page-btn" onclick="submitAbilityAdditionalStep()">次へ</button>
+            ${createAbilityPageNavigation("次へ", "submitAbilityAdditionalStep()")}
         `);
     }
 
@@ -1652,20 +1711,24 @@ canvas{max-width:100%;}
         const card = button.closest(".question-card");
         card.querySelectorAll(".choice-btn").forEach((item) => item.classList.remove("is-selected", "selected"));
         button.classList.add("is-selected", "selected");
-        const nextCard = card.nextElementSibling;
-        if (nextCard?.classList.contains("question-card")) scrollToElementWithOffset(nextCard);
+        const message = $("pageMessage");
+        if (message) message.classList.remove("is-visible");
     }
 
     function submitAbilityAdditionalStep() {
-        if (abilityMeasurementData.additionalQuestions.some((_, index) => abilityMeasurementState.additionalAnswers[index] === undefined)) {
+        const missingIndex = abilityMeasurementData.additionalQuestions.findIndex((_, index) => abilityMeasurementState.additionalAnswers[index] === undefined);
+        if (missingIndex >= 0) {
             const message = $("pageMessage");
             if (message) message.classList.add("is-visible");
+            const card = document.querySelector(`[data-additional-index="${missingIndex}"]`);
+            if (card) scrollToElementWithOffset(card);
             return;
         }
         showAbilitySelectStep("strengths");
     }
 
     function showAbilitySelectStep(kind) {
+        abilityMeasurementState.step = kind;
         const isStrength = kind === "strengths";
         const selected = abilityMeasurementState[kind];
         const blocked = isStrength ? abilityMeasurementState.weaknesses : abilityMeasurementState.strengths;
@@ -1683,7 +1746,7 @@ canvas{max-width:100%;}
                 </section>
             </div>
             <p class="self-rating-intro">複数選択できます。選択済みの項目をもう一度押すと解除できます。</p>
-            <button type="button" class="next-page-btn" onclick="${isStrength ? "submitAbilityStrengthStep()" : "submitAbilityWeaknessStep()"}">次へ</button>
+            ${createAbilityPageNavigation("次へ", isStrength ? "submitAbilityStrengthStep()" : "submitAbilityWeaknessStep()")}
         `);
     }
 
@@ -1708,6 +1771,7 @@ canvas{max-width:100%;}
     }
 
     function showAbilitySelfRatingStep() {
+        abilityMeasurementState.step = "selfRating";
         const ratingItems = abilityMeasurementData.abilities;
         renderAbilityStep("能力測定：自己評価", 82, `
             <div class="question-list">
@@ -1725,8 +1789,8 @@ canvas{max-width:100%;}
                     </section>
                 `).join("")}
             </div>
-            <p id="pageMessage" class="page-message">すべての自己評価に回答してください</p>
-            <button type="button" class="next-page-btn" onclick="submitAbilitySelfRatingStep()">回答確認へ</button>
+            <p id="pageMessage" class="page-message">すべての自己評価項目に回答してください</p>
+            ${createAbilityPageNavigation("回答確認へ →", "submitAbilitySelfRatingStep()")}
         `);
     }
 
@@ -1735,8 +1799,8 @@ canvas{max-width:100%;}
         const card = button.closest(".question-card");
         card.querySelectorAll(".rating-dot").forEach((dot) => dot.classList.remove("is-selected"));
         button.classList.add("is-selected");
-        const nextCard = card.nextElementSibling;
-        if (nextCard?.classList.contains("question-card")) scrollToElementWithOffset(nextCard);
+        const message = $("pageMessage");
+        if (message) message.classList.remove("is-visible");
     }
 
     function submitAbilitySelfRatingStep() {
@@ -1745,12 +1809,37 @@ canvas{max-width:100%;}
         if (missing) {
             const message = $("pageMessage");
             if (message) message.classList.add("is-visible");
+            const card = [...document.querySelectorAll("[data-rating-item]")].find((item) => item.dataset.ratingItem === missing);
+            if (card) scrollToElementWithOffset(card);
             return;
         }
         showAbilityConfirm();
     }
 
+    function backAbilityStep() {
+        switch (abilityMeasurementState.step) {
+            case "playstyle":
+                showAbilityPositionStep();
+                break;
+            case "additional":
+                showAbilityPlaystyleStep();
+                break;
+            case "strengths":
+                showAbilityAdditionalStep();
+                break;
+            case "weaknesses":
+                showAbilitySelectStep("strengths");
+                break;
+            case "selfRating":
+                showAbilitySelectStep("weaknesses");
+                break;
+            default:
+                showAbilityPositionStep();
+        }
+    }
+
     function showAbilityConfirm() {
+        abilityMeasurementState.step = "confirm";
         $("quizCard").classList.add("is-hidden");
         $("confirmArea").classList.remove("is-hidden");
         $("chartBox").style.display = "none";
@@ -1905,7 +1994,7 @@ canvas{max-width:100%;}
 
     function backQuestionFlow() {
         if (diagnosisMode === "ability") {
-            startAbilityMeasurementFlow();
+            backAbilityStep();
             return;
         }
         showPlaystyleTop();
@@ -2433,9 +2522,12 @@ canvas{max-width:100%;}
     window.showAbilityMeasurementTop = showAbilityMeasurementTop;
     window.showAllDiagnosisComingSoon = showAllDiagnosisComingSoon;
     window.selectAbilityPosition = selectAbilityPosition;
+    window.submitAbilityPositionStep = submitAbilityPositionStep;
     window.selectAbilityPlaystyle = selectAbilityPlaystyle;
+    window.submitAbilityPlaystyleStep = submitAbilityPlaystyleStep;
     window.selectAdditionalAnswer = selectAdditionalAnswer;
     window.submitAbilityAdditionalStep = submitAbilityAdditionalStep;
+    window.backAbilityStep = backAbilityStep;
     window.toggleAbilitySelect = toggleAbilitySelect;
     window.submitAbilityStrengthStep = submitAbilityStrengthStep;
     window.submitAbilityWeaknessStep = submitAbilityWeaknessStep;
