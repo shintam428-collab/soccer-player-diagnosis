@@ -151,15 +151,27 @@ button:hover{transform:scale(1.04);}
 .player-card-editor__control input[type="text"]{width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:12px;padding:12px 13px;font-size:16px;font-weight:800;color:#0f172a;background:white;}
 .player-card-editor__file{display:inline-flex;align-items:center;justify-content:center;min-height:46px;border-radius:12px;background:#2563eb;color:white;font-weight:900;cursor:pointer;}
 .player-card-editor__file input{display:none;}
-.ability-player-card{position:relative;display:flex;flex-direction:column;width:min(100%,430px);min-height:630px;margin:22px auto 0;padding:18px 18px 12px;border-radius:30px;background:#020617;box-shadow:0 26px 58px rgba(15,23,42,0.36);color:white;overflow:hidden;text-align:left;}
+.rank-black{--rank-main:#a69cff;--rank-main-strong:#cfc8ff;--rank-dark:#151321;--rank-glow:rgba(166,156,255,.75);--rank-soft:rgba(166,156,255,.18);}
+.rank-gold{--rank-main:#f4c842;--rank-main-strong:#ffe38a;--rank-dark:#3a2a00;--rank-glow:rgba(244,200,66,.65);--rank-soft:rgba(244,200,66,.18);}
+.rank-silver{--rank-main:#d8dee8;--rank-main-strong:#f4f7fb;--rank-dark:#4b5563;--rank-glow:rgba(216,222,232,.65);--rank-soft:rgba(216,222,232,.16);}
+.rank-bronze{--rank-main:#c97a45;--rank-main-strong:#e6a06f;--rank-dark:#4e2d1f;--rank-glow:rgba(201,122,69,.58);--rank-soft:rgba(201,122,69,.16);}
+.rank-white{--rank-main:#f8fafc;--rank-main-strong:#ffffff;--rank-dark:#94a3b8;--rank-glow:rgba(248,250,252,.38);--rank-soft:rgba(248,250,252,.12);}
+.ability-player-card{position:relative;display:flex;flex-direction:column;width:min(100%,430px);min-height:630px;margin:22px auto 0;padding:18px 18px 12px;border-radius:30px;background:#020617;box-shadow:0 26px 58px rgba(15,23,42,0.36),0 0 0 1px var(--rank-soft,rgba(255,255,255,0.12)),0 0 18px var(--rank-glow,rgba(255,255,255,0.2));color:white;overflow:hidden;text-align:left;}
 .ability-player-card::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,0.38),rgba(0,0,0,0.11) 46%,rgba(0,0,0,0.03)),linear-gradient(180deg,rgba(2,6,23,0.24),rgba(2,6,23,0.02) 42%,rgba(2,6,23,0.64) 74%,rgba(2,6,23,0.84));z-index:1;pointer-events:none;}
-.ability-player-card::after{content:"";position:absolute;inset:10px;border:1px solid rgba(255,255,255,0.24);border-radius:24px;z-index:3;pointer-events:none;}
+.ability-player-card::after{content:"";position:absolute;inset:10px;border:1px solid color-mix(in srgb,var(--rank-main-strong,#fff) 70%,transparent);border-radius:24px;box-shadow:inset 0 0 8px var(--rank-soft,rgba(255,255,255,0.12)),0 0 14px var(--rank-glow,rgba(255,255,255,0.18));z-index:3;pointer-events:none;}
 .ability-player-card__photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;display:block;background:linear-gradient(180deg,#e2e8f0,#94a3b8);filter:brightness(1.15) saturate(1.08);z-index:0;}
 .ability-player-card__top{position:relative;z-index:2;display:block;min-height:370px;}
 .ability-player-card .overall-card{width:auto;margin:0;padding:0;background:transparent;border:0;box-shadow:none;text-align:left;}
-.ability-player-card .overall-card__score{margin:0;font-size:74px;color:#facc15;text-shadow:0 6px 20px rgba(0,0,0,0.55);letter-spacing:0;}
-.ability-player-card__position{margin-top:8px;display:inline-flex;align-items:center;justify-content:center;min-width:78px;padding:7px 14px;border-radius:999px;background:rgba(2,6,23,0.72);border:1px solid rgba(255,255,255,0.24);font-size:18px;font-weight:1000;color:white;text-shadow:0 2px 8px rgba(0,0,0,0.65);}
-.ability-player-card__bottom{position:relative;z-index:2;margin-top:auto;padding:11px 15px 10px;border-radius:20px;background:rgba(2,6,23,0.66);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);text-align:center;}
+.ability-player-card .overall-card__score{margin:0;font-size:74px;color:var(--rank-main-strong,#facc15);text-shadow:0 0 8px var(--rank-glow,rgba(250,204,21,0.55)),0 4px 14px rgba(0,0,0,.55);letter-spacing:0;}
+.ability-player-card__identity{display:inline-flex;flex-direction:column;align-items:center;width:max-content;}
+.ability-player-card__position{margin-top:8px;display:inline-flex;align-items:center;justify-content:center;min-width:78px;padding:7px 14px;border-radius:999px;background:rgba(2,6,23,0.72);border:1px solid color-mix(in srgb,var(--rank-main-strong,#fff) 55%,transparent);box-shadow:0 0 10px var(--rank-soft,rgba(255,255,255,0.12)),inset 0 0 8px rgba(255,255,255,.03);font-size:18px;font-weight:1000;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.65);}
+.ability-player-card__emblem{position:relative;z-index:2;display:block;width:36px;height:44px;margin:8px auto 0;background:transparent;border:0;box-shadow:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.7)) drop-shadow(0 0 5px var(--rank-glow,rgba(255,255,255,.25)));}
+.ability-player-card__emblem svg{display:block;width:100%;height:100%;overflow:visible;}
+.emblem-shield-outer{fill:color-mix(in srgb,var(--rank-dark,#151321) 82%,transparent);stroke:var(--rank-main-strong,#fff);stroke-width:5;stroke-linejoin:round;}
+.emblem-shield-inner{fill:color-mix(in srgb,white 8%,transparent);stroke:var(--rank-main,#fff);stroke-width:2.5;stroke-linejoin:round;}
+.emblem-player-head,.emblem-player-body,.emblem-ball{fill:var(--rank-main-strong,#fff);}
+.emblem-ball-lines{fill:none;stroke:var(--rank-dark,#151321);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+.ability-player-card__bottom{position:relative;z-index:2;margin-top:auto;padding:11px 15px 10px;border-radius:20px;background:rgba(2,6,23,0.66);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);box-shadow:inset 0 1px 0 color-mix(in srgb,var(--rank-main-strong,#fff) 72%,transparent),0 -3px 12px var(--rank-soft,rgba(255,255,255,0.12));text-align:center;}
 .ability-player-card__name{margin:0 0 10px;font-size:21px;font-weight:1000;color:white;line-height:1.12;}
 .ability-player-card__bottom-content{display:grid;grid-template-columns:minmax(0,44%) minmax(0,56%);align-items:center;gap:8px;width:100%;}
 .ability-player-card__bottom .ability-player-card__radar{position:relative;z-index:2;width:100%;max-width:145px;aspect-ratio:1/1;height:auto;margin:0 auto;padding:0;display:grid;place-items:center;flex-shrink:0;}
@@ -168,7 +180,7 @@ button:hover{transform:scale(1.04);}
 .player-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 7px;margin:0;min-width:0;}
 .player-stat-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:0;padding:4px 3px;border-bottom:1px solid rgba(255,255,255,0.18);color:white;}
 .player-stat-label{font-size:12px;font-weight:900;letter-spacing:.06em;line-height:1;color:#fff;opacity:.94;}
-.player-stat-value{font-size:17px;font-weight:1000;line-height:1;color:var(--rank-color,#facc15);text-shadow:0 0 9px color-mix(in srgb,var(--rank-color,#facc15) 42%,transparent);}
+.player-stat-value{font-size:17px;font-weight:1000;line-height:1;color:var(--rank-main-strong,#facc15);text-shadow:0 0 8px var(--rank-glow,rgba(250,204,21,0.45));}
 .review-card{background:linear-gradient(135deg,#fff7cc 0%,#e0f2fe 55%,#ffffff 100%);border:2px solid rgba(250,204,21,0.75);border-radius:24px;padding:34px 26px;margin:34px auto 0;box-shadow:0 18px 42px rgba(15,23,42,0.22),0 0 0 6px rgba(255,255,255,0.45);text-align:center;max-width:760px;}
 .review-area{display:none;}
 .review-area.is-visible{display:block;}
@@ -462,6 +474,7 @@ canvas{max-width:100%;}
     .ability-player-card .overall-card{width:auto;padding:0;}
     .ability-player-card .overall-card__score{font-size:60px;}
     .ability-player-card__position{font-size:15px;padding:6px 11px;}
+    .ability-player-card__emblem{width:30px;height:37px;margin:6px auto 0;}
     .ability-player-card__bottom{padding:9px 12px 8px;}
     .ability-player-card__name{font-size:18px;margin-bottom:9px;}
     .ability-player-card__bottom-content{grid-template-columns:minmax(0,45%) minmax(0,55%);gap:5px;}
@@ -2125,6 +2138,7 @@ canvas{max-width:100%;}
             }
             const radarScores = convertToRadarScores(detailScores);
             const overallScore = calculateOverallScore(radarScores);
+            const rankClass = getOverallRankClass(overallScore);
             $("result").innerHTML = `
                 <div class="result-hero">
                     <div class="result-badge">能力測定</div>
@@ -2141,21 +2155,33 @@ canvas{max-width:100%;}
                         <input type="text" id="playerNameInput" placeholder="名前を入力" oninput="handlePlayerNameInput(event)">
                     </label>
                 </div>
-                <div class="ability-player-card">
+                <div class="ability-player-card ${rankClass}">
                     <img id="userPhotoPreview" class="ability-player-card__photo" alt="ユーザー写真プレビュー">
                     <div class="ability-player-card__top">
                         <div>
                             <div class="overall-card">
                                 <div class="overall-card__score">${overallScore}</div>
                             </div>
-                            <div class="ability-player-card__position">${escapeHtml(abilityMeasurementState.position)}</div>
+                            <div class="ability-player-card__identity">
+                                <div class="ability-player-card__position">${escapeHtml(abilityMeasurementState.position)}</div>
+                                <div class="ability-player-card__emblem" aria-label="ランクエンブレム">
+                                    <svg viewBox="0 0 100 120" role="img" aria-hidden="true" focusable="false">
+                                        <path class="emblem-shield-outer" d="M50 4 L92 18 V59 C92 88 73 108 50 117 C27 108 8 88 8 59 V18 Z"/>
+                                        <path class="emblem-shield-inner" d="M50 13 L82 24 V58 C82 80 68 96 50 105 C32 96 18 80 18 58 V24 Z"/>
+                                        <circle class="emblem-player-head" cx="53" cy="40" r="7"/>
+                                        <path class="emblem-player-body" d="M49 48 C43 52,39 60,40 70 L34 82 C32 86,33 90,37 91 C41 92,43 89,45 85 L50 75 L56 82 C60 87,64 89,68 87 C72 85,71 80,68 76 L61 67 L61 56 C67 60,72 62,77 60 C80 59,81 55,79 52 C77 49,73 49,69 50 L61 52 C59 49,55 47,49 48 Z"/>
+                                        <circle class="emblem-ball" cx="72" cy="87" r="8"/>
+                                        <path class="emblem-ball-lines" d="M72 79 L75 83 L74 88 L69 90 L65 87 L66 82 Z M72 79 L79 82 M79 82 L80 89 M80 89 L74 95 M74 95 L67 94 M67 94 L64 87 M64 87 L66 82"/>
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="ability-player-card__bottom">
                         <h3 id="playerCardName" class="ability-player-card__name">YOUR NAME</h3>
                         <div class="ability-player-card__bottom-content">
                             <div id="playerCardRadarSlot" class="ability-player-card__radar"></div>
-                            <div class="player-stat-grid" style="--rank-color:${escapeAttribute(getOverallRankColors(overallScore).accent)}">${createPlayerStatHtml(radarScores)}</div>
+                            <div class="player-stat-grid">${createPlayerStatHtml(radarScores)}</div>
                         </div>
                     </div>
                 </div>
@@ -2386,50 +2412,59 @@ canvas{max-width:100%;}
         return labels[normalizeRadarName(label)] || label;
     }
 
+    function getOverallRankClass(overallScore) {
+        const score = Number(overallScore) || 0;
+        if (score >= 85) return "rank-black";
+        if (score >= 80) return "rank-gold";
+        if (score >= 70) return "rank-silver";
+        if (score >= 60) return "rank-bronze";
+        return "rank-white";
+    }
+
     function getOverallRankColors(overallScore) {
         const score = Number(overallScore) || 0;
         if (score >= 85) {
             return {
-                accent: "#8b5cf6",
-                line: "#a78bfa",
-                fill: "rgba(30,27,75,0.52)",
-                grid: "rgba(139,92,246,0.34)",
-                glow: "rgba(124,58,237,0.78)"
+                accent: "#cfc8ff",
+                line: "#a69cff",
+                fill: "rgba(166,156,255,0.18)",
+                grid: "rgba(166,156,255,0.22)",
+                glow: "rgba(166,156,255,0.75)"
             };
         }
         if (score >= 80) {
             return {
-                accent: "#facc15",
-                line: "#fbbf24",
-                fill: "rgba(250,204,21,0.24)",
-                grid: "rgba(250,204,21,0.32)",
-                glow: "rgba(250,204,21,0.78)"
+                accent: "#ffe38a",
+                line: "#f4c842",
+                fill: "rgba(244,200,66,0.18)",
+                grid: "rgba(244,200,66,0.22)",
+                glow: "rgba(244,200,66,0.65)"
             };
         }
         if (score >= 70) {
             return {
-                accent: "#e5e7eb",
-                line: "#cbd5e1",
-                fill: "rgba(226,232,240,0.2)",
-                grid: "rgba(226,232,240,0.28)",
-                glow: "rgba(226,232,240,0.68)"
+                accent: "#f4f7fb",
+                line: "#d8dee8",
+                fill: "rgba(216,222,232,0.16)",
+                grid: "rgba(216,222,232,0.21)",
+                glow: "rgba(216,222,232,0.65)"
             };
         }
         if (score >= 60) {
             return {
-                accent: "#d97706",
-                line: "#f59e0b",
-                fill: "rgba(217,119,6,0.22)",
-                grid: "rgba(245,158,11,0.28)",
-                glow: "rgba(245,158,11,0.62)"
+                accent: "#e6a06f",
+                line: "#c97a45",
+                fill: "rgba(201,122,69,0.16)",
+                grid: "rgba(201,122,69,0.21)",
+                glow: "rgba(201,122,69,0.58)"
             };
         }
         return {
             accent: "#ffffff",
             line: "#f8fafc",
-            fill: "rgba(255,255,255,0.16)",
-            grid: "rgba(255,255,255,0.24)",
-            glow: "rgba(255,255,255,0.52)"
+            fill: "rgba(248,250,252,0.12)",
+            grid: "rgba(248,250,252,0.18)",
+            glow: "rgba(248,250,252,0.38)"
         };
     }
 
