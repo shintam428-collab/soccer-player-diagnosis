@@ -159,15 +159,16 @@ button:hover{transform:scale(1.04);}
 .ability-player-card .overall-card{width:auto;margin:0;padding:0;background:transparent;border:0;box-shadow:none;text-align:left;}
 .ability-player-card .overall-card__score{margin:0;font-size:74px;color:#facc15;text-shadow:0 6px 20px rgba(0,0,0,0.55);letter-spacing:0;}
 .ability-player-card__position{margin-top:8px;display:inline-flex;align-items:center;justify-content:center;min-width:78px;padding:7px 14px;border-radius:999px;background:rgba(2,6,23,0.72);border:1px solid rgba(255,255,255,0.24);font-size:18px;font-weight:1000;color:white;text-shadow:0 2px 8px rgba(0,0,0,0.65);}
-.ability-player-card__radar{position:relative;z-index:2;width:170px;aspect-ratio:1/1;height:auto;display:grid;place-items:center;margin-top:10px;padding:0;flex-shrink:0;}
-.ability-player-card__radar .chart-box{width:100%;height:100%;margin:0;background:transparent;border:0;border-radius:16px;padding:0;box-shadow:none;display:grid;place-items:center;}
-.ability-player-card__radar canvas{width:100%!important;height:100%!important;display:block;}
 .ability-player-card__bottom{position:relative;z-index:2;margin-top:auto;padding:11px 15px 10px;border-radius:20px;background:rgba(2,6,23,0.66);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);text-align:center;}
 .ability-player-card__name{margin:0 0 10px;font-size:21px;font-weight:1000;color:white;line-height:1.12;}
-.player-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 10px;margin-bottom:0;}
-.player-stat-item{display:flex;align-items:baseline;justify-content:space-between;gap:7px;padding:7px 9px;border-radius:12px;background:rgba(255,255,255,0.12);color:white;}
-.player-stat-label{font-size:12px;font-weight:900;letter-spacing:.06em;opacity:.92;}
-.player-stat-value{font-size:17px;font-weight:1000;color:#facc15;}
+.ability-player-card__bottom-content{display:grid;grid-template-columns:minmax(0,44%) minmax(0,56%);align-items:center;gap:8px;width:100%;}
+.ability-player-card__bottom .ability-player-card__radar{position:relative;z-index:2;width:100%;max-width:145px;aspect-ratio:1/1;height:auto;margin:0 auto;padding:0;display:grid;place-items:center;flex-shrink:0;}
+.ability-player-card__bottom .ability-player-card__radar .chart-box{width:100%;height:100%;margin:0;padding:0;border:0;background:transparent;box-shadow:none;display:grid;place-items:center;}
+.ability-player-card__bottom .ability-player-card__radar canvas{width:100%!important;height:100%!important;display:block;}
+.player-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 7px;margin:0;min-width:0;}
+.player-stat-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:0;padding:4px 3px;border-bottom:1px solid rgba(255,255,255,0.18);color:white;}
+.player-stat-label{font-size:12px;font-weight:900;letter-spacing:.06em;line-height:1;color:#fff;opacity:.94;}
+.player-stat-value{font-size:17px;font-weight:1000;line-height:1;color:var(--rank-color,#facc15);text-shadow:0 0 9px color-mix(in srgb,var(--rank-color,#facc15) 42%,transparent);}
 .review-card{background:linear-gradient(135deg,#fff7cc 0%,#e0f2fe 55%,#ffffff 100%);border:2px solid rgba(250,204,21,0.75);border-radius:24px;padding:34px 26px;margin:34px auto 0;box-shadow:0 18px 42px rgba(15,23,42,0.22),0 0 0 6px rgba(255,255,255,0.45);text-align:center;max-width:760px;}
 .review-area{display:none;}
 .review-area.is-visible{display:block;}
@@ -461,14 +462,13 @@ canvas{max-width:100%;}
     .ability-player-card .overall-card{width:auto;padding:0;}
     .ability-player-card .overall-card__score{font-size:60px;}
     .ability-player-card__position{font-size:15px;padding:6px 11px;}
-    .ability-player-card__radar{width:145px;margin-top:8px;}
-    .ability-player-card__radar .chart-box{padding:0;}
     .ability-player-card__bottom{padding:9px 12px 8px;}
     .ability-player-card__name{font-size:18px;margin-bottom:9px;}
-    .player-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}
-    .player-stat-item{padding:6px 7px;}
-    .player-stat-label{font-size:11px;}
-    .player-stat-value{font-size:16px;}
+    .ability-player-card__bottom-content{grid-template-columns:minmax(0,45%) minmax(0,55%);gap:5px;}
+    .ability-player-card__bottom .ability-player-card__radar{width:100%;max-width:112px;margin:0 auto;}
+    .ability-player-card__bottom .player-stat-grid{gap:3px 5px;}
+    .ability-player-card__bottom .player-stat-label{font-size:9px;}
+    .ability-player-card__bottom .player-stat-value{font-size:15px;line-height:1;}
     .review-card{padding:28px 16px;border-radius:20px;margin-top:28px;}
     .review-card p{font-size:15px;line-height:1.8;}
     .review-card__button{width:100%;max-width:320px;min-height:58px;font-size:17px;}
@@ -2149,12 +2149,14 @@ canvas{max-width:100%;}
                                 <div class="overall-card__score">${overallScore}</div>
                             </div>
                             <div class="ability-player-card__position">${escapeHtml(abilityMeasurementState.position)}</div>
-                            <div id="playerCardRadarSlot" class="ability-player-card__radar"></div>
                         </div>
                     </div>
                     <div class="ability-player-card__bottom">
                         <h3 id="playerCardName" class="ability-player-card__name">YOUR NAME</h3>
-                        <div class="player-stat-grid">${createPlayerStatHtml(radarScores)}</div>
+                        <div class="ability-player-card__bottom-content">
+                            <div id="playerCardRadarSlot" class="ability-player-card__radar"></div>
+                            <div class="player-stat-grid" style="--rank-color:${escapeAttribute(getOverallRankColors(overallScore).accent)}">${createPlayerStatHtml(radarScores)}</div>
+                        </div>
                     </div>
                 </div>
                 <div class="section-card">
@@ -2169,7 +2171,7 @@ canvas{max-width:100%;}
                 <button type="button" class="restart-btn" onclick="startAbilityMeasurement()">もう一度測定する</button>
             `;
             moveRadarChartIntoPlayerCard();
-            drawRadarChart(radarScores);
+            drawRadarChart(radarScores, overallScore);
             initializeUserPhotoPreview();
             showReviewArea();
             showAffiliateArea();
@@ -2384,6 +2386,53 @@ canvas{max-width:100%;}
         return labels[normalizeRadarName(label)] || label;
     }
 
+    function getOverallRankColors(overallScore) {
+        const score = Number(overallScore) || 0;
+        if (score >= 85) {
+            return {
+                accent: "#8b5cf6",
+                line: "#a78bfa",
+                fill: "rgba(30,27,75,0.52)",
+                grid: "rgba(139,92,246,0.34)",
+                glow: "rgba(124,58,237,0.78)"
+            };
+        }
+        if (score >= 80) {
+            return {
+                accent: "#facc15",
+                line: "#fbbf24",
+                fill: "rgba(250,204,21,0.24)",
+                grid: "rgba(250,204,21,0.32)",
+                glow: "rgba(250,204,21,0.78)"
+            };
+        }
+        if (score >= 70) {
+            return {
+                accent: "#e5e7eb",
+                line: "#cbd5e1",
+                fill: "rgba(226,232,240,0.2)",
+                grid: "rgba(226,232,240,0.28)",
+                glow: "rgba(226,232,240,0.68)"
+            };
+        }
+        if (score >= 60) {
+            return {
+                accent: "#d97706",
+                line: "#f59e0b",
+                fill: "rgba(217,119,6,0.22)",
+                grid: "rgba(245,158,11,0.28)",
+                glow: "rgba(245,158,11,0.62)"
+            };
+        }
+        return {
+            accent: "#ffffff",
+            line: "#f8fafc",
+            fill: "rgba(255,255,255,0.16)",
+            grid: "rgba(255,255,255,0.24)",
+            glow: "rgba(255,255,255,0.52)"
+        };
+    }
+
     function drawRadarAxisLabel(ctx, label, x, y, isPlayerCardChart) {
         const textLabel = getRadarLabelAbbreviation(label);
         if (isPlayerCardChart) {
@@ -2406,11 +2455,12 @@ canvas{max-width:100%;}
         ctx.fillText(textLabel, x, y);
     }
 
-    function drawRadarChart(scores) {
+    function drawRadarChart(scores, overallScore = null) {
         const canvas = $("radarChart");
         const chartBox = $("chartBox");
         const ctx = canvas.getContext("2d");
         const isPlayerCardChart = Boolean(canvas.closest(".ability-player-card"));
+        const rankColors = getOverallRankColors(overallScore);
         const cardRadarOrder = ["オフェンス", "ドリブル", "フィジカル", "ディフェンス", "足の速さ", "パス"];
         const labels = isPlayerCardChart ? cardRadarOrder : Object.keys(scores);
         const values = labels.map((label) => clamp(scores[label] || 0));
@@ -2427,10 +2477,10 @@ canvas{max-width:100%;}
         canvas.style.height = `${size}px`;
         ctx.setTransform(scale, 0, 0, scale, 0, 0);
         ctx.clearRect(0, 0, size, size);
-        ctx.strokeStyle = isPlayerCardChart ? "rgba(255,255,255,0.18)" : "rgba(148,163,184,0.55)";
+        ctx.strokeStyle = isPlayerCardChart ? rankColors.grid : "rgba(148,163,184,0.55)";
         ctx.lineWidth = 1;
         for (let level = 1; level <= 5; level++) drawRadarShape(ctx, labels.length, center, radius * level / 5);
-        ctx.strokeStyle = isPlayerCardChart ? "rgba(255,255,255,0.16)" : "rgba(148,163,184,0.35)";
+        ctx.strokeStyle = isPlayerCardChart ? rankColors.grid : "rgba(148,163,184,0.35)";
         labels.forEach((_, index) => {
             const point = radarPoint(index, labels.length, center, radius);
             ctx.beginPath(); ctx.moveTo(center, center); ctx.lineTo(point.x, point.y); ctx.stroke();
@@ -2450,14 +2500,27 @@ canvas{max-width:100%;}
             if (index === 0) ctx.moveTo(point.x, point.y); else ctx.lineTo(point.x, point.y);
         });
         ctx.closePath();
-        ctx.fillStyle = isPlayerCardChart ? "rgba(56,189,248,0.22)" : "rgba(37,99,235,0.22)";
-        ctx.strokeStyle = isPlayerCardChart ? "#67e8f9" : "#2563eb";
+        ctx.fillStyle = isPlayerCardChart ? rankColors.fill : "rgba(37,99,235,0.22)";
+        ctx.strokeStyle = isPlayerCardChart ? rankColors.line : "#2563eb";
         ctx.lineWidth = isPlayerCardChart ? 2.5 : 3;
+        if (isPlayerCardChart) {
+            ctx.shadowColor = rankColors.glow;
+            ctx.shadowBlur = 8;
+        }
         ctx.fill(); ctx.stroke();
-        ctx.fillStyle = isPlayerCardChart ? "#e0f2fe" : "#2563eb";
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = isPlayerCardChart ? rankColors.accent : "#2563eb";
         values.forEach((value, index) => {
             const point = radarPoint(index, values.length, center, radius * value / 100);
-            ctx.beginPath(); ctx.arc(point.x, point.y, isPlayerCardChart ? 3 : 4, 0, Math.PI * 2); ctx.fill();
+            if (isPlayerCardChart) {
+                ctx.save();
+                ctx.shadowColor = rankColors.glow;
+                ctx.shadowBlur = 9;
+                ctx.beginPath(); ctx.arc(point.x, point.y, 3.2, 0, Math.PI * 2); ctx.fill();
+                ctx.restore();
+            } else {
+                ctx.beginPath(); ctx.arc(point.x, point.y, 4, 0, Math.PI * 2); ctx.fill();
+            }
         });
         if (!isPlayerCardChart) {
             ctx.font = "bold 13px Arial, sans-serif";
@@ -2536,7 +2599,7 @@ canvas{max-width:100%;}
     }
 
     function createPlayerStatHtml(scores) {
-        return ["オフェンス", "ドリブル", "フィジカル", "ディフェンス", "足の速さ", "パス"].map((name) => {
+        return ["オフェンス", "ディフェンス", "ドリブル", "足の速さ", "フィジカル", "パス"].map((name) => {
             const value = clamp(scores[name] || 0);
             return `<div class="player-stat-item"><span class="player-stat-label">${escapeHtml(getRadarLabelAbbreviation(name))}</span><span class="player-stat-value">${value}</span></div>`;
         }).join("");
