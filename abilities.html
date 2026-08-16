@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>サッカーの6つの能力を解説 | サッカー診断サイト</title>
+
+<meta name="description" content="サッカー診断サイトで使用しているOFE・DRI・PHY・DEF・SPD・PASの6つの能力について、それぞれの意味や特徴、伸ばすためのポイントを分かりやすく解説します。">
+
+<style>
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+html, body {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    color: #0f172a;
+    background: #f4f7fb;
+    line-height: 1.9;
+}
+
+.page {
+    width: min(100%, 1000px);
+    margin: 0 auto;
+    padding: 48px 20px 30px;
+}
+
+/* メインカード */
+
+.hero {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+    padding: 42px 34px;
+    text-align: center;
+}
+
+.hero h1 {
+    margin: 0 0 16px;
+    font-size: clamp(30px, 6vw, 46px);
+    font-weight: 900;
+    line-height: 1.3;
+}
+
+.hero p {
+    max-width: 760px;
+    margin: 0 auto;
+    color: #475569;
+    font-weight: 700;
+}
+
+/* 注意書き */
+
+.info-box {
+    margin-top: 28px;
+    padding: 20px 22px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 16px;
+    color: #1e3a8a;
+    text-align: left;
+    font-weight: 700;
+}
+
+/* 目次 */
+
+.contents {
+    margin-top: 28px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 28px;
+}
+
+.contents h2 {
+    margin: 0 0 20px;
+    text-align: center;
+    font-size: 24px;
+}
+
+.ability-nav {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.ability-nav a {
+    display: block;
+    padding: 14px 10px;
+    border-radius: 12px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    text-decoration: none;
+    font-weight: 900;
+    text-align: center;
+    border: 1px solid #bfdbfe;
+}
+
+.ability-nav a:hover {
+    background: #dbeafe;
+}
+
+/* 能力カード */
+
+.ability-card {
+    margin-top: 26px;
+    padding: 34px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 22px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.ability-heading {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.ability-code {
+    min-width: 78px;
+    padding: 9px 12px;
+    border-radius: 12px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 900;
+    text-align: center;
+}
+
+.ability-heading h2 {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.4;
+}
+
+.ability-card p {
+    color: #475569;
+    font-weight: 600;
+}
+
+.ability-card h3 {
+    margin: 26px 0 10px;
+    font-size: 19px;
+    color: #0f172a;
+}
+
+.ability-card ul {
+    margin: 8px 0 0;
+    padding-left: 24px;
+    color: #475569;
+    font-weight: 600;
+}
+
+.ability-card li {
+    margin-bottom: 6px;
+}
+
+/* 最後の説明 */
+
+.guide-card {
+    margin-top: 28px;
+    padding: 34px;
+    border-radius: 22px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+}
+
+.guide-card h2 {
+    margin-top: 0;
+    font-size: 26px;
+}
+
+.guide-card p {
+    color: #475569;
+    font-weight: 600;
+}
+
+.start-area {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.start-button {
+    display: inline-block;
+    padding: 15px 32px;
+    background: #2563eb;
+    color: #ffffff;
+    border-radius: 12px;
+    font-weight: 900;
+    text-decoration: none;
+}
+
+.start-button:hover {
+    background: #1d4ed8;
+}
+
+/* フッター */
+
+.footer {
+    margin-top: 32px;
+    padding-bottom: 18px;
+    text-align: center;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    margin-bottom: 12px;
+}
+
+.footer a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 900;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+/* スマホ */
+
+@media (max-width: 700px) {
+
+    .page {
+        padding: 28px 12px 22px;
+    }
+
+    .hero {
+        padding: 28px 18px;
+        border-radius: 18px;
+    }
+
+    .contents {
+        padding: 22px 16px;
+    }
+
+    .ability-nav {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .ability-card {
+        padding: 26px 20px;
+        border-radius: 18px;
+    }
+
+    .ability-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .ability-heading h2 {
+        font-size: 24px;
+    }
+
+    .guide-card {
+        padding: 26px 20px;
+    }
+
+    .start-button {
+        width: 100%;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+<main class="page">
+
+    <!-- ページ上部 -->
+
+    <section class="hero">
+
+        <h1>サッカーの6つの能力について</h1>
+
+        <p>
+            サッカー診断サイトでは、プレーの特徴を
+            「OFE・DRI・PHY・DEF・SPD・PAS」の6つの能力に分けて診断しています。
+            このページでは、それぞれがどのような能力を表しているのか、
+            特徴や伸ばすためのポイントとあわせて解説します。
+        </p>
+
+        <div class="info-box">
+            この6項目は、本サイトの診断結果を分かりやすく表現するために設定している指標です。
+            実際のサッカーでは、ポジションやチームの戦い方によって求められる能力が異なります。
+            数値の高さだけで選手の良し悪しを決めるものではありません。
+        </div>
+
+    </section>
+
+
+    <!-- 目次 -->
+
+    <section class="contents">
+
+        <h2>6つの能力</h2>
+
+        <div class="ability-nav">
+            <a href="#ofe">OFE<br>オフェンス</a>
+            <a href="#dri">DRI<br>ドリブル</a>
+            <a href="#phy">PHY<br>フィジカル</a>
+            <a href="#def">DEF<br>ディフェンス</a>
+            <a href="#spd">SPD<br>スピード</a>
+            <a href="#pas">PAS<br>パス</a>
+        </div>
+
+    </section>
+
+
+    <!-- OFE -->
+
+    <section class="ability-card" id="ofe">
+
+        <div class="ability-heading">
+            <div class="ability-code">OFE</div>
+            <h2>オフェンス</h2>
+        </div>
+
+        <p>
+            OFEは、攻撃にどれだけ効果的に関わることができるかを表す能力です。
+            ゴールを決めることだけではなく、得点につながる場所へ動くことや、
+            攻撃のチャンスを作ることなどもオフェンス能力の一部と考えています。
+        </p>
+
+        <h3>OFEが高い選手の特徴</h3>
+
+        <ul>
+            <li>ゴール前で積極的にプレーできる</li>
+            <li>得点につながる位置を見つけるのが得意</li>
+            <li>攻撃時に相手の嫌がる場所へ動ける</li>
+            <li>シュートやラストパスなど、得点に関わるプレーを選びやすい</li>
+        </ul>
+
+        <h3>伸ばすためのポイント</h3>
+
+        <p>
+            シュート技術だけでなく、ボールを持っていないときの動きを意識することも大切です。
+            味方がボールを持ったときにどこへ動けばチャンスになるのかを考えながらプレーすると、
+            攻撃への関わり方を増やしていくことができます。
+        </p>
+
+    </section>
+
+
+    <!-- DRI -->
+
+    <section class="ability-card" id="dri">
+
+        <div class="ability-heading">
+            <div class="ability-code">DRI</div>
+            <h2>ドリブル</h2>
+        </div>
+
+        <p>
+            DRIは、ボールを自分で運ぶ力や、相手をかわして前へ進む力を表す能力です。
+            足元の技術だけではなく、ボールを失わずに運ぶ判断力や、
+            相手との距離を見ながらプレーする力も重要になります。
+        </p>
+
+        <h3>DRIが高い選手の特徴</h3>
+
+        <ul>
+            <li>相手をかわして前へ進むことができる</li>
+            <li>ボールを足元で細かく扱える</li>
+            <li>狭い場所でもボールを失いにくい</li>
+            <li>ドリブルで相手の守備を崩すことができる</li>
+        </ul>
+
+        <h3>伸ばすためのポイント</h3>
+
+        <p>
+            ボールタッチの練習に加えて、顔を上げて周囲を見ることを意識しましょう。
+            ドリブルは相手を抜くためだけのものではありません。
+            空いているスペースへボールを運び、味方や相手の位置を見ながら
+            次のプレーにつなげることも重要です。
+        </p>
+
+    </section>
+
+
+    <!-- PHY -->
+
+    <section class="ability-card" id="phy">
+
+        <div class="ability-heading">
+            <div class="ability-code">PHY</div>
+            <h2>フィジカル</h2>
+        </div>
+
+        <p>
+            PHYは、相手との競り合いや接触のある場面でプレーを続ける力を表す能力です。
+            単純な体の大きさだけではなく、バランス、体の使い方、
+            姿勢を崩されにくいことなどもフィジカルの一部です。
+        </p>
+
+        <h3>PHYが高い選手の特徴</h3>
+
+        <ul>
+            <li>相手と接触してもボールを失いにくい</li>
+            <li>競り合いで体をうまく使える</li>
+            <li>ボールをキープして味方を待つことができる</li>
+            <li>安定した姿勢でプレーを続けられる</li>
+        </ul>
+
+        <h3>伸ばすためのポイント</h3>
+
+        <p>
+            筋力だけを高めるのではなく、体幹やバランス、
+            相手との間に体を入れる技術も意識しましょう。
+            ボールを守るときの体の向きや重心を工夫することで、
+            自分より体格の大きな相手とも戦いやすくなります。
+        </p>
+
+    </section>
+
+
+    <!-- DEF -->
+
+    <section class="ability-card" id="def">
+
+        <div class="ability-heading">
+            <div class="ability-code">DEF</div>
+            <h2>ディフェンス</h2>
+        </div>
+
+        <p>
+            DEFは、相手の攻撃を止めたり、ボールを奪ったりする力を表す能力です。
+            タックルの強さだけでなく、相手の動きを予測することや、
+            危険なスペースを先に埋めることも重要な守備能力です。
+        </p>
+
+        <h3>DEFが高い選手の特徴</h3>
+
+        <ul>
+            <li>相手との距離を適切に保てる</li>
+            <li>パスコースやドリブルコースを予測できる</li>
+            <li>ボールを奪うタイミングが良い</li>
+            <li>危険な場所を察知して先に動ける</li>
+        </ul>
+
+        <h3>伸ばすためのポイント</h3>
+
+        <p>
+            ボールだけを見るのではなく、相手選手や味方選手、
+            空いているスペースまで確認することが大切です。
+            「どこでボールを奪うか」「どちらへ相手を追い込むか」を考えることで、
+            無理に飛び込まなくても守れる場面が増えていきます。
+        </p>
+
+    </section>
+
+
+    <!-- SPD -->
+
+    <section class="ability-card" id="spd">
+
+        <div class="ability-heading">
+            <div class="ability-code">SPD</div>
+            <h2>スピード</h2>
+        </div>
+
+        <p>
+            SPDは、走る速さや短い距離での加速力、
+            素早く動き出す力を表す能力です。
+            サッカーでは長距離を一直線に走る速さだけではなく、
+            一瞬の動き出しや方向転換も大切になります。
+        </p>
+
+        <h3>SPDが高い選手の特徴</h3>
+
+        <ul>
+            <li>相手より先にスペースへ走り込める</li>
+            <li>短い距離で素早く加速できる</li>
+            <li>攻守の切り替えで素早く動ける</li>
+            <li>スピードを生かして相手を突破できる</li>
+        </ul>
+
+        <h3>伸ばすためのポイント</h3>
+
+        <p>
+            短い距離のダッシュや切り返しを取り入れるだけでなく、
+            動き出すタイミングも意識しましょう。
+            サッカーでは相手より早く走ることだけでなく、
+            相手より早くスタートすることで優位に立てる場面も多くあります。
+        </p>
+
+    </section>
+
+
+    <!-- PAS -->
+
+    <section class="ability-card" id="pas">
+
+        <div class="ability-heading">
+            <div class="ability-code">PAS</div>
+            <h2>パス</h2>
+        </div>
+
+        <p>
+            PASは、味方へ正確にボールを届けたり、
+            パスによって攻撃を組み立てたりする力を表す能力です。
+            正確性だけでなく、味方や相手の位置を確認し、
+            適切なタイミングと強さでパスを出す判断も重要です。
+        </p>
+
+        <h3>PASが高い選手の特徴</h3>
+
+        <ul>
+            <li>味方が受けやすい場所へパスを出せる</li>
+            <li>周囲を見ながらプレーできる</li>
+            <li>攻撃のテンポを作ることができる</li>
+            <li>相手の守備を崩すパスを狙える</li>
+        </ul>
+
+        <h3>伸ばすためのポイント</h3>
+
+        <p>
+            インサイドキックなどの基本的な技術を身につけることに加えて、
+            ボールを受ける前に周囲を見る習慣をつけることが大切です。
+            「どこへ」「いつ」「どのくらいの強さで」出すのかまで考えることで、
+            より効果的なパスにつながります。
+        </p>
+
+    </section>
+
+
+    <!-- 診断結果の考え方 -->
+
+    <section class="guide-card">
+
+        <h2>6つの能力はバランスを見るためのもの</h2>
+
+        <p>
+            サッカーでは、すべての能力が高いことだけが重要なわけではありません。
+            スピードを生かして突破する選手、正確なパスで試合を組み立てる選手、
+            守備やフィジカルでチームを支える選手など、それぞれに違った長所があります。
+        </p>
+
+        <p>
+            本サイトの診断では、6つの能力を比較することで、
+            「自分は何を得意としているのか」
+            「どのようなプレーに特徴があるのか」を分かりやすく確認できるようにしています。
+        </p>
+
+        <p>
+            診断結果は選手としての実力を断定するものではなく、
+            自分のプレースタイルを考えるための一つの目安としてお楽しみください。
+        </p>
+
+        <div class="start-area">
+            <a class="start-button" href="index.html">
+                サッカー診断をしてみる
+            </a>
+        </div>
+
+    </section>
+
+
+    <!-- フッター -->
+
+    <footer class="footer">
+
+        <nav class="footer-links" aria-label="フッターリンク">
+            <a href="index.html">トップページ</a>
+            <a href="privacy.html">プライバシーポリシー</a>
+            <a href="disclaimer.html">免責事項</a>
+            <a href="operator.html">運営者情報</a>
+            <a href="contact.html">お問い合わせ</a>
+        </nav>
+
+        <p>
+            © サッカー診断サイト
+        </p>
+
+    </footer>
+
+</main>
+
+</body>
+</html>
