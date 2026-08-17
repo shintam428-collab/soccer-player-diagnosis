@@ -415,7 +415,7 @@ canvas{max-width:100%;}
 .type-detail-card__description{margin:0;color:#334155;line-height:1.8;}
 .type-detail-card__close{margin-top:14px;padding:10px 18px;border-radius:10px;background:#334155!important;color:#fff;font-size:14px;width:auto;}
 .abilities-guide{padding:0 28px 42px;background:#020617;}
-.abilities-guide__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;max-width:900px;margin:0 auto;}
+.abilities-guide__grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;max-width:1040px;margin:0 auto;}
 .abilities-guide__card{display:flex;flex-direction:column;max-width:none;margin:0;padding:32px 26px;border:1px solid #bfdbfe;border-radius:24px;background:linear-gradient(135deg,#ffffff 0%,#eff6ff 100%);box-shadow:0 16px 36px rgba(15,23,42,0.22);text-align:center;}
 .abilities-guide__title{margin:0 0 12px;color:#1d4ed8;font-size:clamp(24px,4vw,32px);font-weight:900;line-height:1.35;}
 .abilities-guide__text{flex:1;max-width:640px;margin:0 auto 22px;color:#475569;font-size:16px;font-weight:700;line-height:1.85;}
@@ -426,6 +426,9 @@ canvas{max-width:100%;}
 .site-footer__links{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;}
 .site-footer a{color:#2563eb;text-decoration:none;font-weight:900;}
 .site-footer a:hover{text-decoration:underline;}
+@media(max-width:900px){
+    .abilities-guide__grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
 @media(max-width:600px){
     body{width:100%;max-width:100%;padding:112px 10px 12px;margin:0;overflow-x:hidden;}
     .page-content,.quiz-area,#quizArea,#quizCard,#result{width:100%;max-width:100%;margin-left:auto;margin-right:auto;}
@@ -554,11 +557,11 @@ canvas{max-width:100%;}
             <div class="start-hero-panel">
             <p class="start-screen__icon">⚽</p>
                 <h1 class="start-title">あなたのサッカープレースタイル診断</h1>
-                <p class="start-description">14タイプから自分のプレースタイルを見つけよう</p>
+                <p class="start-description">16タイプから自分のプレースタイルを見つけよう</p>
             </div>
             <div id="questionStatus"></div>
-            <div class="type-showcase" aria-label="14タイプ一覧">
-                <h2 class="type-showcase__title">14タイプ一覧</h2>
+            <div class="type-showcase" aria-label="16タイプ一覧">
+                <h2 class="type-showcase__title">16タイプ一覧</h2>
                 <div id="homeTypeGrid" class="type-grid"></div>
                 <div id="homeTypeDetail" class="type-detail-card"></div>
             </div>
@@ -655,6 +658,11 @@ canvas{max-width:100%;}
                         <h2 class="abilities-guide__title">診断結果の見方</h2>
                         <p class="abilities-guide__text">総合値・6つの能力・レーダーチャート・ランクなど、診断結果に表示される項目の意味を詳しく解説しています。</p>
                         <a class="abilities-guide__button" href="result-guide.html">診断結果の見方を詳しく見る</a>
+                    </div>
+                    <div class="abilities-guide__card">
+                        <h2 class="abilities-guide__title">プレースタイル解説</h2>
+                        <p class="abilities-guide__text">プレースタイル診断で登場する各タイプの特徴や強み、プレーで意識したいポイントなどを詳しく解説しています。</p>
+                        <a class="abilities-guide__button" href="playstyle-guide.html">プレースタイルを詳しく見る</a>
                     </div>
                 </div>
             </section>

@@ -211,6 +211,27 @@ body {
     background: #1d4ed8;
 }
 
+.related-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.related-links .start-button {
+    margin: 0;
+}
+
+.start-button--secondary {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+
+.start-button--secondary:hover {
+    background: #dbeafe;
+}
+
 /* フッター */
 
 .footer {
@@ -282,6 +303,10 @@ body {
 
     .start-button {
         width: 100%;
+    }
+
+    .related-links {
+        flex-direction: column;
     }
 }
 
@@ -573,8 +598,14 @@ body {
             自分のプレースタイルを考えるための一つの目安としてお楽しみください。
         </p>
 
-        <div class="start-area">
-            <a class="start-button" href="index.html">
+        <div class="start-area related-links">
+            <a class="start-button" href="result-guide.html">
+                診断結果の見方
+            </a>
+            <a class="start-button" href="playstyle-guide.html">
+                プレースタイルを詳しく見る
+            </a>
+            <a class="start-button start-button--secondary" href="index.html">
                 サッカー診断をしてみる
             </a>
         </div>

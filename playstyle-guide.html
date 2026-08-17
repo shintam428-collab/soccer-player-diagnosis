@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>サッカーのプレースタイル解説｜診断に登場する16タイプ | サッカー診断サイト</title>
+
+<meta name="description" content="サッカーのプレースタイル診断に登場する16タイプを解説。各タイプのプレーの特徴、主な強み、特徴を生かしやすい役割、試合中に意識したいこと、さらに伸ばすポイントを紹介します。">
+
+<style>
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+html, body {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    color: #0f172a;
+    background: #f4f7fb;
+    line-height: 1.9;
+}
+
+.page {
+    width: min(100%, 1080px);
+    margin: 0 auto;
+    padding: 48px 20px 30px;
+}
+
+.hero {
+    padding: 44px 36px;
+    border: 1px solid #dbeafe;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+    text-align: center;
+}
+
+.hero__label {
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 5px 13px;
+    border-radius: 999px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.hero h1 {
+    margin: 0 0 16px;
+    font-size: clamp(30px, 6vw, 46px);
+    font-weight: 900;
+    line-height: 1.3;
+}
+
+.hero p {
+    max-width: 790px;
+    margin: 0 auto;
+    color: #475569;
+    font-weight: 700;
+}
+
+.notice {
+    margin-top: 24px;
+    padding: 18px 20px;
+    border: 1px solid #bfdbfe;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.84);
+    color: #1e3a8a;
+    text-align: left;
+    font-weight: 700;
+}
+
+.axis-guide,
+.contents,
+.type-card,
+.closing-card {
+    margin-top: 28px;
+    border: 1px solid #e2e8f0;
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.axis-guide,
+.contents,
+.closing-card {
+    padding: 32px;
+}
+
+.axis-guide h2,
+.contents h2,
+.closing-card h2 {
+    margin: 0 0 16px;
+    font-size: clamp(24px, 4vw, 30px);
+    line-height: 1.45;
+}
+
+.axis-guide > p,
+.closing-card p {
+    color: #475569;
+    font-weight: 600;
+}
+
+.axis-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.axis-item {
+    padding: 18px;
+    border: 1px solid #dbeafe;
+    border-radius: 16px;
+    background: #f8fbff;
+}
+
+.axis-item h3 {
+    margin: 0 0 6px;
+    color: #1d4ed8;
+    font-size: 17px;
+}
+
+.axis-item p {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.75;
+}
+
+.contents h2 {
+    text-align: center;
+}
+
+.type-nav {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.type-nav a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 62px;
+    padding: 10px 9px;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    text-align: center;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1.45;
+}
+
+.type-nav a:hover {
+    background: #dbeafe;
+}
+
+.type-card {
+    scroll-margin-top: 18px;
+    overflow: hidden;
+}
+
+.type-card__header {
+    padding: 28px 30px 24px;
+    border-bottom: 1px solid #dbeafe;
+    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+}
+
+.type-card__number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 72px;
+    margin-bottom: 10px;
+    padding: 4px 11px;
+    border-radius: 999px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .08em;
+}
+
+.type-card h2 {
+    margin: 0 0 10px;
+    color: #0f172a;
+    font-size: clamp(25px, 4vw, 32px);
+    line-height: 1.4;
+}
+
+.type-card__summary {
+    max-width: 850px;
+    margin: 0;
+    color: #334155;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.axis-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 16px;
+}
+
+.axis-tags span {
+    padding: 4px 10px;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.type-card__body {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 32px;
+    padding: 28px 30px 30px;
+}
+
+.detail-block {
+    min-width: 0;
+}
+
+.detail-block h3 {
+    margin: 20px 0 7px;
+    color: #1e3a8a;
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+.detail-block h3:first-child {
+    margin-top: 0;
+}
+
+.detail-block p,
+.detail-block ul {
+    color: #475569;
+    font-weight: 600;
+}
+
+.detail-block p {
+    margin: 0;
+}
+
+.detail-block ul {
+    margin: 0;
+    padding-left: 23px;
+}
+
+.detail-block li {
+    margin-bottom: 5px;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 18px;
+    color: #2563eb;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.related-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 14px 26px;
+    border: 1px solid #2563eb;
+    border-radius: 12px;
+    background: #2563eb;
+    color: #ffffff;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 900;
+    line-height: 1.5;
+}
+
+.button:hover {
+    background: #1d4ed8;
+}
+
+.button--secondary {
+    border-color: #bfdbfe;
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.button--secondary:hover {
+    background: #dbeafe;
+}
+
+.footer {
+    margin-top: 32px;
+    padding-bottom: 18px;
+    color: #64748b;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    margin-bottom: 12px;
+}
+
+.footer a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 900;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 820px) {
+    .type-nav {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .type-card__body {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-block + .detail-block h3:first-child {
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .page {
+        padding: 28px 12px 22px;
+    }
+
+    .hero {
+        padding: 28px 18px;
+        border-radius: 18px;
+    }
+
+    .axis-guide,
+    .contents,
+    .closing-card {
+        padding: 24px 18px;
+        border-radius: 18px;
+    }
+
+    .axis-grid,
+    .type-nav {
+        grid-template-columns: 1fr;
+    }
+
+    .type-nav a {
+        min-height: 50px;
+    }
+
+    .type-card {
+        border-radius: 18px;
+    }
+
+    .type-card__header {
+        padding: 24px 18px 20px;
+    }
+
+    .type-card__body {
+        padding: 24px 18px 26px;
+    }
+
+    .type-card__summary {
+        font-size: 15px;
+    }
+
+    .related-links {
+        flex-direction: column;
+    }
+
+    .button {
+        width: 100%;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<main class="page">
+
+    <section class="hero">
+        <span class="hero__label">診断に登場する16タイプ</span>
+        <h1>サッカーのプレースタイル解説</h1>
+        <p>
+            サッカー選手には、得意なプレーや試合での役割によってさまざまなプレースタイルがあります。
+            本サイトのプレースタイル診断で実際に登場する各タイプについて、プレーの特徴や強み、試合で意識したいことまで詳しく紹介します。
+        </p>
+        <div class="notice">
+            診断結果は、実際の選手としての実力・適性・ポジションを断定するものではありません。
+            自分が選びやすいプレーやチームとの関わり方を振り返り、自分らしいプレーの特徴を考えるための一つの目安としてご活用ください。
+        </div>
+    </section>
+
+    <section class="axis-guide">
+        <h2>16タイプを形作る4つの診断軸</h2>
+        <p>
+            プレースタイル診断では、回答から見える傾向を4つの軸で整理しています。
+            どちらが優れているという区分ではなく、試合で何を優先し、どのようにチームへ関わりやすいかを表すものです。
+        </p>
+        <div class="axis-grid">
+            <article class="axis-item">
+                <h3>攻める ／ 支える</h3>
+                <p>自分からゴールや突破を狙う傾向と、味方を助けてチームを安定させる傾向を見ます。</p>
+            </article>
+            <article class="axis-item">
+                <h3>直感 ／ 冷静</h3>
+                <p>ひらめきで素早く決断する傾向と、状況を確認して確実な選択をする傾向を見ます。</p>
+            </article>
+            <article class="axis-item">
+                <h3>スピード技術 ／ フィジカル守備</h3>
+                <p>速さやテクニックを生かす傾向と、強さや粘り、体を張るプレーを生かす傾向を見ます。</p>
+            </article>
+            <article class="axis-item">
+                <h3>自由 ／ リーダー</h3>
+                <p>自分の感覚で動いて違いを作る傾向と、声や判断で周囲を動かす傾向を見ます。</p>
+            </article>
+        </div>
+    </section>
+
+    <nav class="contents" id="type-list" aria-label="プレースタイル目次">
+        <h2>プレースタイル一覧</h2>
+        <div class="type-nav">
+            <a href="#bakusoku-striker">爆速ストライカー</a>
+            <a href="#senko-ace">閃光エース</a>
+            <a href="#power-attacker">突撃パワーアタッカー</a>
+            <a href="#tosho-forward">闘将フォワード</a>
+            <a href="#reisei-finisher">冷静フィニッシャー</a>
+            <a href="#senjutsu-ace">戦術エース</a>
+            <a href="#jusensha-attacker">重戦車アタッカー</a>
+            <a href="#shobushi-captain">勝負師キャプテン</a>
+            <a href="#chance-maker">自由なチャンスメーカー</a>
+            <a href="#hirameki-shireito">ひらめき司令塔</a>
+            <a href="#hard-worker">献身的ハードワーカー</a>
+            <a href="#nekketsu-leader">熱血チームリーダー</a>
+            <a href="#gikouha-balancer">技巧派バランサー</a>
+            <a href="#game-maker">冷静なゲームメーカー</a>
+            <a href="#shubi-shokunin">守備職人</a>
+            <a href="#teppeki-tosotsusha">鉄壁の統率者</a>
+        </div>
+    </nav>
+
+    <article class="type-card" id="bakusoku-striker">
+        <header class="type-card__header">
+            <span class="type-card__number">TYPE 01</span>
+            <h2>爆速ストライカー</h2>
+            <p class="type-card__summary">スピードと感覚を信じ、空いた瞬間を逃さず一気にゴールへ向かう突破型アタッカーです。決められた場所に留まるより、相手の背後やサイドの空間を自由に探すと持ち味が出ます。</p>
+            <div class="axis-tags"><span>攻める</span><span>直感</span><span>スピード技術</span><span>自由</span></div>
+        </header>
+        <div class="type-card__body">
+            <div class="detail-block">
+                <h3>プレーの特徴</h3>
+                <p>ボールを受けてから考えるより、スペースが生まれた瞬間に走り出し、少ないタッチで前進するプレーを好みます。速い切り返しや縦への仕掛けで守備の準備が整う前に勝負しやすいタイプです。</p>
+                <h3>主な強み</h3>
+                <ul><li>相手の背後を取る一瞬の加速</li><li>迷いの少ない縦への仕掛け</li><li>カウンターで攻撃を一気に進める力</li></ul>
+            </div>
+            <div class="detail-block">
+                <h3>特徴を生かしやすいポジション・役割</h3>
+                <p>FWやWGなど、前方のスペースへ飛び出せる役割で特徴を発揮しやすいでしょう。中央に固定されず、サイドと中央を行き来する動きも生かせます。</p>
+                <h3>試合中に意識したいポイント</h3>
+                <p>毎回全速力で仕掛けるのではなく、止まる動きや味方へ預ける選択を混ぜると、次のスプリントがより効果的になります。オフサイドにならないタイミングも確認しましょう。</p>
+                <h3>さらに伸ばすためのポイント</h3>
+                <p>トップスピードのまま扱うボールタッチと、走り切った後のシュート精度を磨くと、速さを得点へつなげやすくなります。</p>
+            </div>
+            <a class="back-link" href="#type-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="type-card" id="senko-ace">
+        <header class="type-card__header">
+            <span class="type-card__number">TYPE 02</span>
+            <h2>閃光エース</h2>
+            <p class="type-card__summary">ひらめきとスピードで局面を変えながら、自分のプレーで仲間を前向きにするエースタイプです。突破するだけでなく、「ここで勝負する」という姿勢がチームの攻撃スイッチになります。</p>
+            <div class="axis-tags"><span>攻める</span><span>直感</span><span>スピード技術</span><span>リーダー</span></div>
+        </header>
+        <div class="type-card__body">
+            <div class="detail-block">
+                <h3>プレーの特徴</h3>
+                <p>相手との1対1や速い攻守の切り替えで主導権を握り、チャンスではためらわず前へ出ます。周囲へ要求を伝え、次にどこを狙うかをプレーと声の両方で示す傾向があります。</p>
+                <h3>主な強み</h3>
+                <ul><li>流れを変えるスピードと決断力</li><li>勝負どころでボールを受ける積極性</li><li>攻撃陣を勢いづける存在感</li></ul>
+            </div>
+            <div class="detail-block">
+                <h3>特徴を生かしやすいポジション・役割</h3>
+                <p>WG、FW、攻撃的MFなど、仕掛けと得点への関与が求められる場所で長所が出やすいタイプです。前線のプレスを先導する役割にもつながります。</p>
+                <h3>試合中に意識したいポイント</h3>
+                <p>自分で局面を変えようとするほど、難しい勝負が続くことがあります。味方の上がりを使うパスと自分で行く場面を選び、チーム全体が続けて攻撃できる形を残しましょう。</p>
+                <h3>さらに伸ばすためのポイント</h3>
+                <p>突破後のクロス、ラストパス、シュートを状況別に練習すると、ひらめきを結果へ変える選択肢が増えます。声かけは具体的で短くすると仲間へ届きやすくなります。</p>
+            </div>
+            <a class="back-link" href="#type-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="type-card" id="power-attacker">
+        <header class="type-card__header">
+            <span class="type-card__number">TYPE 03</span>
+            <h2>突撃パワーアタッカー</h2>
+            <p class="type-card__summary">勢いと体の強さを武器に、相手との接触を恐れずゴール方向へ進む勝負師です。整った形を待つより、こぼれ球や混戦の気配を感じて飛び込み、力強く局面を動かします。</p>
+            <div class="axis-tags"><span>攻める</span><span>直感</span><span>フィジカル守備</span><span>自由</span></div>
+        </header>
+        <div class="type-card__body">
+            <div class="detail-block">
+                <h3>プレーの特徴</h3>
+                <p>相手を背負ったボールキープ、競り合い、ゴール前への飛び込みなど、接触のある場面でも前向きなプレーを続けます。直感的に危険な場所へ入り、予想外の混戦からチャンスを作るのが特徴です。</p>
+                <h3>主な強み</h3>
+                <ul><li>プレッシャーを受けても前進する推進力</li><li>セカンドボールへ反応する勝負勘</li><li>相手守備を引きつける力強いプレー</li></ul>
+            </div>
+            <div class="detail-block">
+                <h3>特徴を生かしやすいポジション・役割</h3>
+                <p>中央のFWやゴールへ近い攻撃的な役割で、体を張る長所を生かしやすいでしょう。サイドから内側へ入り、相手SBと競り合う形にも向きます。</p>
+                <h3>試合中に意識したいポイント</h3>
+                <p>正面から押し切るだけでなく、相手の視野から一度外れて入り直すと競り合いを有利にできます。ボールを守った後に、近くの味方を使う出口も準備しておきましょう。</p>
+                <h3>さらに伸ばすためのポイント</h3>
+                <p>体幹やバランスに加えて、ワンタッチで味方へ落とす技術を磨くと、個人の強さをチームの連続攻撃へつなげられます。</p>
+            </div>
+            <a class="back-link" href="#type-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="type-card" id="tosho-forward">
+        <header class="type-card__header">
+            <span class="type-card__number">TYPE 04</span>
+            <h2>闘将フォワード</h2>
+            <p class="type-card__summary">前線で体を張り、迷いのないプレーと熱量で攻撃陣を引っ張るリーダー型です。得点を狙うだけでなく、競り合いやプレスを自分から始めることでチーム全体へ勢いを生みます。</p>
+            <div class="axis-tags"><span>攻める</span><span>直感</span><span>フィジカル守備</span><span>リーダー</span></div>
+        </header>
+        <div class="type-card__body">
+            <div class="detail-block">
+                <h3>プレーの特徴</h3>
+                <p>クロスへの飛び込み、相手CBとの競り合い、ボールを失った直後の追い込みなど、強度の高いプレーを率先します。仲間へ要求を伝え、苦しい時間でも攻撃の基準点になろうとします。</p>
+                <h3>主な強み</h3>
+                <ul><li>ゴール前での迫力と競り合い</li><li>前線守備を始める行動力</li><li>チームの気持ちを前へ向ける発信力</li></ul>
+            </div>
+            <div class="detail-block">
+                <h3>特徴を生かしやすいポジション・役割</h3>
+                <p>CFや2トップの一角など、前線の基準点となる役割で特徴が出やすいタイプです。状況によっては攻撃的MFとして二列目からゴール前へ入る形も考えられます。</p>
+                <h3>試合中に意識したいポイント</h3>
+                <p>熱くなる場面ほど、ファウルや無理な追い込みを避ける冷静さが必要です。味方が連動できる距離を見てプレスを始め、声かけで狙いを共有しましょう。</p>
+                <h3>さらに伸ばすためのポイント</h3>
+                <p>背負った状態からのターンと、左右両方向へのシュートを増やすと、相手に的を絞らせにくくなります。リーダーとして味方を励ます言葉も磨けます。</p>
+            </div>
+            <a class="back-link" href="#type-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="type-card" id="reisei-finisher">
+        <header class="type-card__header">
+            <span class="type-card__number">TYPE 05</span>
+            <h2>冷静フィニッシャー</h2>
+            <p class="type-card__summary">速さと技術を持ちながら、ゴール前では状況を見極めて最適な形を選ぶ得点型です。目立つ動きを続けるより、相手が見失う場所で待ち、決定的な瞬間に現れます。</p>
+            <div class="axis-tags"><span>攻める</span><span>冷静</span><span>スピード技術</span><span>自由</span></div>
+        </header>
+        <div class="type-card__body">
+            <div class="detail-block">
+                <h3>プレーの特徴</h3>
+                <p>相手GKやDFの位置を見てシュートコースを選び、必要ならもう一度運んで角度を作ります。ボールのないところではマークの外へ静かに移動し、パスを受ける直前にスピードを上げるのが特徴です。</p>
+                <h3>主な強み</h3>
+                <ul><li>ゴール前で慌てない判断</li><li>マークを外すタイミング</li><li>少ないタッチで完結させる技術</li></ul>
+            </div>
+            <div class="detail-block">
+                <h3>特徴を生かしやすいポジション・役割</h3>
+                <p>CF、WG、セカンドトップなど、ゴールに近い位置へ入り込める役割で長所を生かしやすいでしょう。攻撃的MFとして遅れてペナルティーエリアへ入る形も合います。</p>
+                <h3>試合中に意識したいポイント</h3>
+                <p>良い位置を探すあまりボールに関わる回数が減らないよう、攻撃の組み立てにも適度に顔を出しましょう。シュート前に一度ゴールを見る習慣が落ち着いた判断を助けます。</p>
+                <h3>さらに伸ばすためのポイント</h3>
+                <p>ワンタッチ、逆足、GKとの1対1など、異なる状況からのフィニッシュを反復すると、冷静さを実戦の得点へ結びつけやすくなります。</p>
+            </div>
+            <a class="back-link" href="#type-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="type-card" id="senjutsu-ace">
+        <header class="type-card__header">
+            <span class="type-card__number">TYPE 06</span>
+            <h2>戦術エース</h2>
+            <p class="type-card__summary">状況を冷静に読み、速さと技術を使って攻撃の狙いを形にする中心選手です。自分が決める場面と味方を生かす場面を整理し、前線全体を動かしながらゴールへ近づきます。</p>
+            <div class="axis-tags"><span>攻める</span><span>冷静</span><span>スピード技術</span><span>リーダー</span></div>
+        </header>
+        <div class="type-card__body">
+            <div class="detail-block">
+                <h3>プレーの特徴</h3>
+                <p>相手の守備位置を見て、幅を取る、内側へ入る、背後へ走るといった動きを選び分けます。ボールを持てばテンポを変え、周囲へ立ち位置や次の狙いを伝える傾向があります。</p>
+                <h3>主な強み</h3>
+                <ul><li>試合状況に合う攻撃手段を選ぶ判断</li><li>技術とスピードを使い分ける柔軟性</li><li>攻撃陣の配置を整えるリーダーシップ</li></ul>
+            </div>
+            <div class="detail-block">
+                <h3>特徴を生かしやすいポジション・役割</h3>
+                <p>攻撃的MF、WG、セカンドトップなど、前線を見渡しながら決定機にも関われる役割で特徴が出やすいタイプです。</p>
+                <h3>試合中に意識したいポイント</h3>
+                <p>正しい形を求めすぎると、思い切った勝負が遅れることがあります。相手が整っていない瞬間は、多少リスクがあっても速く攻め切る判断を持ちましょう。</p>
+                <h3>さらに伸ばすためのポイント</h3>
+                <p>試合映像で自分と味方の立ち位置を振り返り、どの動きが相手をずらしたか確認すると戦術理解が深まります。セットプレーの役割設計も強みを広げます。</p>
+            </div>
+            <a class="back-link" href="#type-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="type-card" id="jusensha-attacker">
+        <header class="type-card__header">
+            <span class="type-card__number">TYPE 07</span>
+            <h2>重戦車アタッカー</h2>
+            <p class="type-card__summary">体の強さを土台にしながら、相手の位置を見て落ち着いて前進する安定型のアタッカーです。勢いだけでぶつからず、ボールを守る角度や進むコースを選んで攻撃を継続します。</p>
+            <div class="axis-tags"><span>攻める</span><span>冷静</span><span>フィジカル守備</span><span>自由</span></div>
+        </header>
+        <div class="type-card__body">
+            <div class="detail-block">
+                <h3>プレーの特徴</h3>
+                <p>相手を背負って時間を作り、味方が上がればパス、自分に前を向く余地があれば運ぶといった判断をします。接触後も姿勢を保ち、攻撃の基準点としてボールを失いにくいのが特徴です。</p>
+                <h3>主な強み</h3>
+                <ul><li>相手を背負うボールキープ</li><li>接触の中でも崩れにくい安定感</li><li>味方の上がりを待てる落ち着き</li></ul>
+            </div>
+            <div class="detail-block">
+                <h3>特徴を生かしやすいポジション・役割</h3>
+                <p>CFや2トップの一角で、ロングボールの収め役や前線の起点を担うと長所が出やすいでしょう。サイドでボールを守りながら押し上げる役割にも生かせます。</p>
+                <h3>試合中に意識したいポイント</h3>
+                <p>ボールを持ちすぎず、味方へ落としてからゴール前へ入り直すと攻撃に厚みが出ます。接触を受ける前に周囲を確認し、次の出口を決めておきましょう。</p>
+                <h3>さらに伸ばすためのポイント</h3>
+                <p>ポストプレー後のターンやスルーパスを増やすと、守る相手に複数の選択肢を意識させられます。短い加速を鍛えることも突破力向上につながります。</p>
+            </div>
+            <a class="back-link" href="#type-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="type-card" id="shobushi-captain">
+        <header class="type-card__header">
+            <span class="type-card__number">TYPE 08</span>
+            <h2>勝負師キャプテン</h2>
+            <p class="type-card__summary">大事な場面ほど落ち着いて前へ出て、強さと責任感で攻撃を導く主将タイプです。試合の流れを読みながら、チームが苦しいときにボールを収めたり、ゴール前へ入ったりします。</p>
+            <div class="axis-tags"><span>攻める</span><span>冷静</span><span>フィジカル守備</span><span>リーダー</span></div>
+        </header>
+        <div class="type-card__body">
+            <div class="detail-block">
+                <h3>プレーの特徴</h3>
+                <p>時間帯や得点状況を踏まえ、急ぐべきか落ち着かせるべきかを選びます。競り合いを引き受け、セットプレーや終盤の攻撃では味方へ明確な狙いを伝えるのが特徴です。</p>
+                <h3>主な強み</h3>
+                <ul><li>プレッシャーのかかる場面での判断</li><li>攻撃の基準点になれる強さ</li><li>周囲を落ち着かせる統率力</li></ul>
+            </div>
+            <div class="detail-block">
+                <h3>特徴を生かしやすいポジション・役割</h3>
+                <p>CFや攻撃的MFなど、攻撃の中心で判断を任される役割に特徴を生かしやすいでしょう。チーム事情によっては中盤から前へ出る役割でも力を発揮できます。</p>
+                <h3>試合中に意識したいポイント</h3>
+                <p>責任を背負いすぎて自分だけで解決しようとせず、味方が得意な形を引き出す声かけも大切です。判定への反応より、次のプレーへの切り替えを優先しましょう。</p>
+                <h3>さらに伸ばすためのポイント</h3>
+                <p>終盤の時間の使い方、セットプレー、得点後の試合運びを学ぶと、勝負どころでの影響力が高まります。両足でボールを収める練習も有効です。</p>
+            </div>
+            <a class="back-link" href="#type-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="type-card" id="chance-maker">
+        <header class="type-card__header">
+            <span class="type-card__number">TYPE 09</span>
+            <h2>自由なチャンスメーカー</h2>
+            <p class="type-card__summary">自由な発想と技術で相手の予想を外し、味方が決定的なプレーをしやすい状況を作るサポート型です。決まった形に縛られず、空いた場所へ移動して攻撃の接点を増やします。</p>
+            <div class="axis-tags"><span>支える</span><span>直感</span><span>スピード技術</span><span>自由</span></div>
+        </header>
+        <div class="type-card__body">
+            <div class="detail-block">
+                <h3>プレーの特徴</h3>
+                <p>狭い場所でのワンタッチ、意表を突くパス、ポジションを入れ替える動きなどで守備を迷わせます。自分が最後に決めるより、味方が前向きで受けられる瞬間を直感的に見つけます。</p>
+                <h3>主な強み</h3>
+                <ul><li>相手の予測を外すアイデア</li><li>複数の場所へ顔を出す機動力</li><li>味方の良さを引き出すラストプレー</li></ul>
+            </div>
+            <div class="detail-block">
+                <h3>特徴を生かしやすいポジション・役割</h3>
+                <p>攻撃的MF、WG、サイドMFなど、ライン間やサイドで自由にボールへ関われる役割で特徴が出やすいタイプです。</p>
+                <h3>試合中に意識したいポイント</h3>
+                <p>自由に動くときほど、空けた場所を誰が使うかを味方と共有しましょう。難しいパスだけでなく、安全につないで次のチャンスを待つ選択が攻撃のリズムを整えます。</p>
+                <h3>さらに伸ばすためのポイント</h3>
+                <p>ボールを受ける前の首振りと、逆サイドを見る習慣を高めると、ひらめきの選択肢が広がります。ゴールへ向かうプレーも加えると相手はパスだけに絞れません。</p>
+            </div>
+            <a class="back-link" href="#type-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="type-card" id="hirameki-shireito">
+        <header class="type-card__header">
+            <span class="type-card__number">TYPE 10</span>
+            <h2>ひらめき司令塔</h2>
+            <p class="type-card__summary">感覚的なパスと素早い判断で味方を動かし、創造性と発信力を兼ね備えた司令塔です。見えたチャンスをすぐ仲間へ伝え、攻撃の方向を示します。</p>
+            <div class="axis-tags"><span>支える</span><span>直感</span><span>スピード技術</span><span>リーダー</span></div>
+        </header>
+        <div class="type-card__body">
+            <div class="detail-block">
+                <h3>プレーの特徴</h3>
+                <p>相手が閉じる前に縦パスを入れたり、味方の動き出しへテンポよくボールを合わせたりします。ボールを持っていないときも、手や声で次の受け手と進む方向を示す傾向があります。</p>
+                <h3>主な強み</h3>
+                <ul><li>チャンスを早く見つける感覚</li><li>味方の動きに合わせるパス技術</li><li>攻撃の狙いを共有する発信力</li></ul>
+            </div>
+            <div class="detail-block">
+                <h3>特徴を生かしやすいポジション・役割</h3>
+                <p>攻撃的MFや中央MFなど、多くの味方と関わりながら前方を見られる場所で長所を発揮しやすいでしょう。サイドから内側へ入る役割にも生かせます。</p>
+                <h3>試合中に意識したいポイント</h3>
+                <p>ひらめいたプレーが味方に伝わらないときは、プレー前の合図やパスの強さを調整しましょう。失敗後も同じ難度のパスを急がず、いったんリズムを整えることが大切です。</p>
+                <h3>さらに伸ばすためのポイント</h3>
+                <p>複数の角度から正確に蹴る技術と、プレー前に両肩越しを確認する習慣を磨くと、創造的な判断を再現しやすくなります。</p>
+            </div>
+            <a class="back-link" href="#type-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="type-card" id="hard-worker">
+        <header class="type-card__header">
+            <span class="type-card__number">TYPE 11</span>
+            <h2>献身的ハードワーカー</h2>
+            <p class="type-card__summary">運動量と粘り強さで味方の足りない場所を埋め、目立たない局面でもチームを前へ進める支え役です。危険を感じたら素早く戻り、ボールがこぼれれば迷わず反応します。</p>
+            <div class="axis-tags"><span>支える</span><span>直感</span><span>フィジカル守備</span><span>自由</span></div>
+        </header>
+        <div class="type-card__body">
+            <div class="detail-block">
+                <h3>プレーの特徴</h3>
+                <p>プレス、カバー、セカンドボール回収、攻撃参加を連続して行い、試合の流れに応じて必要な場所へ移動します。役割の境界を越えて動けるため、味方のミスをすぐ補いやすいタイプです。</p>
+                <h3>主な強み</h3>
+                <ul><li>攻守をつなぐ豊富な運動量</li><li>こぼれ球や切り替えへの反応</li><li>味方を助けるカバー範囲の広さ</li></ul>
+            </div>
+            <div class="detail-block">
+                <h3>特徴を生かしやすいポジション・役割</h3>
+                <p>中央MF、守備的MF、WB、SBなど、攻守両面で移動とサポートが求められる役割で特徴が出やすいでしょう。</p>
+                <h3>試合中に意識したいポイント</h3>
+                <p>すべてを助けようとして本来の場所を空けないよう、味方との優先順位を決めましょう。走る前に相手と味方の配置を確認すれば、少ない移動で効果的に支えられます。</p>
+                <h3>さらに伸ばすためのポイント</h3>
+                <p>持久力だけでなく、ダッシュを繰り返す力と回復の質を高めましょう。奪った直後の最初のパスを安定させると、献身的な守備が攻撃の出発点になります。</p>
+            </div>
+            <a class="back-link" href="#type-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="type-card" id="nekketsu-leader">
+        <header class="type-card__header">
+            <span class="type-card__number">TYPE 12</span>
+            <h2>熱血チームリーダー</h2>
+            <p class="type-card__summary">体を張るプレーと熱い声かけで仲間を鼓舞し、チームのために厳しい局面へ飛び込むリーダーです。直感的に危険を察知し、誰より早く行動する姿勢が周囲へ伝わります。</p>
+            <div class="axis-tags"><span>支える</span><span>直感</span><span>フィジカル守備</span><span>リーダー</span></div>
+        </header>
+        <div class="type-card__body">
+            <div class="detail-block">
+                <h3>プレーの特徴</h3>
+                <p>球際へ強く寄せ、味方が抜かれた場所をカバーし、ピンチでも声を止めません。守るだけでなく、奪った後にチームを押し上げる合図を出して流れを変えます。</p>
+                <h3>主な強み</h3>
+                <ul><li>球際や競り合いで示す闘争心</li><li>仲間を励ます継続的な声かけ</li><li>ピンチへ素早く反応する責任感</li></ul>
+            </div>
+            <div class="detail-block">
+                <h3>特徴を生かしやすいポジション・役割</h3>
+                <p>中央MF、守備的MF、CBなど、周囲との距離を保ちながら守備の強度を上げる役割で長所が出やすいタイプです。</p>
+                <h3>試合中に意識したいポイント</h3>
+                <p>強く行く場面と遅らせる場面を分け、味方が戻る時間を作る守備も使いましょう。声かけは気持ちだけでなく、「右を切る」「背後を見る」など具体的にします。</p>
+                <h3>さらに伸ばすためのポイント</h3>
+                <p>守備の姿勢や間合いを学び、熱量を正確なボール奪取へつなげましょう。感情が高まったときに一呼吸置く習慣も、安定したリーダーシップに役立ちます。</p>
+            </div>
+            <a class="back-link" href="#type-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="type-card" id="gikouha-balancer">
+        <header class="type-card__header">
+            <span class="type-card__number">TYPE 13</span>
+            <h2>技巧派バランサー</h2>
+            <p class="type-card__summary">技術と冷静な判断で攻守のつながりを整え、必要な場所へ柔軟に動く調整役です。自分が目立つことより、チームがスムーズに前進できる立ち位置とプレーを選びます。</p>
+            <div class="axis-tags"><span>支える</span><span>冷静</span><span>スピード技術</span><span>自由</span></div>
+        </header>
+        <div class="type-card__body">
+            <div class="detail-block">
+                <h3>プレーの特徴</h3>
+                <p>味方からボールを引き出し、少ないタッチで次へつなぎながら、攻撃後は空いた場所を埋めます。固定された位置にこだわらず、チームのバランスが崩れない範囲で自由に関わります。</p>
+                <h3>主な強み</h3>
+                <ul><li>ボールを失いにくい基礎技術</li><li>味方同士をつなぐ立ち位置</li><li>攻守の偏りを整える状況判断</li></ul>
+            </div>
+            <div class="detail-block">
+                <h3>特徴を生かしやすいポジション・役割</h3>
+                <p>中央MF、サイドMF、SBなど、周囲と連係しながら複数の仕事を担う役割で特徴を生かしやすいでしょう。</p>
+                <h3>試合中に意識したいポイント</h3>
+                <p>安全につなぐだけでなく、相手を一列越えるパスや前への運びも選択肢に入れましょう。支える位置が低くなりすぎないよう、攻撃時はゴールへ近づく動きも必要です。</p>
+                <h3>さらに伸ばすためのポイント</h3>
+                <p>両足でのコントロールとパス、体の向きを変えるターンを磨くと、どの位置でも調整役を担いやすくなります。味方への短い情報共有も効果的です。</p>
+            </div>
+            <a class="back-link" href="#type-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="type-card" id="game-maker">
+        <header class="type-card__header">
+            <span class="type-card__number">TYPE 14</span>
+            <h2>冷静なゲームメーカー</h2>
+            <p class="type-card__summary">広い視野と落ち着いたパスで試合のテンポを整え、周囲を動かしながらチーム全体を組み立てる司令塔です。急ぐ場面と保持する場面を見分け、攻撃の道筋を作ります。</p>
+            <div class="axis-tags"><span>支える</span><span>冷静</span><span>スピード技術</span><span>リーダー</span></div>
+        </header>
+        <div class="type-card__body">
+            <div class="detail-block">
+                <h3>プレーの特徴</h3>
+                <p>ボールを受ける前に周囲を確認し、相手の守備が薄い方向へ展開します。味方へ立ち位置を伝えながら、短いパスと長いパスを使い分けてチームのリズムを管理します。</p>
+                <h3>主な強み</h3>
+                <ul><li>全体を見渡す視野と予測</li><li>攻撃方向とテンポを選ぶ判断</li><li>味方を適切な位置へ導く統率力</li></ul>
+            </div>
+            <div class="detail-block">
+                <h3>特徴を生かしやすいポジション・役割</h3>
+                <p>中央MFや守備的MFなど、多くの選手とボールに関われる中央の役割で特徴が出やすいでしょう。攻撃的MFとして最後のパスを担う形もあります。</p>
+                <h3>試合中に意識したいポイント</h3>
+                <p>ボールを受ける位置が下がりすぎると、ゴールから遠くなることがあります。相手の中盤とFWの間など、前を向ける場所へ移動する勇気も持ちましょう。</p>
+                <h3>さらに伸ばすためのポイント</h3>
+                <p>プレッシャー下での半身の受け方と、逆サイドへの長いパスを磨くと展開力が増します。試合映像から、味方が受けやすかった合図やタイミングも振り返りましょう。</p>
+            </div>
+            <a class="back-link" href="#type-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="type-card" id="shubi-shokunin">
+        <header class="type-card__header">
+            <span class="type-card__number">TYPE 15</span>
+            <h2>守備職人</h2>
+            <p class="type-card__summary">冷静な読みと対人の強さで危険を消し、派手さより確実性を大切にする守備の専門家です。相手が動く前にコースを予測し、無理に飛び込まず有利な場所へ追い込みます。</p>
+            <div class="axis-tags"><span>支える</span><span>冷静</span><span>フィジカル守備</span><span>自由</span></div>
+        </header>
+        <div class="type-card__body">
+            <div class="detail-block">
+                <h3>プレーの特徴</h3>
+                <p>マーク、カバー、インターセプト、競り合いを状況に合わせて選び、ピンチを大きくなる前に処理します。奪った後は難しいプレーを急がず、味方が次へ進みやすい場所へつなぎます。</p>
+                <h3>主な強み</h3>
+                <ul><li>相手の狙いを読む予測力</li><li>間合いを保った粘り強い対人守備</li><li>危険な場所を先に埋めるカバー</li></ul>
+            </div>
+            <div class="detail-block">
+                <h3>特徴を生かしやすいポジション・役割</h3>
+                <p>CB、守備的MF、SBなど、相手の攻撃を読みながら味方を支える守備的な役割で特徴を発揮しやすいでしょう。</p>
+                <h3>試合中に意識したいポイント</h3>
+                <p>自分だけで奪い切ろうとせず、味方が戻る時間を作ることも守備の成功です。ボールだけでなく、相手の次の受け手と背後のスペースを同時に確認しましょう。</p>
+                <h3>さらに伸ばすためのポイント</h3>
+                <p>奪った直後に前を向く技術と、縦パスの精度を磨くと、守備から攻撃へ価値を広げられます。味方と守備ラインを合わせる声かけも加えましょう。</p>
+            </div>
+            <a class="back-link" href="#type-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="type-card" id="teppeki-tosotsusha">
+        <header class="type-card__header">
+            <span class="type-card__number">TYPE 16</span>
+            <h2>鉄壁の統率者</h2>
+            <p class="type-card__summary">守備の安定感と冷静な指示で後方をまとめ、チーム全体が守りやすい形を作るリーダーです。自分が止めるだけでなく、味方の立ち位置を整えて危険そのものを減らします。</p>
+            <div class="axis-tags"><span>支える</span><span>冷静</span><span>フィジカル守備</span><span>リーダー</span></div>
+        </header>
+        <div class="type-card__body">
+            <div class="detail-block">
+                <h3>プレーの特徴</h3>
+                <p>相手の人数や動きを見て守備ラインを上げ下げし、マークの受け渡しやカバーの場所を指示します。競り合いでは強く、ボールを奪った後は安全な出口を選んでチームを落ち着かせます。</p>
+                <h3>主な強み</h3>
+                <ul><li>後方全体を見渡す状況把握</li><li>守備組織をそろえる具体的な指示</li><li>競り合いとピンチでの安定感</li></ul>
+            </div>
+            <div class="detail-block">
+                <h3>特徴を生かしやすいポジション・役割</h3>
+                <p>CBや守備的MFなど、後方から全体を見て守備を調整できる役割で長所を生かしやすいタイプです。チームによっては最後尾に近い位置から組み立てにも関われます。</p>
+                <h3>試合中に意識したいポイント</h3>
+                <p>指示を出すだけでなく、味方からの情報も受け取りましょう。ラインを上げる場面では全員が準備できているか確認し、無理なオフサイド狙いよりゴールを守ることを優先します。</p>
+                <h3>さらに伸ばすためのポイント</h3>
+                <p>ロングパスや持ち運びを磨くと、相手のプレスを越えて攻撃の起点にもなれます。試合後に守備陣で距離や声の内容を振り返ると統率の質が高まります。</p>
+            </div>
+            <a class="back-link" href="#type-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <section class="closing-card">
+        <h2>プレースタイルは一つに固定されるものではありません</h2>
+        <p>
+            同じ選手でも、ポジション、チームの戦い方、対戦相手、成長によって選ぶプレーは変わります。
+            診断結果に近い部分を自分の長所として確認しながら、ほかのタイプに共感する部分も新しい選択肢として取り入れてみてください。
+        </p>
+        <div class="related-links">
+            <a class="button" href="abilities.html">6つの能力について</a>
+            <a class="button" href="result-guide.html">診断結果の見方</a>
+            <a class="button button--secondary" href="index.html">サッカー診断をしてみる</a>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <nav class="footer-links" aria-label="フッターリンク">
+            <a href="index.html">トップページ</a>
+            <a href="abilities.html">6つの能力について</a>
+            <a href="result-guide.html">診断結果の見方</a>
+            <a href="privacy.html">プライバシーポリシー</a>
+            <a href="disclaimer.html">免責事項</a>
+            <a href="operator.html">運営者情報</a>
+            <a href="contact.html">お問い合わせ</a>
+        </nav>
+        <p>© サッカー診断サイト</p>
+    </footer>
+
+</main>
+
+</body>
+</html>
