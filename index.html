@@ -52,7 +52,7 @@ body{
 .home-hero__lead{font-size:clamp(15px,3vw,22px);line-height:1.85;margin:0 auto;max-width:680px;font-weight:700;}
 .home-action-area{position:relative;margin-top:-1px;padding:34px 28px 42px;background:linear-gradient(180deg,#07111f 0%,#08182b 48%,#020617 100%);}
 .home-action-area::before{content:"";position:absolute;left:0;right:0;top:-80px;height:80px;background:linear-gradient(180deg,rgba(7,17,31,0),#07111f);pointer-events:none;}
-.home-action-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;width:100%;max-width:none;margin:0;}
+.home-action-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;width:100%;max-width:none;margin:0;}
 .home-action-btn{--card-a:#2563eb;--card-b:#0ea5e9;position:relative;display:flex!important;flex-direction:column;align-items:flex-start;justify-content:flex-start;width:100%;min-height:260px;max-width:none;margin:0;padding:22px 18px 20px;border-radius:22px;border:1px solid rgba(255,255,255,0.18);background:linear-gradient(180deg,rgba(15,23,42,0.74),rgba(15,23,42,0.5))!important;color:white;text-align:left;box-shadow:0 16px 34px rgba(0,0,0,0.28);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);overflow:hidden;}
 .home-action-btn::before{content:"";position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--card-a),var(--card-b));}
 .home-action-btn::after{content:"";position:absolute;right:-34px;top:-34px;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.18),transparent 66%);pointer-events:none;}
@@ -557,11 +557,11 @@ canvas{max-width:100%;}
             <div class="start-hero-panel">
             <p class="start-screen__icon">⚽</p>
                 <h1 class="start-title">あなたのサッカープレースタイル診断</h1>
-                <p class="start-description">16タイプから自分のプレースタイルを見つけよう</p>
+                <p class="start-description">14タイプから自分のプレースタイルを見つけよう</p>
             </div>
             <div id="questionStatus"></div>
-            <div class="type-showcase" aria-label="16タイプ一覧">
-                <h2 class="type-showcase__title">16タイプ一覧</h2>
+            <div class="type-showcase" aria-label="14タイプ一覧">
+                <h2 class="type-showcase__title">14タイプ一覧</h2>
                 <div id="homeTypeGrid" class="type-grid"></div>
                 <div id="homeTypeDetail" class="type-detail-card"></div>
             </div>
@@ -626,13 +626,6 @@ canvas{max-width:100%;}
             </div>
             <div class="home-action-area">
                 <div class="home-action-grid">
-                    <button type="button" class="home-action-btn home-action-btn--primary" onclick="showAllDiagnosisComingSoon()">
-                        <span class="home-action-card__badge">おすすめ</span>
-                        <span class="home-action-card__icon">★</span>
-                        <span class="home-action-card__title">すべて診断する</span>
-                        <span class="home-action-card__subtitle">能力・プレースタイルをまとめて診断</span>
-                        <span class="home-action-card__description">あなたの能力値とプレースタイルを総合的に分析します。迷ったらまずはこれがおすすめ。</span>
-                    </button>
                     <button type="button" class="home-action-btn home-action-btn--ability" onclick="showAbilityMeasurementTop()">
                         <span class="home-action-card__icon">◆</span>
                         <span class="home-action-card__title">能力診断</span>
@@ -1475,10 +1468,6 @@ canvas{max-width:100%;}
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    function showAllDiagnosisComingSoon() {
-        showSimplePage("home", "すべて診断する", "能力診断・プレースタイル診断をまとめて行う機能は準備中です。");
-    }
-
     function showAbilityMeasurementTop() {
         diagnosisMode = "ability";
         if (!abilityMeasurementData) {
@@ -1502,12 +1491,6 @@ canvas{max-width:100%;}
                 accent: typeAccents[index % typeAccents.length]
             };
         });
-        homeTypeCards = [
-            ...homeTypeCards,
-            createComingSoonCard(homeTypeCards.length),
-            createComingSoonCard(homeTypeCards.length + 1)
-        ];
-
         grid.innerHTML = homeTypeCards.map((type, index) => `
             <button type="button" class="type-card" style="--accent:${escapeAttribute(type.accent)}" onclick="showHomeTypeDetail(${index})" aria-label="${escapeAttribute(type.typeName)}の詳細を見る">
                 ${type.imageSrc ? `<img class="type-card__image" src="${escapeAttribute(type.imageSrc)}" data-image-path="${escapeAttribute(type.imagePath)}" alt="${escapeAttribute(type.typeName)}" onerror="handleHomeTypeImageError(this)">` : ""}
@@ -1522,38 +1505,12 @@ canvas{max-width:100%;}
         return summary.length > 46 ? `${summary.slice(0, 46)}...` : summary;
     }
 
-    function createComingSoonCard(index) {
-        const imagePath = "images/comingsoon.jpeg";
-        return {
-            typeName: "Coming soon...",
-            key: "",
-            imagePath,
-            imageSrc: imagePath,
-            description: "新しいプレースタイルを追加予定。",
-            accent: typeAccents[index % typeAccents.length],
-            isComingSoon: true
-        };
-    }
-
     function showHomeTypeDetail(index) {
         const detail = $("homeTypeDetail");
         const type = homeTypeCards[index];
         if (!detail || !type) return;
 
         detail.classList.add("is-open");
-        if (type.isComingSoon) {
-            detail.innerHTML = `
-                ${type.imageSrc ? `<img class="type-detail-card__image" src="${escapeAttribute(type.imageSrc)}" data-image-path="${escapeAttribute(type.imagePath)}" alt="${escapeAttribute(type.typeName)}" onerror="handleHomeTypeImageError(this)">` : ""}
-                <div class="type-detail-card__body">
-                    <h3>${escapeHtml(type.typeName)}</h3>
-                    <p class="type-detail-card__description">新しいプレースタイルを追加予定です。</p>
-                    <button type="button" class="type-detail-card__close" onclick="closeHomeTypeDetail()">閉じる</button>
-                </div>
-            `;
-            detail.scrollIntoView({ behavior: "smooth", block: "nearest" });
-            return;
-        }
-
         detail.innerHTML = `
             ${type.imageSrc ? `<img class="type-detail-card__image" src="${escapeAttribute(type.imageSrc)}" data-image-path="${escapeAttribute(type.imagePath)}" alt="${escapeAttribute(type.typeName)}" onerror="handleHomeTypeImageError(this)">` : ""}
             <div class="type-detail-card__body">
@@ -2775,7 +2732,6 @@ canvas{max-width:100%;}
     window.showHomeView = showHomeView;
     window.showPlaystyleTop = showPlaystyleTop;
     window.showAbilityMeasurementTop = showAbilityMeasurementTop;
-    window.showAllDiagnosisComingSoon = showAllDiagnosisComingSoon;
     window.scrollToAbilityFirstQuestion = scrollToAbilityFirstQuestion;
     window.selectAbilityPosition = selectAbilityPosition;
     window.submitAbilityPositionStep = submitAbilityPositionStep;
@@ -2814,3 +2770,4 @@ canvas{max-width:100%;}
 
 </body>
 </html>
+
