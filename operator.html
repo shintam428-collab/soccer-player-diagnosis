@@ -16,6 +16,14 @@ body{font-family:Arial,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:
 .info-row{display:grid;grid-template-columns:180px 1fr;gap:14px;padding:16px;border-radius:16px;background:#f8fafc;border:1px solid #e2e8f0;}
 .info-row dt{font-weight:900;color:#1e3a8a;}
 .info-row dd{margin:0;font-weight:700;color:#334155;}
+.operator-about{margin-top:28px;padding:24px 22px;border-radius:18px;background:#f8fafc;border:1px solid #e2e8f0;}
+.operator-about h2,.operator-contact h2{margin:0 0 12px;color:#1e3a8a;font-size:22px;line-height:1.5;}
+.operator-about p,.operator-contact p{margin:0;color:#475569;font-weight:600;}
+.operator-about p + p{margin-top:12px;}
+.operator-contact{margin-top:22px;padding-top:22px;border-top:1px solid #e2e8f0;}
+.operator-contact p + p{margin-top:10px;}
+.operator-contact a{color:#2563eb;font-weight:900;text-decoration:none;}
+.operator-contact a:hover{text-decoration:underline;}
 .legal-footer{margin-top:26px;text-align:center;color:#64748b;font-size:13px;font-weight:700;}
 .legal-footer__links{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:12px;}
 .legal-footer a{color:#2563eb;font-weight:900;text-decoration:none;}
@@ -43,6 +51,19 @@ body{font-family:Arial,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:
                 <dd>サッカーの能力やプレースタイルを診断できるサービスの提供</dd>
             </div>
         </dl>
+
+        <section class="operator-about" aria-labelledby="operator-about-title">
+            <h2 id="operator-about-title">このサイトについて</h2>
+            <p>「サッカー診断サイト」は、サッカーをしている人が自分のプレーの特徴や、得意だと感じているプレーを振り返るきっかけを提供することを目的に運営しています。</p>
+            <p>能力診断ではOFE・DRI・PHY・DEF・SPD・PASの6つの能力を数値化し、プレースタイル診断では質問への回答からプレー傾向を確認できるようにしています。</p>
+            <p>診断結果は、実際の試合での競技力や将来性、選手としての公式な評価を保証するものではありません。自分のプレーを振り返り、得意なことや今後伸ばしたい部分を整理するための参考情報としてご利用ください。</p>
+        </section>
+
+        <section class="operator-contact" aria-labelledby="operator-contact-title">
+            <h2 id="operator-contact-title">お問い合わせについて</h2>
+            <p>サイトに関するご質問・ご意見・不具合のご連絡は、お問い合わせページより受け付けています。</p>
+            <p><a href="contact.html">お問い合わせページはこちら</a></p>
+        </section>
     </article>
 
     <footer class="legal-footer">
@@ -57,3 +78,4 @@ body{font-family:Arial,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:
 </main>
 </body>
 </html>
+
