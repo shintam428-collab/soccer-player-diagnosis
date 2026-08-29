@@ -414,6 +414,41 @@ canvas{max-width:100%;}
 .type-detail-card__key{margin:0 0 10px;color:#2563eb;font-weight:bold;line-height:1.6;}
 .type-detail-card__description{margin:0;color:#334155;line-height:1.8;}
 .type-detail-card__close{margin-top:14px;padding:10px 18px;border-radius:10px;background:#334155!important;color:#fff;font-size:14px;width:auto;}
+.home-info{padding:8px 28px 48px;background:#020617;color:#0f172a;}
+.home-info__inner{display:grid;gap:24px;max-width:1040px;margin:0 auto;}
+.home-info__section{padding:34px 36px;border:1px solid rgba(191,219,254,0.8);border-radius:24px;background:linear-gradient(135deg,#ffffff 0%,#eff6ff 100%);box-shadow:0 16px 36px rgba(0,0,0,0.22);text-align:left;}
+.home-info__section--notice{border-color:#93c5fd;background:linear-gradient(135deg,#dbeafe 0%,#f8fafc 100%);}
+.home-info__heading{margin:0 0 16px;color:#1d4ed8;font-size:clamp(24px,4vw,32px);font-weight:900;line-height:1.4;}
+.home-info__lead,.home-info__section>p{margin:0;color:#334155;font-size:16px;font-weight:600;line-height:1.95;}
+.home-info__section>p+p{margin-top:14px;}
+.home-info__link-line{margin-top:20px!important;}
+.home-info__link{color:#1d4ed8;font-weight:900;text-underline-offset:3px;}
+.home-info__link:hover{color:#1e40af;}
+.home-ability-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:24px;}
+.home-ability-card{padding:20px;border:1px solid #dbeafe;border-radius:18px;background:#fff;box-shadow:0 8px 18px rgba(15,23,42,0.08);}
+.home-ability-card h3{margin:0 0 8px;color:#1d4ed8;font-size:21px;font-weight:900;line-height:1.35;}
+.home-ability-card p{margin:0;color:#475569;font-size:14px;font-weight:600;line-height:1.8;}
+.home-rank-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:24px;}
+.home-rank-card{--rank-color:#cbd5e1;padding:14px 10px;border:1px solid #dbeafe;border-top:4px solid var(--rank-color);border-radius:14px;background:#fff;text-align:center;}
+.home-rank-card--black{--rank-color:#312e81;}
+.home-rank-card--gold{--rank-color:#d4a72c;}
+.home-rank-card--silver{--rank-color:#94a3b8;}
+.home-rank-card--bronze{--rank-color:#b86f3d;}
+.home-rank-card--white{--rank-color:#e2e8f0;}
+.home-rank-card strong{display:block;margin-bottom:4px;color:#0f172a;font-size:15px;font-weight:900;}
+.home-rank-card span{display:block;color:#64748b;font-size:13px;font-weight:800;}
+.home-info__caution{margin-top:20px!important;padding:16px 18px;border-left:4px solid #2563eb;border-radius:0 12px 12px 0;background:#dbeafe;color:#1e3a8a!important;font-weight:800!important;}
+.home-result-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:22px;}
+.home-result-item{padding:20px;border-radius:18px;background:#fff;border:1px solid #dbeafe;}
+.home-result-item h3{margin:0 0 8px;color:#1e3a8a;font-size:18px;font-weight:900;line-height:1.5;}
+.home-result-item p{margin:0;color:#475569;font-size:14px;font-weight:600;line-height:1.8;}
+.home-faq{display:grid;gap:10px;margin-top:20px;}
+.home-faq__item{border:1px solid #dbeafe;border-radius:14px;background:#fff;overflow:hidden;}
+.home-faq__question{position:relative;padding:17px 48px 17px 18px;color:#1e3a8a;font-size:16px;font-weight:900;line-height:1.65;cursor:pointer;list-style:none;}
+.home-faq__question::-webkit-details-marker{display:none;}
+.home-faq__question::after{content:"＋";position:absolute;right:18px;top:50%;transform:translateY(-50%);color:#2563eb;font-size:22px;line-height:1;}
+.home-faq__item[open] .home-faq__question::after{content:"－";}
+.home-faq__answer{margin:0;padding:0 18px 18px;color:#475569;font-size:14px;font-weight:600;line-height:1.8;}
 .abilities-guide{padding:0 28px 42px;background:#020617;}
 .abilities-guide__grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;max-width:1040px;margin:0 auto;}
 .abilities-guide__card{display:flex;flex-direction:column;max-width:none;margin:0;padding:32px 26px;border:1px solid #bfdbfe;border-radius:24px;background:linear-gradient(135deg,#ffffff 0%,#eff6ff 100%);box-shadow:0 16px 36px rgba(15,23,42,0.22);text-align:center;}
@@ -427,6 +462,9 @@ canvas{max-width:100%;}
 .site-footer a{color:#2563eb;text-decoration:none;font-weight:900;}
 .site-footer a:hover{text-decoration:underline;}
 @media(max-width:900px){
+    .home-ability-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .home-rank-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
+    .home-result-grid{grid-template-columns:1fr;}
     .abilities-guide__grid{grid-template-columns:repeat(2,minmax(0,1fr));}
 }
 @media(max-width:600px){
@@ -445,6 +483,22 @@ canvas{max-width:100%;}
     .home-action-area{padding:26px 14px 32px;}
     .home-action-grid{width:100%;max-width:none;grid-template-columns:1fr;gap:14px;}
     .home-action-btn{min-height:auto;padding:20px 18px;border-radius:18px;}
+    .home-info{padding:0 14px 32px;}
+    .home-info__inner{gap:16px;}
+    .home-info__section{padding:24px 18px;border-radius:20px;}
+    .home-info__heading{font-size:23px;}
+    .home-info__lead,.home-info__section>p{font-size:14px;line-height:1.85;}
+    .home-ability-grid{grid-template-columns:1fr;gap:10px;margin-top:18px;}
+    .home-ability-card{padding:17px;border-radius:15px;}
+    .home-ability-card h3{font-size:19px;}
+    .home-rank-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:18px;}
+    .home-rank-card{padding:12px 8px;}
+    .home-result-grid{gap:10px;margin-top:18px;}
+    .home-result-item{padding:17px;border-radius:15px;}
+    .home-faq__question{padding:15px 44px 15px 15px;font-size:14px;}
+    .home-faq__question::after{right:15px;}
+    .home-faq__answer{padding:0 15px 16px;font-size:13px;}
+    .home-info__caution{padding:14px 15px;}
     .abilities-guide{padding:0 14px 32px;}
     .abilities-guide__grid{grid-template-columns:1fr;gap:14px;}
     .abilities-guide__card{padding:26px 18px;border-radius:20px;}
@@ -638,6 +692,111 @@ canvas{max-width:100%;}
                         <span class="home-action-card__subtitle">あなたの選手タイプを判定</span>
                         <span class="home-action-card__description">王様、スピードスター、守備職人など、あなたに近いプレースタイルタイプを診断します。</span>
                     </button>
+                </div>
+            </div>
+            <div class="home-info">
+                <div class="home-info__inner">
+                    <section class="home-info__section" aria-labelledby="home-about-title">
+                        <h2 id="home-about-title" class="home-info__heading">サッカースタイル診断でできること</h2>
+                        <p>「サッカースタイル診断」は、普段サッカーをしている人が、自分のプレーの特徴を振り返るためのサイトです。能力診断では、ポジションやプレースタイル、質問への回答などをもとに、OFE・DRI・PHY・DEF・SPD・PASの6項目を数値で表示します。</p>
+                        <p>プレースタイル診断では、質問への回答から、どのようなプレーを好む傾向があるかを確認できます。結果は他人との優劣を決めるものではありません。自分が得意だと感じているプレーや、これから伸ばしたい能力を考えるきっかけとして活用してください。</p>
+                    </section>
+
+                    <section class="home-info__section" aria-labelledby="home-abilities-title">
+                        <h2 id="home-abilities-title" class="home-info__heading">能力診断で見る6つの能力</h2>
+                        <p class="home-info__lead">能力診断では、プレーの特徴を6つの項目に分けて表示します。それぞれ異なる特徴を表しているため、総合値だけでなく6項目のバランスを見ることが大切です。</p>
+                        <div class="home-ability-grid">
+                            <article class="home-ability-card">
+                                <h3>OFE</h3>
+                                <p>攻撃への関わりを表す項目です。ゴール前への入り方や攻撃時の動きなど、得点につながるプレーへの関わりを確認するための指標です。</p>
+                            </article>
+                            <article class="home-ability-card">
+                                <h3>DRI</h3>
+                                <p>ボールを持って前進するプレーの特徴を表します。相手をかわす動きや、ボールを運んで局面を前へ進めるプレーを考えるための項目です。</p>
+                            </article>
+                            <article class="home-ability-card">
+                                <h3>PHY</h3>
+                                <p>フィジカル面の特徴を表します。相手との競り合いやボールを守る場面など、身体を使うプレーを考えるための項目です。</p>
+                            </article>
+                            <article class="home-ability-card">
+                                <h3>DEF</h3>
+                                <p>守備への関わりを表します。相手への対応、ボールを奪う意識、危険な場所を守るプレーなどを考えるための項目です。</p>
+                            </article>
+                            <article class="home-ability-card">
+                                <h3>SPD</h3>
+                                <p>スピードを生かすプレーの特徴を表します。走る速さに加え、スペースへの飛び出しや次のプレーへ素早く移る動きも含みます。</p>
+                            </article>
+                            <article class="home-ability-card">
+                                <h3>PAS</h3>
+                                <p>パスを使って味方と連携するプレーの特徴を表します。ボールをつなぐことや、状況に合わせてパスを選ぶプレーを考えるための項目です。</p>
+                            </article>
+                        </div>
+                        <p class="home-info__link-line">さらに詳しい説明は「<a class="home-info__link" href="abilities.html">6つの能力について</a>」で確認できます。</p>
+                    </section>
+
+                    <section class="home-info__section" aria-labelledby="home-rank-title">
+                        <h2 id="home-rank-title" class="home-info__heading">総合値とランクの見方</h2>
+                        <p>能力診断の結果では、6つの能力に加えて総合値を表示します。総合値は診断結果をひと目で確認するための目安ですが、サッカーではポジションやプレースタイルによって求められる能力の組み合わせが異なります。</p>
+                        <p>総合値だけを見るのではなく、レーダーチャートの形や、どの能力が高く、どの能力に伸びしろがあるかも確認してみてください。</p>
+                        <div class="home-rank-grid" aria-label="総合値によるランク一覧">
+                            <div class="home-rank-card home-rank-card--black"><strong>85以上</strong><span>ブラック</span></div>
+                            <div class="home-rank-card home-rank-card--gold"><strong>80～84</strong><span>ゴールド</span></div>
+                            <div class="home-rank-card home-rank-card--silver"><strong>70～79</strong><span>シルバー</span></div>
+                            <div class="home-rank-card home-rank-card--bronze"><strong>60～69</strong><span>ブロンズ</span></div>
+                            <div class="home-rank-card home-rank-card--white"><strong>59以下</strong><span>ホワイト</span></div>
+                        </div>
+                        <p class="home-info__caution">このランクは当サイトの診断結果を見やすくするための独自の区分です。実際の競技力や選手としての評価を保証するものではありません。</p>
+                    </section>
+
+                    <section class="home-info__section" aria-labelledby="home-use-title">
+                        <h2 id="home-use-title" class="home-info__heading">診断結果をどう活かす？</h2>
+                        <div class="home-result-grid">
+                            <article class="home-result-item">
+                                <h3>自分の強みを確認する</h3>
+                                <p>レーダーチャートで高く表示された能力を確認し、普段の試合や練習で、どのような場面にその特徴が表れているか振り返ってみましょう。</p>
+                            </article>
+                            <article class="home-result-item">
+                                <h3>伸ばしたい能力を考える</h3>
+                                <p>低く表示された能力を単純な弱点と決めつける必要はありません。自分のポジションや目指すプレースタイルに必要かを考え、必要であれば今後の練習テーマにできます。</p>
+                            </article>
+                            <article class="home-result-item">
+                                <h3>時間を空けて再診断する</h3>
+                                <p>練習内容やポジション、プレーへの考え方が変わると回答も変わることがあります。一定期間後にもう一度診断し、以前の結果と見比べる使い方もできます。</p>
+                            </article>
+                        </div>
+                    </section>
+
+                    <section class="home-info__section home-info__section--notice" aria-labelledby="home-note-title">
+                        <h2 id="home-note-title" class="home-info__heading">この診断について</h2>
+                        <p>このサイトの診断結果は、選んだポジションやプレースタイル、質問への回答などをもとに算出しています。走行速度や試合中のスタッツを機器で測定したものではなく、プロ選手の能力値を再現したり、実際の競技能力を客観的に証明したりする数値ではありません。</p>
+                        <p>結果は公式な選手評価ではなく、自分のプレーについて考え、得意なことや今後伸ばしたい部分を整理するための参考情報として利用してください。</p>
+                    </section>
+
+                    <section class="home-info__section" aria-labelledby="home-faq-title">
+                        <h2 id="home-faq-title" class="home-info__heading">よくある質問</h2>
+                        <div class="home-faq">
+                            <details class="home-faq__item">
+                                <summary class="home-faq__question">診断結果は実際のサッカー能力を表していますか？</summary>
+                                <p class="home-faq__answer">回答内容をもとに算出した当サイト独自の結果です。実際の試合成績や測定機器による能力評価とは異なります。</p>
+                            </details>
+                            <details class="home-faq__item">
+                                <summary class="home-faq__question">どのポジションでも能力診断を利用できますか？</summary>
+                                <p class="home-faq__answer">サイト内で選択できるポジションから、普段プレーする位置や、それに近いものを選んで利用できます。</p>
+                            </details>
+                            <details class="home-faq__item">
+                                <summary class="home-faq__question">診断結果が低かった能力は苦手ということですか？</summary>
+                                <p class="home-faq__answer">必ずしもそうではありません。ポジションやプレースタイルによって重要になる能力は異なるため、6項目全体のバランスを見ることをおすすめします。</p>
+                            </details>
+                            <details class="home-faq__item">
+                                <summary class="home-faq__question">もう一度診断してもいいですか？</summary>
+                                <p class="home-faq__answer">何度でも利用できます。回答を変えて結果を比べたり、時間を空けて再診断したりする使い方もできます。</p>
+                            </details>
+                            <details class="home-faq__item">
+                                <summary class="home-faq__question">診断結果は公式な選手評価ですか？</summary>
+                                <p class="home-faq__answer">公式な評価ではありません。自分のプレーを振り返るための参考情報として利用してください。</p>
+                            </details>
+                        </div>
+                    </section>
                 </div>
             </div>
             <section class="abilities-guide" aria-label="診断についての解説ページ">
