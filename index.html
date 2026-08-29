@@ -834,7 +834,7 @@ canvas{max-width:100%;}
         abilitySelectLong: "./ability_select_long.csv",
         radarMap: "./radar_map.csv",
         abilities20: "./abilities_20.csv",
-        scoringRules: "./スコアリングルール.csv"
+        scoringRules: "./scoring_rules.csv"
     };
     const text = {
         loading: "\u8aad\u307f\u8fbc\u307f\u4e2d...",
@@ -1067,7 +1067,7 @@ canvas{max-width:100%;}
                 { label: "ability_select_map.csv", path: files.abilitySelectMap },
                 { label: "ability_select_long.csv", path: files.abilitySelectLong }
             ]),
-            loadOptional("スコアリングルール.csv", files.scoringRules)
+            loadOptional("scoring_rules.csv", files.scoringRules)
         ]);
 
         if (!selectMapResult.rows.length) loadFailures.push("ability_select_map.csv または ability_select_long.csv");
