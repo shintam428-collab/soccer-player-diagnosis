@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ポジション別に見るサッカーの6能力 | サッカー診断サイト</title>
+
+<meta name="description" content="サッカー診断サイトで使用しているOFE・DRI・PHY・DEF・SPD・PASの6能力を、CF・WG・MF・SB・CB・GKなどのポジション別に分かりやすく解説します。">
+
+<style>
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+html, body {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    color: #0f172a;
+    background: #f4f7fb;
+    line-height: 1.9;
+}
+
+.page {
+    width: min(100%, 1060px);
+    margin: 0 auto;
+    padding: 48px 20px 30px;
+}
+
+.hero {
+    padding: 44px 36px;
+    border: 1px solid #dbeafe;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+    text-align: center;
+}
+
+.hero__label {
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 5px 13px;
+    border-radius: 999px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.hero h1 {
+    margin: 0 0 16px;
+    font-size: clamp(30px, 6vw, 46px);
+    font-weight: 900;
+    line-height: 1.3;
+}
+
+.hero p {
+    max-width: 800px;
+    margin: 0 auto;
+    color: #475569;
+    font-weight: 700;
+}
+
+.hero p + p {
+    margin-top: 12px;
+}
+
+.notice {
+    margin-top: 24px;
+    padding: 18px 20px;
+    border: 1px solid #bfdbfe;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.84);
+    color: #1e3a8a;
+    text-align: left;
+    font-weight: 700;
+}
+
+.contents,
+.position-card,
+.closing-card {
+    margin-top: 28px;
+    border: 1px solid #e2e8f0;
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.contents,
+.closing-card {
+    padding: 32px;
+}
+
+.contents h2,
+.closing-card h2 {
+    margin: 0 0 16px;
+    font-size: clamp(24px, 4vw, 30px);
+    line-height: 1.45;
+}
+
+.contents h2 {
+    text-align: center;
+}
+
+.position-nav {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.position-nav a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 56px;
+    padding: 10px;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 900;
+}
+
+.position-nav a:hover {
+    background: #dbeafe;
+}
+
+.position-card {
+    scroll-margin-top: 18px;
+    overflow: hidden;
+}
+
+.position-card__header {
+    padding: 28px 30px 24px;
+    border-bottom: 1px solid #dbeafe;
+    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+}
+
+.position-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 64px;
+    margin-bottom: 10px;
+    padding: 5px 13px;
+    border-radius: 999px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: .06em;
+}
+
+.position-card h2 {
+    margin: 0 0 10px;
+    font-size: clamp(25px, 4vw, 32px);
+    line-height: 1.4;
+}
+
+.position-card__summary {
+    max-width: 880px;
+    margin: 0;
+    color: #334155;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.ability-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 16px;
+}
+
+.ability-tags span {
+    padding: 4px 11px;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.position-card__body {
+    padding: 28px 30px 30px;
+}
+
+.detail-block + .detail-block {
+    margin-top: 26px;
+}
+
+.detail-block h3 {
+    margin: 0 0 9px;
+    color: #1e3a8a;
+    font-size: 19px;
+    line-height: 1.5;
+}
+
+.detail-block p,
+.detail-block ul,
+.detail-block ol {
+    color: #475569;
+    font-weight: 600;
+}
+
+.detail-block p {
+    margin: 0;
+}
+
+.detail-block ul,
+.detail-block ol {
+    margin: 0;
+    padding-left: 23px;
+}
+
+.detail-block li + li {
+    margin-top: 7px;
+}
+
+.ability-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding: 0 !important;
+    list-style: none;
+}
+
+.ability-list li {
+    display: grid;
+    grid-template-columns: 54px minmax(0, 1fr);
+    gap: 10px;
+    align-items: start;
+    min-width: 0;
+    margin: 0;
+    padding: 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #f8fafc;
+}
+
+.ability-list strong {
+    color: #1d4ed8;
+    font-size: 15px;
+    font-weight: 900;
+}
+
+.combination-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.combination {
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid #bfdbfe;
+    border-radius: 15px;
+    background: #f8fbff;
+}
+
+.combination strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #1d4ed8;
+    font-weight: 900;
+}
+
+.combination p {
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.75;
+}
+
+.result-point {
+    padding: 17px 18px;
+    border-left: 4px solid #2563eb;
+    border-radius: 0 14px 14px 0;
+    background: #eff6ff;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 22px;
+    color: #2563eb;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.closing-card p,
+.closing-card ul,
+.closing-card ol {
+    color: #475569;
+    font-weight: 600;
+}
+
+.closing-card p {
+    margin: 0;
+}
+
+.closing-card p + p {
+    margin-top: 12px;
+}
+
+.closing-card ol {
+    margin: 0;
+    padding-left: 24px;
+}
+
+.closing-card li + li {
+    margin-top: 7px;
+}
+
+.related-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 14px 24px;
+    border: 1px solid #2563eb;
+    border-radius: 12px;
+    background: #2563eb;
+    color: #ffffff;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 900;
+    line-height: 1.5;
+}
+
+.button:hover {
+    background: #1d4ed8;
+}
+
+.button--secondary {
+    border-color: #bfdbfe;
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.button--secondary:hover {
+    background: #dbeafe;
+}
+
+.footer {
+    margin-top: 32px;
+    padding-bottom: 18px;
+    color: #64748b;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    margin-bottom: 12px;
+}
+
+.footer a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 900;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 820px) {
+    .position-nav,
+    .ability-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .combination-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .page {
+        padding: 28px 12px 22px;
+    }
+
+    .hero {
+        padding: 28px 18px;
+        border-radius: 18px;
+    }
+
+    .contents,
+    .closing-card {
+        padding: 24px 18px;
+        border-radius: 18px;
+    }
+
+    .position-nav,
+    .ability-list {
+        grid-template-columns: 1fr;
+    }
+
+    .position-nav a {
+        min-height: 50px;
+    }
+
+    .position-card {
+        border-radius: 18px;
+    }
+
+    .position-card__header {
+        padding: 24px 18px 20px;
+    }
+
+    .position-card__body {
+        padding: 24px 18px 26px;
+    }
+
+    .position-card__summary {
+        font-size: 15px;
+    }
+
+    .ability-list li {
+        grid-template-columns: 50px minmax(0, 1fr);
+    }
+
+    .related-links {
+        flex-direction: column;
+    }
+
+    .button {
+        width: 100%;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<main class="page">
+
+    <header class="hero">
+        <span class="hero__label">診断結果をプレーに結びつける</span>
+        <h1>ポジション別に見る6つの能力</h1>
+        <p>サッカーでは、ポジションによってボールに関わる場所や求められるプレーが異なります。同じ能力値でも、前線で得点につなげるのか、中盤で組み立てに使うのか、最終ラインでピンチを防ぐのかによって生かし方は変わります。</p>
+        <p>すべての能力が高いことだけを目標にするのではなく、本サイトのOFE・DRI・PHY・DEF・SPD・PASを、自分の役割や得意なプレーと照らし合わせて見てみましょう。</p>
+        <div class="notice">このページの内容は、ポジションごとの役割を一つに決めつけるものではありません。チームの戦術や本人の特徴によって、求められる能力やその生かし方は変わります。</div>
+    </header>
+
+    <nav class="contents" id="position-list" aria-label="ポジション別ガイドの目次">
+        <h2>ポジションから選ぶ</h2>
+        <div class="position-nav">
+            <a href="#cf">CF</a>
+            <a href="#wg">WG</a>
+            <a href="#omf">OMF</a>
+            <a href="#cmf">CMF</a>
+            <a href="#dmf">DMF</a>
+            <a href="#sb">SB</a>
+            <a href="#cb">CB</a>
+            <a href="#gk">GK</a>
+        </div>
+    </nav>
+
+    <article class="position-card" id="cf">
+        <header class="position-card__header">
+            <span class="position-label">CF</span>
+            <h2>センターフォワード（CF）</h2>
+            <p class="position-card__summary">ゴール前で得点に関わるだけでなく、前線でボールを収めて味方を押し上げたり、相手DFの背後へ走って守備ラインを動かしたりする役割です。</p>
+            <div class="ability-tags" aria-label="特に関連が強い能力"><span>OFE</span><span>PHY</span><span>SPD</span></div>
+        </header>
+        <div class="position-card__body">
+            <section class="detail-block">
+                <h3>1. ポジションの役割</h3>
+                <p>ペナルティーエリア内でシュートを狙いながら、くさびのパスを受ける、味方のためにスペースを作る、前線から守備を始めるなど、攻撃の基準点になります。相手DFとの距離が近いため、ボールを受ける前の動きと次のプレーを素早く選ぶことが重要です。</p>
+            </section>
+            <section class="detail-block">
+                <h3>2. 特に重要になりやすい能力</h3>
+                <p>得点につながる位置へ入るOFE、相手を背負ってボールを守るPHY、背後へ抜け出すSPDが特徴に結びつきやすい能力です。一方、連係を重視するCFにはPAS、前を向いて仕掛けるCFにはDRIも大切です。</p>
+            </section>
+            <section class="detail-block">
+                <h3>3. 各能力がどう生きるか</h3>
+                <ul class="ability-list">
+                    <li><strong>OFE</strong><span>DFの視野から外れてゴール前へ入り、シュートやこぼれ球に関わる。</span></li>
+                    <li><strong>DRI</strong><span>前を向いた場面で相手をかわし、自分でシュートコースを作る。</span></li>
+                    <li><strong>PHY</strong><span>相手を背負ってボールを収め、味方が上がる時間を作る。</span></li>
+                    <li><strong>DEF</strong><span>相手CBやGKへのプレスで、後方からの組み立てを制限する。</span></li>
+                    <li><strong>SPD</strong><span>DFの背後へ走り、スルーパスを受けられる位置へ先に入る。</span></li>
+                    <li><strong>PAS</strong><span>落としやワンタッチパスで、近くの味方と攻撃をつなぐ。</span></li>
+                </ul>
+            </section>
+            <section class="detail-block">
+                <h3>4. 能力の組み合わせ例</h3>
+                <div class="combination-grid">
+                    <div class="combination"><strong>OFE＋SPD</strong><p>相手DFの背後へ抜け出し、ゴール前へ素早く進入するタイプ。</p></div>
+                    <div class="combination"><strong>OFE＋PHY</strong><p>相手を背負いながら前線の起点になり、ゴール前で勝負するタイプ。</p></div>
+                    <div class="combination"><strong>DRI＋OFE</strong><p>自分でボールを運び、相手を外してシュートまで持ち込むタイプ。</p></div>
+                </div>
+            </section>
+            <section class="detail-block result-point">
+                <h3>5. 診断結果を見るときのポイント</h3>
+                <p>OFEが高い場合は、得点数だけでなく、ゴール前へ入る回数や味方のパスを引き出す動きにも注目しましょう。PHYやSPDのどちらかが低くても、PASを生かした連係やDRIを生かした仕掛けなど、別の方法で前線の役割を果たせます。</p>
+            </section>
+            <a class="back-link" href="#position-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="position-card" id="wg">
+        <header class="position-card__header">
+            <span class="position-label">WG</span>
+            <h2>ウイング（WG）</h2>
+            <p class="position-card__summary">サイドで相手と1対1を行い、縦への突破、中央へのカットイン、クロスやシュートによってチャンスを作る役割です。</p>
+            <div class="ability-tags" aria-label="特に関連が強い能力"><span>SPD</span><span>DRI</span><span>OFE</span></div>
+        </header>
+        <div class="position-card__body">
+            <section class="detail-block">
+                <h3>1. ポジションの役割</h3>
+                <p>タッチライン際で幅を取って相手守備を広げたり、内側へ移動してゴールに近い場所でプレーしたりします。ボールを持ったときの突破だけでなく、背後へのランニングや守備への切り替えも試合の流れに影響します。</p>
+            </section>
+            <section class="detail-block">
+                <h3>2. 特に重要になりやすい能力</h3>
+                <p>相手の横を走り抜けるSPD、狭い場所でもボールを運ぶDRI、ゴールやラストプレーに関わるOFEが特徴になりやすい能力です。クロスや折り返しを武器にする選手ではPASも大きな役割を持ちます。</p>
+            </section>
+            <section class="detail-block">
+                <h3>3. 各能力がどう生きるか</h3>
+                <ul class="ability-list">
+                    <li><strong>OFE</strong><span>逆サイドからゴール前へ入り、シュートやラストプレーに関わる。</span></li>
+                    <li><strong>DRI</strong><span>サイドの1対1で相手を外し、前進やカットインにつなげる。</span></li>
+                    <li><strong>PHY</strong><span>接触を受けてもボールを失わず、突破を続ける。</span></li>
+                    <li><strong>DEF</strong><span>相手SBの攻撃参加を追い、サイドで数的不利を作らせない。</span></li>
+                    <li><strong>SPD</strong><span>縦のスペースへ走り、守備が整う前に相手陣内へ進む。</span></li>
+                    <li><strong>PAS</strong><span>クロス、折り返し、ラストパスで味方の決定機を作る。</span></li>
+                </ul>
+            </section>
+            <section class="detail-block">
+                <h3>4. 能力の組み合わせ例</h3>
+                <div class="combination-grid">
+                    <div class="combination"><strong>SPD＋DRI</strong><p>加速とボール運びを組み合わせ、スピードに乗って相手を抜くタイプ。</p></div>
+                    <div class="combination"><strong>DRI＋OFE</strong><p>サイドからカットインし、自分でゴールへ向かうタイプ。</p></div>
+                    <div class="combination"><strong>SPD＋PAS</strong><p>縦突破で深い位置を取り、クロスやラストパスにつなげるタイプ。</p></div>
+                </div>
+            </section>
+            <section class="detail-block result-point">
+                <h3>5. 診断結果を見るときのポイント</h3>
+                <p>SPDやDRIが高い場合も、抜いた回数だけでなく、その後にシュートやパスへつなげられたかを見てみましょう。DEFが低く表示されても攻撃で違いを作れる場合がありますが、チームの戦い方によっては戻る位置や守備参加も重要になります。</p>
+            </section>
+            <a class="back-link" href="#position-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="position-card" id="omf">
+        <header class="position-card__header">
+            <span class="position-label">OMF</span>
+            <h2>オフェンシブミッドフィルダー（OMF）</h2>
+            <p class="position-card__summary">前線と中盤をつなぎ、相手の中盤と最終ラインの間でボールを受けて、ラストパスやシュートでチャンスを作る役割です。</p>
+            <div class="ability-tags" aria-label="特に関連が強い能力"><span>PAS</span><span>OFE</span><span>DRI</span></div>
+        </header>
+        <div class="position-card__body">
+            <section class="detail-block">
+                <h3>1. ポジションの役割</h3>
+                <p>前を向ける場所を探しながらパスを受け、FWへボールを届けたり、自分でゴール前へ入ったりします。相手の守備が密集する中央でプレーすることが多いため、受ける前の確認と少ないタッチでの判断が重要です。</p>
+            </section>
+            <section class="detail-block">
+                <h3>2. 特に重要になりやすい能力</h3>
+                <p>味方へ決定的なボールを届けるPAS、ゴール前へ関わるOFE、マークを外して前進するDRIが特徴につながりやすい能力です。プレッシャーの強い場所でプレーを続けるにはPHYも助けになります。</p>
+            </section>
+            <section class="detail-block">
+                <h3>3. 各能力がどう生きるか</h3>
+                <ul class="ability-list">
+                    <li><strong>OFE</strong><span>FWを追い越してゴール前へ入り、シュートにも関わる。</span></li>
+                    <li><strong>DRI</strong><span>中央の守備を一人外し、パスやシュートのコースを開く。</span></li>
+                    <li><strong>PHY</strong><span>相手の寄せを受けながらボールを守り、前を向く時間を作る。</span></li>
+                    <li><strong>DEF</strong><span>相手の中盤へ素早く寄せ、前線でボールを奪い返す。</span></li>
+                    <li><strong>SPD</strong><span>守備ラインの間や背後へ移動し、フリーで受ける。</span></li>
+                    <li><strong>PAS</strong><span>スルーパスやワンタッチの連係で守備の間を通す。</span></li>
+                </ul>
+            </section>
+            <section class="detail-block">
+                <h3>4. 能力の組み合わせ例</h3>
+                <div class="combination-grid">
+                    <div class="combination"><strong>PAS＋OFE</strong><p>ゴール前でラストパスとシュートの両方に関わるタイプ。</p></div>
+                    <div class="combination"><strong>PAS＋DRI</strong><p>ボールを持ちながら相手守備を引きつけ、味方への道を作るタイプ。</p></div>
+                    <div class="combination"><strong>OFE＋DRI</strong><p>中央で自分から局面を打開し、そのままゴールへ向かうタイプ。</p></div>
+                </div>
+            </section>
+            <section class="detail-block result-point">
+                <h3>5. 診断結果を見るときのポイント</h3>
+                <p>PASが高ければ、成功本数だけでなく、味方が次のプレーをしやすい場所へ届けられているかを振り返りましょう。DRIやOFEが高い選手は自分で違いを作れますが、ボールを持たないときに相手の間へ入る動きも特徴を生かす鍵になります。</p>
+            </section>
+            <a class="back-link" href="#position-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="position-card" id="cmf">
+        <header class="position-card__header">
+            <span class="position-label">CMF</span>
+            <h2>セントラルミッドフィルダー（CMF）</h2>
+            <p class="position-card__summary">中盤の中央で攻撃と守備の両方に関わり、ボールを動かしながら試合の流れを作る役割です。</p>
+            <div class="ability-tags" aria-label="特に関連が強い能力"><span>PAS</span><span>DEF</span><span>PHY</span></div>
+        </header>
+        <div class="position-card__body">
+            <section class="detail-block">
+                <h3>1. ポジションの役割</h3>
+                <p>味方DFからボールを受けて前線へつなぎ、失った直後には相手の攻撃を遅らせます。ボールの近くに顔を出し続けるだけでなく、状況に応じてゴール前へ進入したり、後方に残ってバランスを取ったりします。</p>
+            </section>
+            <section class="detail-block">
+                <h3>2. 特に重要になりやすい能力</h3>
+                <p>攻撃の方向を選ぶPAS、中央で相手の前進を止めるDEF、プレッシャーの中でプレーを続けるPHYが関係しやすい能力です。攻撃参加が多い選手ではOFE、ボールを運んでラインを越える選手ではDRIも重要になります。</p>
+            </section>
+            <section class="detail-block">
+                <h3>3. 各能力がどう生きるか</h3>
+                <ul class="ability-list">
+                    <li><strong>OFE</strong><span>後方からゴール前へ入り、セカンドボールやシュートに関わる。</span></li>
+                    <li><strong>DRI</strong><span>相手の中盤を運びながら越え、パスだけでは作れない前進を生む。</span></li>
+                    <li><strong>PHY</strong><span>相手の寄せに耐えてボールを失わず、球際でも競り合う。</span></li>
+                    <li><strong>DEF</strong><span>パスコースを消し、こぼれ球を回収して相手の攻撃を止める。</span></li>
+                    <li><strong>SPD</strong><span>攻守の切り替えで素早く移動し、必要な場所を埋める。</span></li>
+                    <li><strong>PAS</strong><span>短いパスと展開を使い分け、攻撃のテンポと方向を整える。</span></li>
+                </ul>
+            </section>
+            <section class="detail-block">
+                <h3>4. 能力の組み合わせ例</h3>
+                <div class="combination-grid">
+                    <div class="combination"><strong>PAS＋DEF</strong><p>ボールを奪ったあと、落ち着いて攻撃の起点になるタイプ。</p></div>
+                    <div class="combination"><strong>PAS＋PHY</strong><p>相手のプレッシャーを受けながらボールを守り、試合を組み立てるタイプ。</p></div>
+                    <div class="combination"><strong>OFE＋PAS</strong><p>後方でつなぐだけでなく、ゴール前へ進入する攻撃参加型。</p></div>
+                </div>
+            </section>
+            <section class="detail-block result-point">
+                <h3>5. 診断結果を見るときのポイント</h3>
+                <p>CMFは多くの能力に関わるため、最も高い項目だけでなく全体の形を見ることが大切です。PASとDEFが高ければ攻守の切り替え、OFEやDRIが高ければ前進や攻撃参加など、自分が試合のどこで流れを変えやすいかを考えてみましょう。</p>
+            </section>
+            <a class="back-link" href="#position-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="position-card" id="dmf">
+        <header class="position-card__header">
+            <span class="position-label">DMF</span>
+            <h2>ディフェンシブミッドフィルダー（DMF）</h2>
+            <p class="position-card__summary">最終ラインの前で相手の攻撃を止め、味方DFからボールを受けて後方から攻撃を組み立てる役割です。</p>
+            <div class="ability-tags" aria-label="特に関連が強い能力"><span>DEF</span><span>PAS</span><span>PHY</span></div>
+        </header>
+        <div class="position-card__body">
+            <section class="detail-block">
+                <h3>1. ポジションの役割</h3>
+                <p>中央の危険なパスコースを消し、相手FWや攻撃的MFが前を向くのを防ぎます。ボールを奪ったあとは安全につなぐだけでなく、空いたサイドや前線へ届けて守備から攻撃への切り替えを始めます。</p>
+            </section>
+            <section class="detail-block">
+                <h3>2. 特に重要になりやすい能力</h3>
+                <p>相手の狙いを読みボールを回収するDEF、奪ったボールを味方へつなぐPAS、中央の競り合いで負けないPHYが役割に結びつきやすい能力です。広い範囲をカバーする場合にはSPDも助けになります。</p>
+            </section>
+            <section class="detail-block">
+                <h3>3. 各能力がどう生きるか</h3>
+                <ul class="ability-list">
+                    <li><strong>OFE</strong><span>相手が引いた場面で前へ出て、ミドルや攻撃の継続に関わる。</span></li>
+                    <li><strong>DRI</strong><span>最初の寄せを運んで外し、前線へのパスコースを作る。</span></li>
+                    <li><strong>PHY</strong><span>中央の球際で体を入れ、相手の前進を止めてボールを守る。</span></li>
+                    <li><strong>DEF</strong><span>危険な場所を先に埋め、インターセプトやカバーを行う。</span></li>
+                    <li><strong>SPD</strong><span>サイドやDF背後のスペースへ移動し、カウンターに対応する。</span></li>
+                    <li><strong>PAS</strong><span>奪った直後の一手を選び、後方から攻撃の方向を決める。</span></li>
+                </ul>
+            </section>
+            <section class="detail-block">
+                <h3>4. 能力の組み合わせ例</h3>
+                <div class="combination-grid">
+                    <div class="combination"><strong>DEF＋PHY</strong><p>球際や対人守備で相手の攻撃を止め、中央を守るタイプ。</p></div>
+                    <div class="combination"><strong>DEF＋PAS</strong><p>ボールを奪い、間を空けずに次の攻撃へつなげるタイプ。</p></div>
+                    <div class="combination"><strong>PAS＋PHY</strong><p>プレッシャーを受けても保持し、後方から試合を組み立てるタイプ。</p></div>
+                </div>
+            </section>
+            <section class="detail-block result-point">
+                <h3>5. 診断結果を見るときのポイント</h3>
+                <p>DEFが高い場合は、タックルの回数だけでなく、危険な場所を埋めて相手にパスを出させなかった場面も振り返りましょう。PASとの組み合わせを見ると、守備で終わらず次の攻撃までつなげられるかを考えやすくなります。</p>
+            </section>
+            <a class="back-link" href="#position-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="position-card" id="sb">
+        <header class="position-card__header">
+            <span class="position-label">SB</span>
+            <h2>サイドバック（SB）</h2>
+            <p class="position-card__summary">サイドの守備を担当しながら、攻撃時にはオーバーラップやパス交換、クロスによって前進を助ける役割です。</p>
+            <div class="ability-tags" aria-label="特に関連が強い能力"><span>DEF</span><span>SPD</span><span>PAS</span></div>
+        </header>
+        <div class="position-card__body">
+            <section class="detail-block">
+                <h3>1. ポジションの役割</h3>
+                <p>相手WGの突破を防ぎ、味方CBの外側や背後をカバーします。攻撃では味方WGの外側を追い越す、内側でパスを受ける、深い位置からクロスを送るなど、戦術によって立ち位置が大きく変わります。</p>
+            </section>
+            <section class="detail-block">
+                <h3>2. 特に重要になりやすい能力</h3>
+                <p>相手の仕掛けへ対応するDEF、攻守の長い距離を移動するSPD、味方との連係やクロスに使うPASが役割に結びつきやすい能力です。攻撃型のSBでは、自分で前進するDRIやゴール前に関わるOFEも重要です。</p>
+            </section>
+            <section class="detail-block">
+                <h3>3. 各能力がどう生きるか</h3>
+                <ul class="ability-list">
+                    <li><strong>OFE</strong><span>攻撃参加のタイミングを選び、逆サイドのクロスへ入る。</span></li>
+                    <li><strong>DRI</strong><span>サイドで相手の寄せを外し、自分でボールを前へ運ぶ。</span></li>
+                    <li><strong>PHY</strong><span>タッチライン際の接触や競り合いで相手に負けずに対応する。</span></li>
+                    <li><strong>DEF</strong><span>縦突破とカットインを見極め、危険なコースを消す。</span></li>
+                    <li><strong>SPD</strong><span>オーバーラップと帰陣を繰り返し、背後のスペースもカバーする。</span></li>
+                    <li><strong>PAS</strong><span>クロスや縦パス、近い味方との連係で攻撃を前進させる。</span></li>
+                </ul>
+            </section>
+            <section class="detail-block">
+                <h3>4. 能力の組み合わせ例</h3>
+                <div class="combination-grid">
+                    <div class="combination"><strong>DEF＋SPD</strong><p>相手WGへの対応や、自陣の背後にできたスペースのカバーに強いタイプ。</p></div>
+                    <div class="combination"><strong>SPD＋PAS</strong><p>オーバーラップから深い位置を取り、クロスを供給するタイプ。</p></div>
+                    <div class="combination"><strong>DRI＋SPD</strong><p>自分でボールを運びながら、サイドを大きく前進する攻撃型。</p></div>
+                </div>
+            </section>
+            <section class="detail-block result-point">
+                <h3>5. 診断結果を見るときのポイント</h3>
+                <p>DEFとSPDが高ければ、1対1だけでなく背後をカバーできた場面にも注目しましょう。PASやDRIが高い場合は攻撃参加が強みになりますが、上がるタイミングとボールを失った後の戻りまで含めて特徴を考えることが大切です。</p>
+            </section>
+            <a class="back-link" href="#position-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="position-card" id="cb">
+        <header class="position-card__header">
+            <span class="position-label">CB</span>
+            <h2>センターバック（CB）</h2>
+            <p class="position-card__summary">ゴール前を守り、相手FWとの競り合い、味方のカバー、最終ラインからのビルドアップに関わる役割です。</p>
+            <div class="ability-tags" aria-label="特に関連が強い能力"><span>DEF</span><span>PHY</span><span>PAS</span></div>
+        </header>
+        <div class="position-card__body">
+            <section class="detail-block">
+                <h3>1. ポジションの役割</h3>
+                <p>相手FWに前を向かせず、クロスやスルーパスに対応してゴールへ近づかせないことが中心です。守備ライン全体の位置をそろえながら、ボールを持ったときには味方MFやSBへ正確に届けて攻撃を始めます。</p>
+            </section>
+            <section class="detail-block">
+                <h3>2. 特に重要になりやすい能力</h3>
+                <p>危険を予測して対応するDEF、競り合いや空中戦で体を使うPHY、後方からボールをつなぐPASが役割に関係しやすい能力です。守備ラインの背後が広い戦い方では、相手FWの走りに対応するSPDも重要です。</p>
+            </section>
+            <section class="detail-block">
+                <h3>3. 各能力がどう生きるか</h3>
+                <ul class="ability-list">
+                    <li><strong>OFE</strong><span>セットプレーでゴール前へ上がり、空中戦やこぼれ球に関わる。</span></li>
+                    <li><strong>DRI</strong><span>安全を確認して持ち上がり、相手の最初の守備ラインを越える。</span></li>
+                    <li><strong>PHY</strong><span>相手FWとの対人戦やクロスへの競り合いで体を使う。</span></li>
+                    <li><strong>DEF</strong><span>相手の動きとパスを読み、ゴール前の危険を先に消す。</span></li>
+                    <li><strong>SPD</strong><span>スルーパスやロングボールに反応し、背後のスペースを守る。</span></li>
+                    <li><strong>PAS</strong><span>縦パスやサイドチェンジで、後方から攻撃を開始する。</span></li>
+                </ul>
+            </section>
+            <section class="detail-block">
+                <h3>4. 能力の組み合わせ例</h3>
+                <div class="combination-grid">
+                    <div class="combination"><strong>DEF＋PHY</strong><p>対人守備や空中戦で強さを発揮し、ゴール前を守るタイプ。</p></div>
+                    <div class="combination"><strong>DEF＋SPD</strong><p>相手FWの動きを読み、背後のスペースへの対応に強いタイプ。</p></div>
+                    <div class="combination"><strong>DEF＋PAS</strong><p>守備を安定させながら、後方から正確なパスで攻撃を始めるタイプ。</p></div>
+                </div>
+            </section>
+            <section class="detail-block result-point">
+                <h3>5. 診断結果を見るときのポイント</h3>
+                <p>CBではOFEが低くても、それだけで評価は決まりません。DEFとPHYによる守備、PASによるビルドアップ、SPDによるカバーなど、自分が失点を防ぎながらチームを前進させた場面と照らし合わせて見ましょう。</p>
+            </section>
+            <a class="back-link" href="#position-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="position-card" id="gk">
+        <header class="position-card__header">
+            <span class="position-label">GK</span>
+            <h2>ゴールキーパー（GK）</h2>
+            <p class="position-card__summary">ゴールを守る最後の選手としてシュートに対応し、味方へ指示を出しながら、ボールを保持したあとは攻撃の出発点にもなる役割です。</p>
+            <div class="ability-tags" aria-label="フィールドプレーの観点で見られる能力"><span>DEF</span><span>PAS</span><span>PHY</span></div>
+        </header>
+        <div class="position-card__body">
+            <section class="detail-block">
+                <h3>1. ポジションの役割</h3>
+                <p>シュートを止めるだけでなく、DFラインの背後をカバーし、クロスへ対応し、味方へ守備位置を伝えます。現代のサッカーでは、足元でパスを受けて相手のプレスを外す場面も増えています。</p>
+            </section>
+            <section class="detail-block">
+                <h3>2. 特に重要になりやすい能力</h3>
+                <p>本サイトの6能力は、GK専用の能力を完全に表すものではありません。そのうえでフィールドプレーの観点から見ると、守備への意識や危険察知に関わるDEF、後方からの組み立てに関わるPAS、接触や空中戦の安定につながるPHYなどを参考にできます。</p>
+            </section>
+            <section class="detail-block">
+                <h3>3. 各能力がどう生きるか</h3>
+                <ul class="ability-list">
+                    <li><strong>OFE</strong><span>攻撃の開始位置として、素早い配球でカウンターのきっかけを作る。</span></li>
+                    <li><strong>DRI</strong><span>バックパスを受けたとき、相手の寄せを外してパスコースを確保する。</span></li>
+                    <li><strong>PHY</strong><span>相手との接触や空中戦で姿勢を保ち、安定してボールへ対応する。</span></li>
+                    <li><strong>DEF</strong><span>危険な場所や相手の動きを読み、前に出るタイミングを判断する。</span></li>
+                    <li><strong>SPD</strong><span>DFラインの背後へ出たボールに反応し、早くスペースをカバーする。</span></li>
+                    <li><strong>PAS</strong><span>近い味方へのパスと前線への配球を使い分け、ビルドアップに参加する。</span></li>
+                </ul>
+            </section>
+            <section class="detail-block">
+                <h3>4. 能力の組み合わせ例</h3>
+                <div class="combination-grid">
+                    <div class="combination"><strong>DEF＋PHY</strong><p>危険を察知して前へ出て、接触や空中戦でも安定して対応するタイプ。</p></div>
+                    <div class="combination"><strong>DEF＋PAS</strong><p>守備状況を読み、ボールを確保したあと正確に攻撃へつなぐタイプ。</p></div>
+                    <div class="combination"><strong>PAS＋PHY</strong><p>相手のプレッシャー下でも落ち着き、後方の起点としてプレーするタイプ。</p></div>
+                </div>
+            </section>
+            <section class="detail-block result-point">
+                <h3>5. 診断結果を見るときのポイント</h3>
+                <p><strong>この診断は、セービング、ハイボール処理、キック、反射神経など、GK特有の能力を直接測定する診断ではありません。</strong>6能力はフィールドプレーへの関わりを振り返る参考として使い、GKとしての全体的な実力や適性を断定する数値にはしないでください。</p>
+            </section>
+            <a class="back-link" href="#position-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <section class="closing-card">
+        <h2>低い能力＝悪い選手ではない</h2>
+        <p>ポジションによって優先される能力は異なり、同じポジションでもプレースタイルやチームの戦術によって必要な能力の組み合わせは変わります。診断で低く表示された項目が、必ずしも単純な弱点になるわけではありません。</p>
+        <p>たとえばCBでOFEが低くても、DEFを生かした守備やPASを生かしたビルドアップでチームに貢献できます。WGでDEFが低くても、DRIやSPDによる突破、OFEによる得点への関与が大きな特徴になる場合があります。</p>
+        <p>ただし、チームの戦術によってはCBの攻撃参加やWGの守備参加が重要になることもあります。能力値だけで役割を決めつけず、自分が任されている役割と実際のプレーを照らし合わせて考えましょう。</p>
+    </section>
+
+    <section class="closing-card">
+        <h2>自分の診断結果と比べてみよう</h2>
+        <ol>
+            <li>自分が主にプレーしているポジションを確認する</li>
+            <li>診断結果に表示された6能力を見る</li>
+            <li>特に高く表示された能力を2〜3個確認する</li>
+            <li>このページのポジションの役割と照らし合わせる</li>
+            <li>高い能力を自分の強みとして生かせるプレーを考える</li>
+            <li>これから伸ばしたい能力を一つ決める</li>
+        </ol>
+        <p>数値だけで終わらせず、試合や練習で実際に起きた場面を思い出すと、自分の特徴をより具体的に整理できます。</p>
+        <div class="related-links" aria-label="関連ページ">
+            <a class="button" href="abilities.html">6つの能力について詳しく見る</a>
+            <a class="button" href="result-guide.html">診断結果の見方</a>
+            <a class="button" href="playstyle-guide.html">プレースタイル解説</a>
+            <a class="button button--secondary" href="index.html">サッカー診断をしてみる</a>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <nav class="footer-links" aria-label="フッターリンク">
+            <a href="index.html">トップページ</a>
+            <a href="abilities.html">6つの能力について</a>
+            <a href="result-guide.html">診断結果の見方</a>
+            <a href="playstyle-guide.html">プレースタイル解説</a>
+            <a href="privacy.html">プライバシーポリシー</a>
+            <a href="disclaimer.html">免責事項</a>
+            <a href="operator.html">運営者情報</a>
+            <a href="contact.html">お問い合わせ</a>
+        </nav>
+        <p>© サッカー診断サイト</p>
+    </footer>
+
+</main>
+
+</body>
+</html>
+
