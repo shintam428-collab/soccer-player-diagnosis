@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>サッカーの6能力を伸ばす練習方法 | サッカー診断サイト</title>
+
+<meta name="description" content="サッカー診断サイトで使用しているOFE・DRI・PHY・DEF・SPD・PASの6能力について、練習方法、試合中に意識したいポイント、診断結果の活用方法を分かりやすく解説します。">
+
+<style>
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+html, body {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    color: #0f172a;
+    background: #f4f7fb;
+    line-height: 1.9;
+}
+
+.page {
+    width: min(100%, 1060px);
+    margin: 0 auto;
+    padding: 48px 20px 30px;
+}
+
+.hero {
+    padding: 44px 36px;
+    border: 1px solid #dbeafe;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+    text-align: center;
+}
+
+.hero__label {
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 5px 13px;
+    border-radius: 999px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.hero h1 {
+    margin: 0 0 16px;
+    font-size: clamp(30px, 6vw, 46px);
+    font-weight: 900;
+    line-height: 1.3;
+}
+
+.hero p {
+    max-width: 800px;
+    margin: 0 auto;
+    color: #475569;
+    font-weight: 700;
+}
+
+.hero p + p {
+    margin-top: 12px;
+}
+
+.notice {
+    margin-top: 24px;
+    padding: 18px 20px;
+    border: 1px solid #bfdbfe;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.86);
+    color: #1e3a8a;
+    text-align: left;
+    font-weight: 700;
+}
+
+.contents,
+.ability-card,
+.guide-card,
+.examples-section,
+.choice-card,
+.position-link-card {
+    margin-top: 28px;
+    border: 1px solid #e2e8f0;
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+.contents,
+.guide-card,
+.examples-section,
+.choice-card,
+.position-link-card {
+    padding: 32px;
+}
+
+.contents h2,
+.guide-card h2,
+.examples-section h2,
+.choice-card h2,
+.position-link-card h2 {
+    margin: 0 0 16px;
+    font-size: clamp(24px, 4vw, 30px);
+    line-height: 1.45;
+}
+
+.contents h2 {
+    text-align: center;
+}
+
+.ability-nav {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.ability-nav a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 58px;
+    padding: 10px;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 900;
+    line-height: 1.45;
+}
+
+.ability-nav a:hover {
+    background: #dbeafe;
+}
+
+.ability-card {
+    scroll-margin-top: 18px;
+    overflow: hidden;
+}
+
+.ability-card__header {
+    padding: 28px 30px 24px;
+    border-bottom: 1px solid #dbeafe;
+    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+}
+
+.ability-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 68px;
+    margin-bottom: 10px;
+    padding: 5px 13px;
+    border-radius: 999px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: .08em;
+}
+
+.ability-card h2 {
+    margin: 0 0 10px;
+    font-size: clamp(25px, 4vw, 32px);
+    line-height: 1.4;
+}
+
+.ability-card__summary {
+    max-width: 880px;
+    margin: 0;
+    color: #334155;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.ability-card__body {
+    padding: 28px 30px 30px;
+}
+
+.detail-block + .detail-block {
+    margin-top: 26px;
+}
+
+.detail-block h3 {
+    margin: 0 0 9px;
+    color: #1e3a8a;
+    font-size: 19px;
+    line-height: 1.5;
+}
+
+.detail-block p,
+.detail-block ul,
+.detail-block ol {
+    color: #475569;
+    font-weight: 600;
+}
+
+.detail-block p {
+    margin: 0;
+}
+
+.detail-block ul,
+.detail-block ol {
+    margin: 0;
+    padding-left: 23px;
+}
+
+.detail-block li + li {
+    margin-top: 7px;
+}
+
+.scene-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 24px;
+}
+
+.training-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    padding: 0 !important;
+    list-style: none;
+    counter-reset: training;
+}
+
+.training-grid li {
+    min-width: 0;
+    margin: 0;
+    padding: 17px;
+    border: 1px solid #bfdbfe;
+    border-radius: 15px;
+    background: #f8fbff;
+    counter-increment: training;
+}
+
+.training-grid li::before {
+    content: counter(training, decimal-leading-zero);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 24px;
+    margin-bottom: 9px;
+    border-radius: 999px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.training-grid strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #1d4ed8;
+    font-weight: 900;
+}
+
+.training-grid span {
+    display: block;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.75;
+}
+
+.focus-box {
+    padding: 17px 18px;
+    border-left: 4px solid #2563eb;
+    border-radius: 0 14px 14px 0;
+    background: #eff6ff;
+}
+
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.result-box {
+    min-width: 0;
+    padding: 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 15px;
+    background: #f8fafc;
+}
+
+.result-box--high {
+    border-color: #bfdbfe;
+    background: #eff6ff;
+}
+
+.result-box--low {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+}
+
+.result-box h3 {
+    margin: 0 0 7px;
+    font-size: 17px;
+}
+
+.result-box--high h3 {
+    color: #1d4ed8;
+}
+
+.result-box--low h3 {
+    color: #334155;
+}
+
+.result-box p {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.safety-note {
+    margin-top: 14px;
+    padding: 15px 17px;
+    border: 1px solid #fed7aa;
+    border-radius: 14px;
+    background: #fff7ed;
+    color: #9a3412;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 22px;
+    color: #2563eb;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.guide-card,
+.examples-section,
+.choice-card,
+.position-link-card {
+    scroll-margin-top: 18px;
+}
+
+.guide-card > p,
+.examples-section > p,
+.choice-card p,
+.position-link-card p {
+    color: #475569;
+    font-weight: 600;
+}
+
+.goal-steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 22px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: goal-step;
+}
+
+.goal-steps li {
+    min-width: 0;
+    padding: 18px;
+    border: 1px solid #dbeafe;
+    border-radius: 15px;
+    background: #f8fbff;
+    color: #475569;
+    font-weight: 700;
+    counter-increment: goal-step;
+}
+
+.goal-steps li::before {
+    content: "STEP " counter(goal-step, decimal-leading-zero);
+    display: block;
+    margin-bottom: 7px;
+    color: #2563eb;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .05em;
+}
+
+.example-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.example-card {
+    min-width: 0;
+    padding: 20px;
+    border: 1px solid #dbeafe;
+    border-radius: 16px;
+    background: #f8fbff;
+}
+
+.example-card__label {
+    display: inline-block;
+    margin-bottom: 9px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.example-card h3 {
+    margin: 0 0 10px;
+    font-size: 20px;
+    line-height: 1.4;
+}
+
+.score-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.score-list span {
+    padding: 3px 8px;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.example-card dl {
+    margin: 0;
+}
+
+.example-card dt {
+    margin-top: 10px;
+    color: #1e3a8a;
+    font-weight: 900;
+}
+
+.example-card dd {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.example-note {
+    margin: 18px 0 0;
+    padding: 15px 17px;
+    border-radius: 14px;
+    background: #eff6ff;
+    color: #1e3a8a !important;
+    font-size: 14px;
+    font-weight: 700 !important;
+}
+
+.choice-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.choice-item {
+    min-width: 0;
+    padding: 19px;
+    border: 1px solid #dbeafe;
+    border-radius: 15px;
+    background: #f8fbff;
+}
+
+.choice-item h3 {
+    margin: 0 0 7px;
+    color: #1e3a8a;
+    font-size: 18px;
+}
+
+.choice-item p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.position-link-card {
+    border-color: #bfdbfe;
+    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+    text-align: center;
+}
+
+.position-link-card p {
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.position-link-card .button {
+    margin-top: 20px;
+}
+
+.related-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 14px 24px;
+    border: 1px solid #2563eb;
+    border-radius: 12px;
+    background: #2563eb;
+    color: #ffffff;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 900;
+    line-height: 1.5;
+}
+
+.button:hover {
+    background: #1d4ed8;
+}
+
+.button--secondary {
+    border-color: #bfdbfe;
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.button--secondary:hover {
+    background: #dbeafe;
+}
+
+.footer {
+    margin-top: 32px;
+    padding-bottom: 18px;
+    color: #64748b;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    margin-bottom: 12px;
+}
+
+.footer a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 900;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 820px) {
+    .ability-nav,
+    .training-grid,
+    .goal-steps,
+    .example-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .training-grid li:last-child:nth-child(odd),
+    .example-card:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 600px) {
+    .page {
+        padding: 28px 12px 22px;
+    }
+
+    .hero {
+        padding: 28px 18px;
+        border-radius: 18px;
+    }
+
+    .contents,
+    .guide-card,
+    .examples-section,
+    .choice-card,
+    .position-link-card {
+        padding: 24px 18px;
+        border-radius: 18px;
+    }
+
+    .ability-nav,
+    .scene-list,
+    .training-grid,
+    .result-grid,
+    .goal-steps,
+    .example-grid,
+    .choice-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .training-grid li:last-child:nth-child(odd),
+    .example-card:last-child:nth-child(odd) {
+        grid-column: auto;
+    }
+
+    .ability-nav a {
+        min-height: 50px;
+    }
+
+    .ability-card {
+        border-radius: 18px;
+    }
+
+    .ability-card__header {
+        padding: 24px 18px 20px;
+    }
+
+    .ability-card__body {
+        padding: 24px 18px 26px;
+    }
+
+    .ability-card__summary {
+        font-size: 15px;
+    }
+
+    .related-links {
+        flex-direction: column;
+    }
+
+    .button {
+        width: 100%;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<main class="page">
+
+    <header class="hero">
+        <span class="hero__label">診断結果を次のプレーへ</span>
+        <h1>6つの能力を伸ばす練習ガイド</h1>
+        <p>能力診断の結果は、実際の競技力を断定する公式な評価ではなく、自分のプレーの特徴を振り返るための目安です。高く表示された能力は強みとしてさらに磨き、低く表示された能力は自分の役割に必要かを考えてから練習テーマにできます。</p>
+        <p>伸ばしたい能力はポジションやチームで任されている役割によって異なります。一度にすべてを変えようとせず、まず一つの能力と一つの具体的な目標を決めると、練習や試合で取り組みやすくなります。</p>
+        <div class="notice">ここで紹介する練習内容は一例であり、効果を保証するものではありません。年齢、体力、経験、所属チームの方針に合わせて無理のない範囲で取り組み、フィジカルやスピードの練習では十分なウォームアップと休息を取りましょう。痛みや体調不良がある場合は無理をせず、指導者や保護者などに相談してください。</div>
+    </header>
+
+    <nav class="contents" id="guide-list" aria-label="能力別練習ガイドの目次">
+        <h2>能力から選ぶ</h2>
+        <div class="ability-nav">
+            <a href="#ofe">OFE</a>
+            <a href="#dri">DRI</a>
+            <a href="#phy">PHY</a>
+            <a href="#def">DEF</a>
+            <a href="#spd">SPD</a>
+            <a href="#pas">PAS</a>
+            <a href="#make-goal">診断結果から目標を作る</a>
+        </div>
+    </nav>
+
+    <article class="ability-card" id="ofe">
+        <header class="ability-card__header">
+            <span class="ability-label">OFE</span>
+            <h2>オフェンスを伸ばす</h2>
+            <p class="ability-card__summary">ゴール前への関わり、得点につながる位置取り、シュート、ラストパス、ボールを持っていないときの攻撃参加などを振り返る能力です。</p>
+        </header>
+        <div class="ability-card__body">
+            <section class="detail-block">
+                <h3>1. この能力が表しているもの</h3>
+                <p>OFEは、ボールを持ったときのシュートだけでなく、味方が前を向いた瞬間の動き出しや、次に得点へつながりそうな場所を選ぶ力も含めて攻撃への関わりを表します。得点数だけでは見えにくい、相手DFを動かすランニングや味方のために空間を作る動きも大切です。</p>
+            </section>
+            <section class="detail-block">
+                <h3>2. 試合で現れやすい場面</h3>
+                <ul class="scene-list"><li>クロスに合わせてニアやファーへ入る</li><li>相手DFの視野から外れて動く</li><li>シュートを打てる場所へ移動する</li><li>味方が前を向いた瞬間に背後へ走る</li></ul>
+            </section>
+            <section class="detail-block">
+                <h3>3. 練習方法</h3>
+                <ol class="training-grid">
+                    <li><strong>シュート＋動き直し</strong><span>パスを受けてシュートしたあと、別の位置へ移動してもう一度ボールを受けます。止まらず次の機会へ関わる習慣を作ります。</span></li>
+                    <li><strong>ゴール前への入り方</strong><span>クロスを想定し、ニア・中央・ファーへ入る動きを順番に試します。味方と同じ場所へ重ならないことも意識します。</span></li>
+                    <li><strong>オフザボールの動き</strong><span>味方がボールを持ったら、DFの視野から一度外れ、パスを受けられるスペースへタイミングよく動きます。</span></li>
+                </ol>
+            </section>
+            <section class="detail-block focus-box">
+                <h3>4. 試合中に意識したいこと</h3>
+                <p>ボールだけを見続けず、相手DFの位置と味方が顔を上げる瞬間を確認しましょう。最初の動きで受けられなくても、止まらず角度や距離を変えて動き直すと、次のパスやこぼれ球に関わりやすくなります。</p>
+            </section>
+            <div class="detail-block result-grid">
+                <section class="result-box result-box--high"><h3>5. 診断結果が高かった場合</h3><p>得点やチャンスへ関わろうとする意識を強みとして生かしましょう。自分で終えるだけでなく、相手を引きつけて味方を空ける動きや、より良い位置の味方へ渡す判断も組み合わせられます。</p></section>
+                <section class="result-box result-box--low"><h3>6. 診断結果が低かった場合</h3><p>攻撃が苦手だと決まるわけではありません。現在のポジションや役割ではゴール前へ関わる機会が少ない可能性もあります。まずは一試合に数回、攻撃時に一つ前のスペースへ動くことから試せます。</p></section>
+            </div>
+            <a class="back-link" href="#guide-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="ability-card" id="dri">
+        <header class="ability-card__header">
+            <span class="ability-label">DRI</span>
+            <h2>ドリブルを伸ばす</h2>
+            <p class="ability-card__summary">ボールを運ぶ、相手をかわす、狭い場所で保持する、自分で局面を前進させるといったプレーに関係する能力です。</p>
+        </header>
+        <div class="ability-card__body">
+            <section class="detail-block">
+                <h3>1. この能力が表しているもの</h3>
+                <p>DRIは派手なフェイントだけを示すものではありません。空いている場所へボールを運ぶ、相手から遠い足で守る、寄せられたときに方向を変えるなど、次のプレーへつなげるためのボール操作も含みます。</p>
+            </section>
+            <section class="detail-block">
+                <h3>2. 試合で現れやすい場面</h3>
+                <ul class="scene-list"><li>サイドや中央での1対1</li><li>スペースへボールを持ち運ぶ</li><li>プレッシャーを受けながら保持する</li><li>相手を引きつけて味方を空ける</li></ul>
+            </section>
+            <section class="detail-block">
+                <h3>3. 練習方法</h3>
+                <ol class="training-grid">
+                    <li><strong>左右両足の細かいタッチ</strong><span>インサイド、アウトサイド、足裏を使い、狭い範囲で方向を変えます。速さよりもボールが体から離れすぎないことを優先します。</span></li>
+                    <li><strong>顔を上げるドリブル</strong><span>進行方向に合図や色を用意し、数タッチごとに顔を上げて確認します。周囲を見ながら運ぶ感覚を身につけます。</span></li>
+                    <li><strong>目的を変える1対1</strong><span>ゴールを目指して「抜く」、空いた場所へ「運ぶ」、一定時間「守る」を分けて練習し、状況に合う選択を増やします。</span></li>
+                </ol>
+            </section>
+            <section class="detail-block focus-box">
+                <h3>4. 試合中に意識したいこと</h3>
+                <p>ボールを受ける前に相手と味方の位置を見て、ドリブル後のパスやシュートまで考えましょう。コーンを速く回る技術だけでなく、いつ運び、いつ離すかを判断することが、試合で使えるドリブルにつながります。</p>
+            </section>
+            <div class="detail-block result-grid">
+                <section class="result-box result-box--high"><h3>5. 診断結果が高かった場合</h3><p>自分で前進できる点を強みにしつつ、毎回相手を抜こうとする必要はありません。相手を引きつけてからパスを出す、広いスペースだけ運ぶなど、味方との使い分けを増やしましょう。</p></section>
+                <section class="result-box result-box--low"><h3>6. 診断結果が低かった場合</h3><p>ドリブル技術そのものが低いと断定する結果ではありません。普段の役割でドリブルを選ぶ頻度が少ないことも考えられます。安全なスペースへ数メートル運ぶ練習から始められます。</p></section>
+            </div>
+            <a class="back-link" href="#guide-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="ability-card" id="phy">
+        <header class="ability-card__header">
+            <span class="ability-label">PHY</span>
+            <h2>フィジカルを伸ばす</h2>
+            <p class="ability-card__summary">競り合い、ボールキープ、接触時の安定、体の使い方、姿勢やバランスなどに関係する能力です。筋肉量や体格だけで決まるものではありません。</p>
+        </header>
+        <div class="ability-card__body">
+            <section class="detail-block">
+                <h3>1. この能力が表しているもの</h3>
+                <p>PHYは、大きな相手を力で押し返すことだけではなく、重心を安定させる、相手とボールの間に体を入れる、接触されても次の動作へ移るといった体の使い方を含みます。姿勢やタイミングを工夫することで、体格にかかわらず生かせる部分があります。</p>
+            </section>
+            <section class="detail-block">
+                <h3>2. 試合で現れやすい場面</h3>
+                <ul class="scene-list"><li>相手を背負ってボールを収める</li><li>球際で体を入れて競り合う</li><li>接触を受けながらプレーを続ける</li><li>空中戦の着地後に姿勢を保つ</li></ul>
+            </section>
+            <section class="detail-block">
+                <h3>3. 練習方法</h3>
+                <ol class="training-grid">
+                    <li><strong>ボールを遠くに置くキープ</strong><span>相手役に軽く寄せてもらい、ボールを相手から遠い足へ置きます。腕だけで押さず、体の向きと足の位置を確認します。</span></li>
+                    <li><strong>バランスと姿勢保持</strong><span>片足立ちやゆっくりした重心移動を行い、上半身が大きく傾かない姿勢を作ります。安定した範囲で左右を行います。</span></li>
+                    <li><strong>体を入れる対人練習</strong><span>転がるボールへ相手より先に入り、体で進路を確保してからコントロールします。強くぶつかるのではなく位置取りを優先します。</span></li>
+                </ol>
+                <p class="safety-note">成長期を含め、無理な重量や過度な負荷は扱わず、正しいフォームを優先してください。筋力トレーニングは指導者のもとで行い、痛みがある場合や体調が悪い場合は中止して休みましょう。</p>
+            </section>
+            <section class="detail-block focus-box">
+                <h3>4. 試合中に意識したいこと</h3>
+                <p>相手が近づいてから力で対抗するのではなく、先に体の向きを作り、ボールを相手から遠い位置へ置きましょう。低い重心と次に動ける姿勢を保つと、接触後もパスやドリブルへ移りやすくなります。</p>
+            </section>
+            <div class="detail-block result-grid">
+                <section class="result-box result-box--high"><h3>5. 診断結果が高かった場合</h3><p>競り合いやキープを強みにできますが、力だけに頼らず、ファーストタッチや周囲を見る判断と組み合わせましょう。接触を避けて早く離したほうがよい場面も選べると、強みがさらに生きます。</p></section>
+                <section class="result-box result-box--low"><h3>6. 診断結果が低かった場合</h3><p>体格が小さいことと、プレーが弱いことは同じではありません。姿勢、重心、相手より先に入る位置、ボールの置き場所を工夫することで、競り合いやキープを補える場合があります。</p></section>
+            </div>
+            <a class="back-link" href="#guide-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="ability-card" id="def">
+        <header class="ability-card__header">
+            <span class="ability-label">DEF</span>
+            <h2>ディフェンスを伸ばす</h2>
+            <p class="ability-card__summary">相手の動きを予測する、危険な場所を埋める、1対1に対応する、ボールを奪う、味方をカバーするといった守備への関わりを表します。</p>
+        </header>
+        <div class="ability-card__body">
+            <section class="detail-block">
+                <h3>1. この能力が表しているもの</h3>
+                <p>DEFはタックルやボール奪取の回数だけではありません。相手の進行を遅らせる、危険なパスコースを切る、味方が戻る時間を作る、カバーできる距離を保つことも良い守備です。ボールが来る前の準備が結果に大きく関わります。</p>
+            </section>
+            <section class="detail-block">
+                <h3>2. 試合で現れやすい場面</h3>
+                <ul class="scene-list"><li>1対1で相手の進行方向を限定する</li><li>縦パスやスルーパスのコースを消す</li><li>味方が抜かれた場所をカバーする</li><li>ボールを失った直後に切り替える</li></ul>
+            </section>
+            <section class="detail-block">
+                <h3>3. 練習方法</h3>
+                <ol class="training-grid">
+                    <li><strong>外側へ誘導する1対1</strong><span>守るゴールを決め、相手を中央へ入れず外側へ運ばせます。すぐ足を出さず、距離と体の向きを保ちます。</span></li>
+                    <li><strong>パスコースを限定する</strong><span>ボール保持者と受け手の間に立ち、どちらのコースを消すか声で確認します。味方と連動して追い込みます。</span></li>
+                    <li><strong>少人数でカバーを確認する</strong><span>2対2や3対3で、味方が寄せたときに背後と中央を守れる位置へ動きます。奪う人と支える人の役割を交代します。</span></li>
+                </ol>
+            </section>
+            <section class="detail-block focus-box">
+                <h3>4. 試合中に意識したいこと</h3>
+                <p>最初から奪い切ろうとせず、相手をゴールから遠ざけ、味方が戻る時間を作る選択も持ちましょう。ボール、相手、守るゴールを同時に見やすい体の向きを作ると、次の動きを予測しやすくなります。</p>
+            </section>
+            <div class="detail-block result-grid">
+                <section class="result-box result-box--high"><h3>5. 診断結果が高かった場合</h3><p>守備の読みやポジショニングを強みとして生かしましょう。奪った瞬間に周囲を見て、最初のパスを味方へ安全に届けるところまでを一つの守備プレーとして考えられます。</p></section>
+                <section class="result-box result-box--low"><h3>6. 診断結果が低かった場合</h3><p>FWや攻撃的な役割では、守備に関わる場面自体が少ない可能性もあります。自分の役割を確認したうえで、まずボールを失った直後の数秒だけ素早く戻る、近いパスコースを一つ消すなど具体的に取り組めます。</p></section>
+            </div>
+            <a class="back-link" href="#guide-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="ability-card" id="spd">
+        <header class="ability-card__header">
+            <span class="ability-label">SPD</span>
+            <h2>スピードを伸ばす</h2>
+            <p class="ability-card__summary">最高速度だけでなく、短い距離での加速、動き出し、方向転換、攻守の切り替えなど、試合の状況に合わせて素早く動く力に関係します。</p>
+        </header>
+        <div class="ability-card__body">
+            <section class="detail-block">
+                <h3>1. この能力が表しているもの</h3>
+                <p>SPDは単純な50m走の速さだけではありません。相手より先に状況を読み、最初の一歩を早く出すことや、短い距離で加速・減速して方向を変えることも含みます。「相手より速く走る」だけでなく「相手より早く動き出す」ことが大切です。</p>
+            </section>
+            <section class="detail-block">
+                <h3>2. 試合で現れやすい場面</h3>
+                <ul class="scene-list"><li>DFの背後へ走り出す</li><li>サイドで一気に加速して突破する</li><li>ボールを失った後に帰陣する</li><li>相手のパスへ反応して方向を変える</li></ul>
+            </section>
+            <section class="detail-block">
+                <h3>3. 練習方法</h3>
+                <ol class="training-grid">
+                    <li><strong>5〜10mの短いダッシュ</strong><span>前向きや横向きなど試合に近い姿勢から、最初の数歩を素早く出します。一本ごとに十分な休息を取ります。</span></li>
+                    <li><strong>合図への反応スタート</strong><span>声や指差しの合図を見て、指定された方向へ動きます。予測だけで飛び出さず、情報を確認して反応します。</span></li>
+                    <li><strong>ボールを使った速度変化</strong><span>ボールを運びながら加速し、決めた地点で減速して方向を変えます。ボールが体から離れすぎない範囲で行います。</span></li>
+                </ol>
+                <p class="safety-note">スプリント前には十分にウォームアップし、一本ごとに休息を取りましょう。疲労してフォームが崩れた状態で無理に繰り返さず、痛みや違和感がある場合は中止してください。</p>
+            </section>
+            <section class="detail-block focus-box">
+                <h3>4. 試合中に意識したいこと</h3>
+                <p>常に全速力で走るのではなく、必要な瞬間に加速できる準備をしましょう。味方が前を向く前に動き出しの姿勢を作る、相手がボールから目を離した瞬間に走るなど、情報とタイミングを速度に結びつけます。</p>
+            </section>
+            <div class="detail-block result-grid">
+                <section class="result-box result-box--high"><h3>5. 診断結果が高かった場合</h3><p>背後へのランニング、サイド突破、守備のカバーなど、自分の速度が試合に影響する場面を見つけましょう。走る前の位置とタイミングを整えると、同じ速さでも相手との差を作りやすくなります。</p></section>
+                <section class="result-box result-box--low"><h3>6. 診断結果が低かった場合</h3><p>走力だけでプレーが決まるわけではありません。相手より先に状況を予測し、良い位置を取り、早く動き出すことで補える場面があります。短い距離の一歩目や準備姿勢から見直せます。</p></section>
+            </div>
+            <a class="back-link" href="#guide-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <article class="ability-card" id="pas">
+        <header class="ability-card__header">
+            <span class="ability-label">PAS</span>
+            <h2>パスを伸ばす</h2>
+            <p class="ability-card__summary">パスの正確性、タイミング、強さ、視野、味方との連係、攻撃の組み立てなど、ボールを味方へつないで次のプレーを作る能力です。</p>
+        </header>
+        <div class="ability-card__body">
+            <section class="detail-block">
+                <h3>1. この能力が表しているもの</h3>
+                <p>PASは単純なパス成功率だけではありません。味方が次のプレーをしやすい足元やスペースへ、適切な強さとタイミングで届けることが重要です。受ける前に周囲を見ておく準備や、短いパスと勝負するパスを選ぶ判断も関係します。</p>
+            </section>
+            <section class="detail-block">
+                <h3>2. 試合で現れやすい場面</h3>
+                <ul class="scene-list"><li>プレッシャーの中で近い味方へつなぐ</li><li>前線や逆サイドへ展開する</li><li>味方の走る先へラストパスを出す</li><li>ワンタッチやツータッチで攻撃のテンポを作る</li></ul>
+            </section>
+            <section class="detail-block">
+                <h3>3. 練習方法</h3>
+                <ol class="training-grid">
+                    <li><strong>左右両足のインサイドキック</strong><span>近い距離からフォームと軸足を確認し、味方の右足側・左足側へ狙い分けます。</span></li>
+                    <li><strong>受ける前に周囲を見る</strong><span>ボールが来る前に後方の合図や人数を確認し、受けた後の方向を決めてからコントロールします。</span></li>
+                    <li><strong>2タッチ以内のパス</strong><span>一度目のタッチを次に出したい方向へ置き、二度目で味方へ届けます。速さより準備と正確さを優先します。</span></li>
+                    <li><strong>距離に合わせた強さ</strong><span>近距離・中距離・動く味方へ同じフォームから蹴り分け、味方が止まらず受けられる強さを探します。</span></li>
+                </ol>
+            </section>
+            <section class="detail-block focus-box">
+                <h3>4. 試合中に意識したいこと</h3>
+                <p>ボールを受けてから探すのではなく、受ける前に味方、相手、空いている場所を確認しましょう。安全につなぐ場面と、相手のラインを越えるパスへ挑戦する場面を分けると、パスの目的が明確になります。</p>
+            </section>
+            <div class="detail-block result-grid">
+                <section class="result-box result-box--high"><h3>5. 診断結果が高かった場合</h3><p>試合の組み立てやチャンスメイクを強みとして生かし、安全なパスと勝負するパスを使い分けましょう。出した後に動き直し、もう一度受けることで攻撃を続けられます。</p></section>
+                <section class="result-box result-box--low"><h3>6. 診断結果が低かった場合</h3><p>キック技術だけでなく、周囲を見るタイミングや受ける前の体の向きも振り返りましょう。最初は短い距離で、味方の次のプレーがしやすい場所へ丁寧に届ける目標から始められます。</p></section>
+            </div>
+            <a class="back-link" href="#guide-list">一覧へ戻る ↑</a>
+        </div>
+    </article>
+
+    <section class="guide-card" id="make-goal">
+        <h2>診断結果から練習目標を作ってみよう</h2>
+        <p>診断結果を眺めるだけで終わらせず、一つの行動に置き換えると練習へつなげやすくなります。次の順番で、自分に合う小さな目標を作ってみましょう。</p>
+        <ol class="goal-steps">
+            <li>診断結果の6能力を確認する</li>
+            <li>高い能力を2つ確認する</li>
+            <li>自分のポジションと照らし合わせる</li>
+            <li>伸ばしたい能力を1つだけ選ぶ</li>
+            <li>具体的な練習目標に変える</li>
+            <li>数週間後にプレーを振り返る</li>
+        </ol>
+    </section>
+
+    <section class="examples-section">
+        <h2>診断結果を使った目標の具体例</h2>
+        <p>能力値の組み合わせから強みを整理し、次の一歩を決める例です。</p>
+        <div class="example-grid">
+            <article class="example-card">
+                <span class="example-card__label">例1</span>
+                <h3>WGの場合</h3>
+                <div class="score-list"><span>SPD 84</span><span>DRI 80</span><span>PAS 64</span></div>
+                <dl><dt>強み</dt><dd>スピード＋ドリブル</dd><dt>今後の目標</dt><dd>突破後のパスやクロスにつなげる</dd><dt>練習例</dt><dd>縦突破からクロスまでを左右のサイドで行う</dd></dl>
+            </article>
+            <article class="example-card">
+                <span class="example-card__label">例2</span>
+                <h3>CBの場合</h3>
+                <div class="score-list"><span>DEF 82</span><span>PHY 78</span><span>PAS 70</span></div>
+                <dl><dt>強み</dt><dd>守備＋フィジカル</dd><dt>今後の目標</dt><dd>奪った後のパスを安定させる</dd><dt>練習例</dt><dd>ボール奪取から味方へのファーストパスまでをセットで行う</dd></dl>
+            </article>
+            <article class="example-card">
+                <span class="example-card__label">例3</span>
+                <h3>OMFの場合</h3>
+                <div class="score-list"><span>PAS 83</span><span>OFE 76</span><span>DRI 72</span></div>
+                <dl><dt>強み</dt><dd>パス＋攻撃参加</dd><dt>今後の目標</dt><dd>チャンスメイクに加えて自分でもゴール前へ入る</dd><dt>練習例</dt><dd>パスを出したあとにゴール前へ入り直す</dd></dl>
+            </article>
+        </div>
+        <p class="example-note">ここで示した数値は、目標の作り方を説明するための例です。この数値なら必ず特定のタイプやプレーになるという意味ではありません。</p>
+    </section>
+
+    <section class="choice-card">
+        <h2>強みを伸ばす？ 苦手を補う？</h2>
+        <p>必ず低い能力から優先して練習する必要はありません。自分の武器をさらに伸ばす方法と、ポジションやチームから求められる能力を補う方法のどちらも選べます。一度に複数を変えようとせず、今の自分に必要なテーマを一つ選びましょう。</p>
+        <div class="choice-grid">
+            <article class="choice-item"><h3>強みをさらに磨く例</h3><p>WGでSPDとDRIが高く、突破がチームの武器になっているなら、動き出しや仕掛けの質をさらに高めます。そのうえで、突破後のパスやシュートまでを練習に含めます。</p></article>
+            <article class="choice-item"><h3>役割に必要な能力を補う例</h3><p>CBでDEFは高いもののPASが低く、チームからビルドアップを求められているなら、奪った後やGKから受けた後のパスを重点的なテーマにできます。</p></article>
+        </div>
+    </section>
+
+    <aside class="position-link-card">
+        <h2>ポジションで優先する能力を考える</h2>
+        <p>どの能力を優先するか迷ったら、自分のポジションでどの能力が生かされやすいかも確認してみましょう。チームでの役割と診断結果を重ねると、練習目標を選びやすくなります。</p>
+        <a class="button" href="position-guide.html">ポジション別に6つの能力を見る</a>
+    </aside>
+
+    <div class="related-links" aria-label="関連ページ">
+        <a class="button" href="abilities.html">6つの能力について詳しく見る</a>
+        <a class="button" href="position-guide.html">ポジション別に6能力を見る</a>
+        <a class="button" href="result-guide.html">診断結果の見方</a>
+        <a class="button" href="playstyle-guide.html">プレースタイル解説</a>
+        <a class="button button--secondary" href="index.html">サッカー診断をしてみる</a>
+    </div>
+
+    <footer class="footer">
+        <nav class="footer-links" aria-label="フッターリンク">
+            <a href="index.html">トップページ</a>
+            <a href="abilities.html">6つの能力について</a>
+            <a href="position-guide.html">ポジション別能力ガイド</a>
+            <a href="result-guide.html">診断結果の見方</a>
+            <a href="playstyle-guide.html">プレースタイル解説</a>
+            <a href="privacy.html">プライバシーポリシー</a>
+            <a href="disclaimer.html">免責事項</a>
+            <a href="operator.html">運営者情報</a>
+            <a href="contact.html">お問い合わせ</a>
+        </nav>
+        <p>© サッカー診断サイト</p>
+    </footer>
+
+</main>
+
+</body>
+</html>
+
