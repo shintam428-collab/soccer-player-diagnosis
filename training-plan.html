@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>サッカー診断結果から練習目標を作る方法 | サッカー診断サイト</title>
+<meta name="description" content="サッカー診断のOFE・DRI・PHY・DEF・SPD・PASの結果から、自分の強みや伸ばしたい能力を整理し、具体的な練習目標を作る方法を分かりやすく解説します。">
+<style>
+*, *::before, *::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;background:#f4f7fb;}
+html,body{width:100%;max-width:100%;margin:0;overflow-x:hidden;}
+body{font-family:Arial,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:#0f172a;background:#f4f7fb;line-height:1.85;}
+a{color:inherit;}
+.guide-page{width:min(100%,1080px);margin:0 auto;padding:42px 20px 28px;}
+.hero{position:relative;overflow:hidden;padding:52px 46px;border-radius:28px;background:linear-gradient(135deg,#0f2f74 0%,#1d4ed8 58%,#2563eb 100%);box-shadow:0 20px 44px rgba(30,64,175,0.22);color:#fff;}
+.hero::before,.hero::after{content:"";position:absolute;border-radius:999px;background:rgba(255,255,255,0.09);pointer-events:none;}
+.hero::before{width:280px;height:280px;right:-100px;top:-145px;}
+.hero::after{width:190px;height:190px;left:-90px;bottom:-105px;}
+.hero__inner{position:relative;z-index:1;max-width:850px;}
+.hero__label{display:inline-flex;align-items:center;gap:8px;margin:0 0 14px;padding:7px 13px;border:1px solid rgba(255,255,255,0.35);border-radius:999px;background:rgba(255,255,255,0.12);font-size:13px;font-weight:900;letter-spacing:.04em;}
+.hero h1{margin:0;font-size:clamp(32px,5.6vw,54px);line-height:1.3;font-weight:900;letter-spacing:.01em;}
+.hero__lead{max-width:780px;margin:20px 0 0;font-size:clamp(16px,2.3vw,19px);font-weight:700;color:#eaf2ff;}
+.hero__note{margin:22px 0 0;padding:15px 17px;border-radius:15px;background:rgba(7,25,66,0.42);border:1px solid rgba(255,255,255,0.2);font-size:14px;font-weight:700;color:#f8fbff;}
+.section{margin-top:34px;}
+.section-card{padding:34px;border:1px solid #dbe5f1;border-radius:24px;background:#fff;box-shadow:0 12px 30px rgba(15,23,42,0.07);}
+.section-heading{margin:0 0 10px;font-size:clamp(25px,4vw,34px);line-height:1.4;color:#123b91;font-weight:900;}
+.section-lead{margin:0;color:#475569;font-weight:650;}
+.toc{padding:30px 32px;}
+.toc h2{margin:0 0 16px;font-size:24px;line-height:1.4;color:#153e8e;}
+.toc-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:0;padding:0;list-style:none;}
+.toc-list a{display:flex;align-items:center;min-height:52px;padding:12px 15px;border:1px solid #cfe0fb;border-radius:14px;background:#f7faff;color:#1d4ed8;font-weight:900;text-decoration:none;transition:transform .18s ease,background .18s ease;}
+.toc-list a:hover{background:#eaf2ff;transform:translateY(-1px);}
+.step-card{scroll-margin-top:18px;padding:34px;border:1px solid #dbe5f1;border-radius:24px;background:#fff;box-shadow:0 12px 30px rgba(15,23,42,0.07);}
+.step-card + .step-card{margin-top:24px;}
+.step-title-row{display:flex;align-items:flex-start;gap:16px;margin-bottom:18px;}
+.step-number{display:flex;flex:0 0 54px;width:54px;height:54px;align-items:center;justify-content:center;border-radius:16px;background:linear-gradient(135deg,#2563eb,#1d4ed8);box-shadow:0 8px 18px rgba(37,99,235,.22);color:#fff;font-size:21px;font-weight:900;}
+.step-card h2{margin:3px 0 0;font-size:clamp(23px,3.5vw,30px);line-height:1.45;color:#123b91;}
+.step-card h3,.content-card h3,.position-card h3,.failure-card h3{margin:0 0 8px;font-size:19px;line-height:1.55;color:#1e3a8a;}
+.step-card p,.content-card p,.position-card p,.failure-card p{margin:0;color:#475569;font-weight:600;}
+.step-card p + p,.content-card p + p,.position-card p + p{margin-top:12px;}
+.numbered-list{counter-reset:read-order;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:22px 0 0;padding:0;list-style:none;}
+.numbered-list li{position:relative;padding:42px 12px 13px;border-radius:15px;background:#f4f8ff;border:1px solid #d8e5fb;color:#334155;font-size:14px;font-weight:800;text-align:center;}
+.numbered-list li::before{counter-increment:read-order;content:counter(read-order);position:absolute;top:10px;left:50%;display:flex;width:25px;height:25px;align-items:center;justify-content:center;transform:translateX(-50%);border-radius:999px;background:#2563eb;color:#fff;font-size:13px;}
+.inline-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;}
+.text-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:9px 14px;border-radius:12px;background:#eaf2ff;border:1px solid #cbdcf8;color:#1d4ed8;font-weight:900;text-decoration:none;}
+.text-link:hover{background:#dfeaff;}
+.cards-2,.cards-3,.ability-grid,.position-grid,.failure-grid,.formula-grid{display:grid;gap:14px;margin-top:20px;}
+.cards-2,.position-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+.cards-3,.ability-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
+.formula-grid{grid-template-columns:repeat(4,minmax(0,1fr));}
+.failure-grid{grid-template-columns:repeat(5,minmax(0,1fr));}
+.content-card{padding:20px;border-radius:17px;background:#f8fafc;border:1px solid #e2e8f0;}
+.content-card--blue{background:#f2f7ff;border-color:#d4e2fa;}
+.content-card--good{background:#f0fdf7;border-color:#bbf7d0;}
+.content-card--bad{background:#fff7f7;border-color:#fecaca;}
+.example-label{display:inline-block;margin-bottom:8px;padding:4px 9px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:12px;font-weight:900;}
+.plain-list,.check-list{margin:14px 0 0;padding-left:1.35em;color:#475569;font-weight:650;}
+.plain-list li + li,.check-list li + li{margin-top:8px;}
+.check-list{padding:0;list-style:none;}
+.check-list li{position:relative;padding-left:27px;}
+.check-list li::before{content:"✓";position:absolute;left:0;top:0;color:#2563eb;font-weight:900;}
+.decision-list{counter-reset:decision;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:20px 0 0;padding:0;list-style:none;}
+.decision-list li{counter-increment:decision;padding:19px;border-radius:17px;background:#f4f8ff;border:1px solid #d5e3fa;color:#475569;font-weight:650;}
+.decision-list strong{display:block;margin-bottom:7px;color:#1e3a8a;font-size:17px;}
+.decision-list strong::before{content:counter(decision) ". ";color:#2563eb;}
+.formula-card{padding:18px 15px;border-radius:16px;background:#eff6ff;border:1px solid #bfdbfe;text-align:center;}
+.formula-card strong{display:block;color:#1d4ed8;font-size:16px;}
+.formula-card span{display:block;margin-top:5px;color:#475569;font-size:13px;font-weight:700;}
+.ability-card{padding:21px;border-radius:18px;background:#f8fafc;border:1px solid #dce5f0;}
+.ability-code{display:inline-flex;min-width:50px;height:34px;align-items:center;justify-content:center;margin-bottom:10px;padding:0 10px;border-radius:10px;background:#2563eb;color:#fff;font-weight:900;letter-spacing:.05em;}
+.ability-card h3{margin:0 0 8px;color:#1e3a8a;font-size:18px;}
+.ability-card ul{margin:0;padding-left:1.25em;color:#475569;font-size:14px;font-weight:650;}
+.ability-card li + li{margin-top:5px;}
+.safety-box{margin-top:20px;padding:18px 20px;border-radius:17px;background:#fff8e8;border:1px solid #f4d58d;color:#5f4611;font-weight:700;}
+.position-section,.failure-section,.sheet-section,.flow-section{scroll-margin-top:18px;}
+.position-card{padding:23px;border-radius:19px;background:#fff;border:1px solid #dbe5f1;box-shadow:0 7px 20px rgba(15,23,42,.055);}
+.position-score{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 13px;}
+.position-score span{padding:4px 9px;border-radius:999px;background:#eaf2ff;color:#1d4ed8;font-size:12px;font-weight:900;}
+.position-card dl{display:grid;gap:10px;margin:0;}
+.position-card dt{font-size:13px;font-weight:900;color:#1e3a8a;}
+.position-card dd{margin:2px 0 0;color:#475569;font-weight:600;}
+.fiction-note{margin:16px 0 0;padding:13px 15px;border-radius:13px;background:#f8fafc;color:#64748b;font-size:13px;font-weight:700;}
+.failure-card{padding:19px;border-radius:17px;background:#fff;border:1px solid #e2e8f0;}
+.failure-card__number{display:flex;width:31px;height:31px;align-items:center;justify-content:center;margin-bottom:9px;border-radius:10px;background:#eaf2ff;color:#1d4ed8;font-weight:900;}
+.goal-sheet{margin-top:21px;padding:28px;border-radius:20px;background:linear-gradient(145deg,#eaf3ff,#f8fbff);border:2px solid #bfdbfe;box-shadow:inset 0 0 0 5px rgba(255,255,255,.55);}
+.goal-sheet__title{margin:0 0 17px;color:#123b91;font-size:21px;font-weight:900;}
+.goal-sheet__lines{display:grid;gap:10px;}
+.goal-sheet__line{margin:0!important;padding:9px 2px;border-bottom:1px dashed #93b4e6;color:#334155!important;font-weight:700!important;overflow-wrap:anywhere;}
+.goal-sheet__line strong{display:inline-block;min-width:160px;color:#1e3a8a;}
+.flow-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px 24px;margin:23px 0 0;padding:0;list-style:none;counter-reset:flow;}
+.flow-list li{counter-increment:flow;position:relative;display:flex;min-height:84px;align-items:center;justify-content:center;padding:17px 10px;border-radius:17px;background:#fff;border:1px solid #cfe0f8;color:#1e3a8a;text-align:center;font-weight:900;}
+.flow-list li::before{content:counter(flow);position:absolute;top:-11px;left:12px;display:flex;width:26px;height:26px;align-items:center;justify-content:center;border-radius:999px;background:#2563eb;color:#fff;font-size:12px;}
+.flow-list li:not(:nth-child(4n))::after{content:"→";position:absolute;right:-20px;color:#2563eb;font-size:20px;font-weight:900;}
+.related-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-top:22px;}
+.related-link{display:flex;min-height:58px;align-items:center;justify-content:center;padding:13px;border-radius:15px;background:#2563eb;color:#fff;text-align:center;font-weight:900;text-decoration:none;box-shadow:0 8px 18px rgba(37,99,235,.16);}
+.related-link:hover{background:#1d4ed8;}
+.related-link--light{background:#fff;color:#1d4ed8;border:1px solid #bfd3f4;box-shadow:none;}
+.related-link--light:hover{background:#eff6ff;}
+.guide-footer{margin-top:30px;padding:23px 16px 6px;text-align:center;color:#64748b;font-size:13px;font-weight:700;}
+.guide-footer__links{display:flex;align-items:center;justify-content:center;gap:10px 16px;flex-wrap:wrap;margin-bottom:13px;}
+.guide-footer a{color:#2563eb;font-weight:900;text-decoration:none;}
+.guide-footer a:hover{text-decoration:underline;}
+@media(max-width:900px){
+  .failure-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .formula-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .flow-list{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .flow-list li:not(:nth-child(4n))::after{display:none;}
+  .ability-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media(max-width:700px){
+  .guide-page{padding:24px 12px 20px;}
+  .hero{padding:36px 24px;border-radius:21px;}
+  .section{margin-top:24px;}
+  .section-card,.step-card{padding:25px 20px;border-radius:20px;}
+  .toc{padding:24px 20px;}
+  .toc-list,.cards-2,.cards-3,.position-grid,.decision-list,.related-links{grid-template-columns:1fr;}
+  .numbered-list{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .step-title-row{gap:12px;}
+  .step-number{flex-basis:45px;width:45px;height:45px;border-radius:13px;font-size:18px;}
+  .goal-sheet{padding:23px 18px;}
+  .goal-sheet__line strong{display:block;min-width:0;margin-bottom:2px;}
+}
+@media(max-width:480px){
+  .guide-page{padding:18px 10px;}
+  .hero{padding:31px 19px;}
+  .hero h1{font-size:30px;}
+  .section-card,.step-card{padding:22px 16px;}
+  .toc{padding:22px 16px;}
+  .toc-list a{min-height:48px;padding:10px 12px;font-size:14px;}
+  .step-title-row{display:block;}
+  .step-number{margin-bottom:12px;}
+  .numbered-list,.ability-grid,.formula-grid,.failure-grid,.flow-list{grid-template-columns:1fr;}
+  .numbered-list li{min-height:72px;}
+  .inline-links{display:grid;grid-template-columns:1fr;}
+  .text-link{width:100%;}
+  .flow-list{gap:17px;}
+  .related-link{width:100%;}
+  .guide-footer__links{gap:9px 12px;}
+}
+</style>
+</head>
+<body>
+<main class="guide-page">
+  <header class="hero">
+    <div class="hero__inner">
+      <p class="hero__label">診断後のアクションガイド</p>
+      <h1>診断結果から自分だけの練習目標を作ろう</h1>
+      <p class="hero__lead">診断結果は、眺めて終わりにするのではなく、自分のプレーを振り返る材料として使うと役立ちます。6つの能力を一度に全部伸ばそうとせず、まず強みを整理し、今伸ばしたい能力を1つ選んで、試合で実行できる行動へ変えてみましょう。数週間取り組んだら振り返り、必要に応じて目標を変えたり、もう一度診断したりすることも大切です。</p>
+      <p class="hero__note">診断結果は公式な能力評価ではありません。練習目標を決めるための一つの参考として利用してください。</p>
+    </div>
+  </header>
+
+  <nav class="section section-card toc" aria-label="ページ内の目次">
+    <h2>目次</h2>
+    <ul class="toc-list">
+      <li><a href="#step1">STEP1 診断結果を確認</a></li>
+      <li><a href="#step2">STEP2 強みを見つける</a></li>
+      <li><a href="#step3">STEP3 伸ばしたい能力を選ぶ</a></li>
+      <li><a href="#step4">STEP4 具体的な目標に変える</a></li>
+      <li><a href="#step5">STEP5 練習メニューを決める</a></li>
+      <li><a href="#step6">STEP6 振り返る</a></li>
+      <li><a href="#position-examples">ポジション別の具体例</a></li>
+      <li><a href="#common-mistakes">よくある失敗</a></li>
+      <li><a href="#goal-sheet">目標シート</a></li>
+    </ul>
+  </nav>
+
+  <section class="section" aria-label="練習目標を作る6つのステップ">
+    <article class="step-card" id="step1">
+      <div class="step-title-row">
+        <span class="step-number" aria-hidden="true">1</span>
+        <h2>STEP1｜まず診断結果を整理しよう</h2>
+      </div>
+      <p>結果画面では、総合値だけでなく、OFE・DRI・PHY・DEF・SPD・PASの6能力、レーダーチャート、プレースタイル、普段のポジションを合わせて確認します。総合値は全体像をつかむための目安ですが、その数字だけでプレーの良し悪しは決まりません。能力の高低や組み合わせに目を向けると、自分らしい特徴が見えやすくなります。</p>
+      <ol class="numbered-list">
+        <li>最も高い能力</li>
+        <li>次に高い能力</li>
+        <li>低めの能力</li>
+        <li>レーダーの形</li>
+        <li>ポジションとの関係</li>
+      </ol>
+      <p style="margin-top:18px;">低めに出た能力も、単純な弱点とは限りません。ポジションやチームでの役割によって、求められる能力や生かし方は異なります。まずは評価を急がず、「どの能力が、どのプレーに表れているか」を考えてみましょう。</p>
+      <div class="inline-links">
+        <a class="text-link" href="result-guide.html">診断結果の見方を確認する</a>
+        <a class="text-link" href="result-examples.html">診断結果の具体例を見る</a>
+      </div>
+    </article>
+
+    <article class="step-card" id="step2">
+      <div class="step-title-row">
+        <span class="step-number" aria-hidden="true">2</span>
+        <h2>STEP2｜まずは自分の強みを言葉にする</h2>
+      </div>
+      <p>能力名をそのまま覚えるだけでなく、「試合で何ができるのか」という言葉に置き換えてみましょう。複数の能力が組み合わさることで、実際の強みがより具体的になります。</p>
+      <div class="cards-2">
+        <div class="content-card content-card--blue">
+          <h3>SPD ＋ DRI</h3>
+          <p>スピードを生かして相手をかわし、ボールを前へ運べる。空いているスペースを見つけたときに特徴を出しやすい組み合わせです。</p>
+        </div>
+        <div class="content-card content-card--blue">
+          <h3>DEF ＋ PHY</h3>
+          <p>対人守備や空中戦で相手の攻撃を止める。体の使い方と守備判断を組み合わせ、危険な場面を減らしやすい強みです。</p>
+        </div>
+        <div class="content-card content-card--blue">
+          <h3>PAS ＋ OFE</h3>
+          <p>味方を生かしながら、自分もゴールに関わる。パスを出した後も動き直し、次の攻撃へ続けられる特徴があります。</p>
+        </div>
+        <div class="content-card content-card--blue">
+          <h3>PAS ＋ DEF</h3>
+          <p>ボールを奪った後、落ち着いて攻撃を始める。守備で終わらず、安全な味方や前方の選択肢へつなげられる強みです。</p>
+        </div>
+      </div>
+      <h3 style="margin-top:22px;">強みを見つけるための質問</h3>
+      <ul class="check-list">
+        <li>自信を持って行えるプレーは何か</li>
+        <li>チームメートや指導者から褒められるプレーは何か</li>
+        <li>ボールを持ったとき、自然に選んでいるプレーは何か</li>
+        <li>守備で「うまく対応できた」と感じるのはどんな場面か</li>
+      </ul>
+    </article>
+
+    <article class="step-card" id="step3">
+      <div class="step-title-row">
+        <span class="step-number" aria-hidden="true">3</span>
+        <h2>STEP3｜次に伸ばしたい能力を1つ決める</h2>
+      </div>
+      <p>伸ばす能力は、必ずしも数値が最も低いものを選ぶ必要はありません。自分の強みをさらに伸ばすのか、ポジションで必要な要素を補うのか、チームで任されている役割を良くするのかを考え、今の自分に合う1つを決めます。</p>
+      <ol class="decision-list">
+        <li><strong>強みを伸ばす</strong>すでに得意な能力を磨き、試合で相手との差を作れる武器にする。</li>
+        <li><strong>役割を補う</strong>ポジションで必要になりやすい能力から、今後役立ちそうなものを選ぶ。</li>
+        <li><strong>チームの役割を伸ばす</strong>監督やチームから求められているプレーに結びつく能力を選ぶ。</li>
+      </ol>
+      <div class="cards-2">
+        <div class="content-card">
+          <span class="example-label">例：WG</span>
+          <h3>SPD 84・DRI 82・PAS 63</h3>
+          <p>縦への突破を武器にするならSPDやDRIをさらに伸ばす考え方があります。一方、突破後のクロスやラストパスの精度を高めたいなら、PASを選ぶこともできます。</p>
+        </div>
+        <div class="content-card">
+          <span class="example-label">例：CB</span>
+          <h3>DEF 84・PHY 81・PAS 62</h3>
+          <p>守備の安定感をさらに高めるならDEFやPHYが候補です。ビルドアップを任されているなら、奪った後の配球につながるPASを選ぶ意味もあります。</p>
+        </div>
+      </div>
+      <div class="inline-links">
+        <a class="text-link" href="position-guide.html">ポジション別に6能力を見る</a>
+      </div>
+    </article>
+
+    <article class="step-card" id="step4">
+      <div class="step-title-row">
+        <span class="step-number" aria-hidden="true">4</span>
+        <h2>STEP4｜「能力を上げたい」から「何をするか」へ</h2>
+      </div>
+      <p>「PASを上げる」「DRIを上げる」「守備を頑張る」だけでは、練習や試合で何をすればよいかが曖昧です。能力名を、場面と行動が分かる目標へ置き換えましょう。</p>
+      <div class="cards-2">
+        <div class="content-card content-card--bad">
+          <h3>曖昧な目標</h3>
+          <ul class="plain-list">
+            <li>PASを上げる</li>
+            <li>DRIを上げる</li>
+            <li>守備を頑張る</li>
+          </ul>
+        </div>
+        <div class="content-card content-card--good">
+          <h3>行動が分かる目標</h3>
+          <ul class="plain-list">
+            <li>両足で、味方が受けやすい位置へパスを出す</li>
+            <li>1対1では毎回仕掛けず、空いた場所へ運ぶ選択も使う</li>
+            <li>すぐに飛び込まず、相手を外側へ誘導する</li>
+            <li>味方が前を向いたら、背後への動き出しを増やす</li>
+          </ul>
+        </div>
+      </div>
+      <div class="formula-grid">
+        <div class="formula-card"><strong>何を</strong><span>改善したいプレー</span></div>
+        <div class="formula-card"><strong>どんな場面で</strong><span>試合の状況</span></div>
+        <div class="formula-card"><strong>どのくらい</strong><span>回数や意識の頻度</span></div>
+        <div class="formula-card"><strong>いつ振り返るか</strong><span>見直す日</span></div>
+      </div>
+      <p style="margin-top:18px;">この4つが分かると、練習の目的と試合での確認点が結びつきます。達成できたかだけでなく、以前より良くなった点も見つけやすくなります。</p>
+    </article>
+
+    <article class="step-card" id="step5">
+      <div class="step-title-row">
+        <span class="step-number" aria-hidden="true">5</span>
+        <h2>STEP5｜目標に合った練習を選ぶ</h2>
+      </div>
+      <p>決めた目標に近い動きや判断を練習に取り入れます。回数をこなすことだけを目的にせず、試合のどの場面で使うかをイメージしながら行うことが大切です。</p>
+      <div class="ability-grid">
+        <div class="ability-card">
+          <span class="ability-code">OFE</span>
+          <h3>オフェンス</h3>
+          <ul><li>ゴール前への動き出し</li><li>シュート後の動き直し</li><li>味方が前を向いた瞬間の背後へのラン</li></ul>
+        </div>
+        <div class="ability-card">
+          <span class="ability-code">DRI</span>
+          <h3>ドリブル</h3>
+          <ul><li>両足を使った細かなボールタッチ</li><li>顔を上げながらボールを運ぶ</li><li>1対1で相手との間合いを変える</li></ul>
+        </div>
+        <div class="ability-card">
+          <span class="ability-code">PHY</span>
+          <h3>フィジカル</h3>
+          <ul><li>相手を背負ったボールキープ</li><li>姿勢を保つバランス練習</li><li>先に良い位置へ入る体の使い方</li></ul>
+        </div>
+        <div class="ability-card">
+          <span class="ability-code">DEF</span>
+          <h3>ディフェンス</h3>
+          <ul><li>1対1で飛び込まず対応する</li><li>相手の進行方向を限定する</li><li>味方の背後をカバーする位置取り</li></ul>
+        </div>
+        <div class="ability-card">
+          <span class="ability-code">SPD</span>
+          <h3>スピード</h3>
+          <ul><li>5〜10メートルの短いダッシュ</li><li>切り返しを含む方向転換</li><li>合図に反応してスタートする</li></ul>
+        </div>
+        <div class="ability-card">
+          <span class="ability-code">PAS</span>
+          <h3>パス</h3>
+          <ul><li>両足を使った短いパス</li><li>受ける前に周囲を確認する</li><li>2タッチで次の味方へつなぐ</li></ul>
+        </div>
+      </div>
+      <div class="safety-box">練習内容や負荷は、年齢・体力・経験・所属チームの方針に合わせて調整してください。十分なウォームアップと休息を取り、痛みや体調不良がある場合は無理をせず、指導者や保護者などに相談しましょう。過度な負荷をかけず、安全な場所と方法で行うことが前提です。</div>
+      <div class="inline-links">
+        <a class="text-link" href="ability-training.html">6能力を伸ばす練習方法を見る</a>
+      </div>
+    </article>
+
+    <article class="step-card" id="step6">
+      <div class="step-title-row">
+        <span class="step-number" aria-hidden="true">6</span>
+        <h2>STEP6｜練習したら振り返ろう</h2>
+      </div>
+      <p>振り返りは「練習をした・しなかった」だけで終わらせず、試合で実際に使えたかを確認します。回数だけでなく、判断やプレーの質がどう変わったかも大切です。数週間を目安に見直し、難しすぎる場合は小さな目標へ変え、できるようになったら次の目標へ進みましょう。</p>
+      <p>もう一度診断して変化を見る方法もあります。ただし、診断値を上げること自体を目的にせず、試合で自分の特徴を生かせる場面が増えたかを中心に考えてください。</p>
+      <h3 style="margin-top:22px;">振り返りの質問</h3>
+      <ul class="check-list">
+        <li>試合の中で目標を意識できたか</li>
+        <li>うまくできた場面はあったか</li>
+        <li>難しかった場面はどこか</li>
+        <li>次は何を変えるとよいか</li>
+        <li>強みを生かせた場面は増えたか</li>
+      </ul>
+    </article>
+  </section>
+
+  <section class="section section-card position-section" id="position-examples">
+    <h2 class="section-heading">ポジション別｜目標の作り方の例</h2>
+    <p class="section-lead">同じ能力でも、ポジションや役割によって目標の作り方は変わります。自分のプレーに置き換えるときの参考にしてください。</p>
+    <div class="position-grid">
+      <article class="position-card">
+        <h3>WG｜突破の先までつなげる</h3>
+        <div class="position-score"><span>SPD 84</span><span>DRI 81</span><span>PAS 64</span></div>
+        <dl>
+          <div><dt>強み</dt><dd>スピードとドリブルを生かした縦への突破。</dd></div>
+          <div><dt>目標</dt><dd>相手を抜いた後、クロスやラストパスまで落ち着いてつなげる。</dd></div>
+          <div><dt>練習例</dt><dd>縦突破からクロス、カットインからパスまたはシュートまでを続けて行う。</dd></div>
+        </dl>
+      </article>
+      <article class="position-card">
+        <h3>CF｜得点への関わり方を増やす</h3>
+        <div class="position-score"><span>OFE 85</span><span>SPD 78</span><span>PHY 75</span></div>
+        <dl>
+          <div><dt>強み</dt><dd>ゴール前への動き出しと、相手との競り合い。</dd></div>
+          <div><dt>目標</dt><dd>背後へ走るだけでなく、ボールを収めて味方を使う選択も増やす。</dd></div>
+          <div><dt>練習例</dt><dd>ポストプレーから味方へ落とし、もう一度ゴール前へ入る動きを繰り返す。</dd></div>
+        </dl>
+      </article>
+      <article class="position-card">
+        <h3>OMF｜パスの後も攻撃に関わる</h3>
+        <div class="position-score"><span>PAS 84</span><span>OFE 77</span><span>DRI 73</span></div>
+        <dl>
+          <div><dt>強み</dt><dd>味方を使うパスと、攻撃へ入っていく判断。</dd></div>
+          <div><dt>目標</dt><dd>パスを出して止まらず、ゴール方向へ動き直して次のプレーに関わる。</dd></div>
+          <div><dt>練習例</dt><dd>パス、移動、リターンパス、シュートを一つの流れで行う。</dd></div>
+        </dl>
+      </article>
+      <article class="position-card">
+        <h3>CMF｜奪った後の最初のパスを安定させる</h3>
+        <div class="position-score"><span>PAS 79</span><span>DEF 76</span><span>PHY 73</span></div>
+        <dl>
+          <div><dt>強み</dt><dd>攻守をつなぎ、中央でボールの流れを整える。</dd></div>
+          <div><dt>目標</dt><dd>ボールを奪った直後に周囲を確認し、最初のパスを味方へ確実につなぐ。</dd></div>
+          <div><dt>練習例</dt><dd>守備、奪取、顔を上げる、味方へパスという流れを続けて行う。</dd></div>
+        </dl>
+      </article>
+      <article class="position-card">
+        <h3>SB｜攻め上がるタイミングを磨く</h3>
+        <div class="position-score"><span>SPD 82</span><span>DEF 80</span><span>PAS 73</span></div>
+        <dl>
+          <div><dt>強み</dt><dd>サイドの守備と、上下動を繰り返せるスピード。</dd></div>
+          <div><dt>目標</dt><dd>味方と相手の位置を見て、効果的なタイミングでオーバーラップする。</dd></div>
+          <div><dt>練習例</dt><dd>守備対応から前方を確認し、オーバーラップしてクロスまで行う。</dd></div>
+        </dl>
+      </article>
+      <article class="position-card">
+        <h3>CB｜守備から攻撃の始まりへつなぐ</h3>
+        <div class="position-score"><span>DEF 85</span><span>PHY 82</span><span>PAS 70</span></div>
+        <dl>
+          <div><dt>強み</dt><dd>対人守備と競り合いで相手の攻撃を止める。</dd></div>
+          <div><dt>目標</dt><dd>守備を成功させた後も集中を切らさず、攻撃の始まりとなるパスを選ぶ。</dd></div>
+          <div><dt>練習例</dt><dd>競り合い、ボールを確保、周囲を確認、縦パスまでを連続して行う。</dd></div>
+        </dl>
+      </article>
+    </div>
+    <p class="fiction-note">このセクションの能力値は、目標の作り方を説明するための架空の例です。実在する選手の能力や評価を示すものではありません。</p>
+    <div class="inline-links">
+      <a class="text-link" href="position-guide.html">ポジション別に6能力を見る</a>
+    </div>
+  </section>
+
+  <section class="section section-card failure-section" id="common-mistakes">
+    <h2 class="section-heading">練習目標を作るときによくある失敗</h2>
+    <p class="section-lead">目標が続かないときは、意欲ではなく作り方を見直すと改善できることがあります。</p>
+    <div class="failure-grid">
+      <article class="failure-card">
+        <span class="failure-card__number">1</span>
+        <h3>6能力を一度に伸ばす</h3>
+        <p>意識が分散して目標が曖昧になります。まずは1つに絞りましょう。</p>
+      </article>
+      <article class="failure-card">
+        <span class="failure-card__number">2</span>
+        <h3>最も低い能力だけを選ぶ</h3>
+        <p>その能力が現在の役割で重要とは限りません。強みや役割も合わせて考えます。</p>
+      </article>
+      <article class="failure-card">
+        <span class="failure-card__number">3</span>
+        <h3>数値を上げることだけを目指す</h3>
+        <p>大切なのは、試合で使えるプレーが増え、質が良くなることです。</p>
+      </article>
+      <article class="failure-card">
+        <span class="failure-card__number">4</span>
+        <h3>練習後に試合を振り返らない</h3>
+        <p>練習した動きを実戦で使えたか確認すると、次の課題が見つかります。</p>
+      </article>
+      <article class="failure-card">
+        <span class="failure-card__number">5</span>
+        <h3>他の選手と比べすぎる</h3>
+        <p>ポジションや役割が違えば必要な能力も異なります。自分の変化を見ましょう。</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section section-card sheet-section" id="goal-sheet">
+    <h2 class="section-heading">自分の練習目標を整理してみよう</h2>
+    <p class="section-lead">診断結果とここまでのステップを見ながら、紙やスマートフォンのメモに書き写して使ってください。</p>
+    <div class="goal-sheet" aria-label="自分の練習目標テンプレート">
+      <p class="goal-sheet__title">【自分の練習目標】</p>
+      <div class="goal-sheet__lines">
+        <p class="goal-sheet__line"><strong>ポジション：</strong></p>
+        <p class="goal-sheet__line"><strong>最も高い能力：</strong></p>
+        <p class="goal-sheet__line"><strong>強み：</strong></p>
+        <p class="goal-sheet__line"><strong>伸ばしたい能力：</strong></p>
+        <p class="goal-sheet__line"><strong>理由：</strong></p>
+        <p class="goal-sheet__line"><strong>練習目標：</strong></p>
+        <p class="goal-sheet__line"><strong>練習方法：</strong></p>
+        <p class="goal-sheet__line"><strong>試合で意識すること：</strong></p>
+        <p class="goal-sheet__line"><strong>振り返る日：</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-card flow-section">
+    <h2 class="section-heading">診断を練習と試合につなげる流れ</h2>
+    <p class="section-lead">一度決めた目標にこだわりすぎず、試合での気づきをもとに繰り返し見直しましょう。</p>
+    <ol class="flow-list">
+      <li>診断</li>
+      <li>結果を見る</li>
+      <li>強みを知る</li>
+      <li>伸ばす能力を選ぶ</li>
+      <li>練習</li>
+      <li>試合</li>
+      <li>振り返り</li>
+      <li>再診断</li>
+    </ol>
+    <div class="inline-links">
+      <a class="text-link" href="diagnosis-method.html">診断の仕組みを見る</a>
+      <a class="text-link" href="abilities.html">6つの能力について確認する</a>
+    </div>
+  </section>
+
+  <section class="section section-card">
+    <h2 class="section-heading">次に確認したいページ</h2>
+    <p class="section-lead">診断結果の理解や、ポジションに合わせた目標作りに役立つ解説をまとめています。</p>
+    <div class="related-links">
+      <a class="related-link" href="index.html">サッカー診断をしてみる</a>
+      <a class="related-link" href="result-examples.html">診断結果の具体例</a>
+      <a class="related-link" href="position-guide.html">ポジション別能力ガイド</a>
+      <a class="related-link related-link--light" href="ability-training.html">6能力の練習ガイド</a>
+      <a class="related-link related-link--light" href="diagnosis-method.html">診断の仕組み</a>
+      <a class="related-link related-link--light" href="result-guide.html">診断結果の見方</a>
+    </div>
+  </section>
+
+  <footer class="guide-footer">
+    <nav class="guide-footer__links" aria-label="フッターリンク">
+      <a href="index.html">トップページ</a>
+      <a href="abilities.html">6つの能力について</a>
+      <a href="position-guide.html">ポジション別能力ガイド</a>
+      <a href="ability-training.html">6能力の練習ガイド</a>
+      <a href="diagnosis-method.html">診断の仕組み</a>
+      <a href="result-examples.html">診断結果の具体例</a>
+      <a href="result-guide.html">診断結果の見方</a>
+      <a href="playstyle-guide.html">プレースタイル解説</a>
+      <a href="privacy.html">プライバシーポリシー</a>
+      <a href="disclaimer.html">免責事項</a>
+      <a href="operator.html">運営者情報</a>
+      <a href="contact.html">お問い合わせ</a>
+    </nav>
+    <p>&copy; サッカー診断サイト</p>
+  </footer>
+</main>
+</body>
+</html>
