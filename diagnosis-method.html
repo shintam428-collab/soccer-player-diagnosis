@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>サッカー診断はどうやって結果を出している？ | サッカー診断サイト</title>
+
+<meta name="description" content="サッカー診断サイトで能力値やプレースタイルがどのように決まるのかを解説。ポジション、回答、得意・苦手、自己評価、6能力、総合値、ランク、レーダーチャートの考え方を紹介します。">
+
+<style>
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+html, body {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    color: #0f172a;
+    background: #f4f7fb;
+    line-height: 1.9;
+}
+
+a {
+    overflow-wrap: anywhere;
+}
+
+.page {
+    width: min(100%, 1060px);
+    margin: 0 auto;
+    padding: 48px 20px 30px;
+}
+
+.hero {
+    padding: 44px 36px;
+    border: 1px solid #dbeafe;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+    text-align: center;
+}
+
+.hero__label {
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 5px 13px;
+    border-radius: 999px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.hero h1 {
+    margin: 0 0 16px;
+    font-size: clamp(30px, 6vw, 46px);
+    font-weight: 900;
+    line-height: 1.3;
+}
+
+.hero p {
+    max-width: 820px;
+    margin: 0 auto;
+    color: #475569;
+    font-weight: 700;
+}
+
+.hero p + p {
+    margin-top: 12px;
+}
+
+.notice {
+    margin-top: 24px;
+    padding: 18px 20px;
+    border: 1px solid #bfdbfe;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #1e3a8a;
+    text-align: left;
+    font-weight: 700;
+}
+
+.contents,
+.section-card,
+.closing-card,
+.faq-section {
+    margin-top: 28px;
+    padding: 32px;
+    border: 1px solid #e2e8f0;
+    border-radius: 22px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+    scroll-margin-top: 18px;
+}
+
+.contents h2,
+.section-card > h2,
+.closing-card > h2,
+.faq-section > h2 {
+    margin: 0 0 16px;
+    font-size: clamp(24px, 4vw, 30px);
+    line-height: 1.45;
+}
+
+.contents h2 {
+    text-align: center;
+}
+
+.section-card > p,
+.closing-card > p,
+.faq-section > p {
+    margin: 0;
+    color: #475569;
+    font-weight: 600;
+}
+
+.section-card > p + p,
+.closing-card > p + p {
+    margin-top: 13px;
+}
+
+.contents-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.contents-grid a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 58px;
+    padding: 10px 12px;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 900;
+    line-height: 1.45;
+}
+
+.contents-grid a:hover {
+    background: #dbeafe;
+}
+
+.section-lead {
+    margin-bottom: 22px !important;
+}
+
+.step-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: diagnosis-step;
+}
+
+.step-grid li {
+    position: relative;
+    min-width: 0;
+    min-height: 174px;
+    padding: 20px 20px 20px 72px;
+    border: 1px solid #dbeafe;
+    border-radius: 17px;
+    background: linear-gradient(135deg, #f8fbff 0%, #ffffff 100%);
+    counter-increment: diagnosis-step;
+}
+
+.step-grid li::before {
+    content: counter(diagnosis-step, decimal-leading-zero);
+    position: absolute;
+    top: 20px;
+    left: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 900;
+    box-shadow: 0 8px 16px rgba(37, 99, 235, 0.22);
+}
+
+.step-grid h3 {
+    margin: 0 0 7px;
+    color: #1e3a8a;
+    font-size: 18px;
+    line-height: 1.45;
+}
+
+.step-grid p {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.8;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 22px;
+}
+
+.detail-box {
+    min-width: 0;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #f8fafc;
+}
+
+.detail-box h3 {
+    margin: 0 0 8px;
+    color: #1e3a8a;
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+.detail-box p,
+.detail-box ul {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.detail-box ul {
+    padding-left: 21px;
+}
+
+.detail-box li + li {
+    margin-top: 5px;
+}
+
+.point-box {
+    margin-top: 20px;
+    padding: 18px 20px;
+    border-left: 4px solid #2563eb;
+    border-radius: 0 14px 14px 0;
+    background: #eff6ff;
+    color: #1e3a8a;
+    font-weight: 700;
+}
+
+.point-box p {
+    margin: 0;
+}
+
+.page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    margin-top: 20px;
+    padding: 12px 20px;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    text-decoration: none;
+    font-weight: 900;
+    line-height: 1.5;
+}
+
+.page-link:hover {
+    background: #dbeafe;
+}
+
+.question-example-list,
+.measure-list {
+    margin: 18px 0 0;
+    padding-left: 24px;
+    color: #475569;
+    font-weight: 600;
+}
+
+.question-example-list li + li,
+.measure-list li + li {
+    margin-top: 7px;
+}
+
+.ability-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.ability-item {
+    min-width: 0;
+    padding: 19px;
+    border: 1px solid #dbeafe;
+    border-radius: 16px;
+    background: #f8fbff;
+}
+
+.ability-code {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 55px;
+    margin-bottom: 9px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .08em;
+}
+
+.ability-item h3 {
+    margin: 0 0 7px;
+    color: #1e3a8a;
+    font-size: 18px;
+}
+
+.ability-item p {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.comparison-card {
+    min-width: 0;
+    padding: 20px;
+    border: 1px solid #dbeafe;
+    border-radius: 16px;
+    background: #f8fbff;
+}
+
+.comparison-card strong {
+    display: block;
+    margin-bottom: 7px;
+    color: #1d4ed8;
+    font-size: 17px;
+}
+
+.comparison-card p {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.rank-list {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+    margin: 22px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.rank-list li {
+    min-width: 0;
+    padding: 16px 10px;
+    border: 1px solid #dbeafe;
+    border-radius: 14px;
+    background: #f8fafc;
+    text-align: center;
+}
+
+.rank-list strong,
+.rank-list span {
+    display: block;
+}
+
+.rank-list strong {
+    color: #1e3a8a;
+    font-size: 15px;
+    overflow-wrap: anywhere;
+}
+
+.rank-list span {
+    margin-top: 4px;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.type-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 9px;
+    margin: 22px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.type-list li {
+    min-width: 0;
+    padding: 11px 12px;
+    border: 1px solid #dbeafe;
+    border-radius: 12px;
+    background: #f8fbff;
+    color: #1e3a8a;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 900;
+}
+
+.use-steps {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 22px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: use-step;
+}
+
+.use-steps li {
+    position: relative;
+    min-width: 0;
+    min-height: 72px;
+    padding: 16px 16px 16px 58px;
+    border: 1px solid #dbeafe;
+    border-radius: 14px;
+    background: #f8fbff;
+    color: #475569;
+    font-weight: 700;
+    counter-increment: use-step;
+}
+
+.use-steps li::before {
+    content: counter(use-step);
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.guide-links,
+.related-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 14px 22px;
+    border: 1px solid #2563eb;
+    border-radius: 12px;
+    background: #2563eb;
+    color: #ffffff;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 900;
+    line-height: 1.5;
+}
+
+.button:hover {
+    background: #1d4ed8;
+}
+
+.button--secondary {
+    border-color: #bfdbfe;
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.button--secondary:hover {
+    background: #dbeafe;
+}
+
+.faq-list {
+    display: grid;
+    gap: 11px;
+    margin-top: 20px;
+}
+
+.faq-list details {
+    border: 1px solid #dbeafe;
+    border-radius: 14px;
+    background: #f8fbff;
+    overflow: hidden;
+}
+
+.faq-list summary {
+    position: relative;
+    padding: 17px 48px 17px 18px;
+    color: #1e3a8a;
+    font-weight: 900;
+    cursor: pointer;
+    list-style: none;
+}
+
+.faq-list summary::-webkit-details-marker {
+    display: none;
+}
+
+.faq-list summary::after {
+    content: "+";
+    position: absolute;
+    top: 50%;
+    right: 18px;
+    transform: translateY(-50%);
+    color: #2563eb;
+    font-size: 22px;
+    line-height: 1;
+}
+
+.faq-list details[open] summary::after {
+    content: "−";
+}
+
+.faq-list details p {
+    margin: 0;
+    padding: 0 18px 18px;
+    color: #475569;
+    font-weight: 600;
+}
+
+.closing-card {
+    border-color: #bfdbfe;
+    background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+    text-align: center;
+}
+
+.closing-card > p {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.footer {
+    margin-top: 32px;
+    padding-bottom: 18px;
+    color: #64748b;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    margin-bottom: 12px;
+}
+
+.footer a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 900;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 820px) {
+    .contents-grid,
+    .ability-grid,
+    .type-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .rank-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .page {
+        padding: 28px 12px 22px;
+    }
+
+    .hero {
+        padding: 28px 18px;
+        border-radius: 18px;
+    }
+
+    .contents,
+    .section-card,
+    .closing-card,
+    .faq-section {
+        padding: 24px 18px;
+        border-radius: 18px;
+    }
+
+    .contents-grid,
+    .step-grid,
+    .detail-grid,
+    .ability-grid,
+    .comparison-grid,
+    .rank-list,
+    .type-list,
+    .use-steps {
+        grid-template-columns: 1fr;
+    }
+
+    .contents-grid a {
+        min-height: 50px;
+    }
+
+    .step-grid li {
+        min-height: 0;
+        padding: 18px 18px 18px 66px;
+    }
+
+    .step-grid li::before {
+        top: 18px;
+        left: 16px;
+    }
+
+    .guide-links,
+    .related-links {
+        flex-direction: column;
+    }
+
+    .button,
+    .page-link {
+        width: 100%;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<main class="page">
+
+    <header class="hero">
+        <span class="hero__label">回答から結果ができる流れを知る</span>
+        <h1>サッカー診断の仕組みと結果の考え方</h1>
+        <p>本サイトの診断結果は、質問への回答や選んだポジション、普段のプレーについての自己評価をもとに、自分のプレー傾向を整理したものです。実際の試合データやセンサーで能力を測定した評価ではなく、プロ選手の能力値を再現することを目的としたものでもありません。</p>
+        <p>表示された数値やタイプは、選手としての実力や適性、将来性を断定するものではありません。「どんなプレーを選びやすいか」「何を強みだと感じているか」を振り返るための参考情報として利用してください。</p>
+        <div class="notice">同じ人でも、回答時の考え方や現在のポジション、チームでの役割、これまでの経験によって結果が変わる場合があります。</div>
+    </header>
+
+    <nav class="contents" aria-label="ページ内の目次">
+        <h2>このページで分かること</h2>
+        <div class="contents-grid">
+            <a href="#flow">診断結果ができるまで</a>
+            <a href="#position">ポジションの考え方</a>
+            <a href="#answers">質問と能力値</a>
+            <a href="#six-abilities">6能力・総合値・ランク</a>
+            <a href="#personality">プレースタイル診断</a>
+            <a href="#how-to-use">結果の活用方法</a>
+            <a href="#limits">この診断の範囲</a>
+            <a href="#faq">よくある質問</a>
+        </div>
+    </nav>
+
+    <section class="section-card" id="flow">
+        <h2>診断結果ができるまで</h2>
+        <p class="section-lead">能力診断では、次の順番で回答を整理し、細かな能力から6能力、総合値、ランクへまとめます。プレースタイル診断の判定方法は、後半で別に説明しています。</p>
+        <ol class="step-grid">
+            <li>
+                <h3>ポジションを選ぶ</h3>
+                <p>普段プレーするポジションを選びます。ここで選んだポジションは、基礎となる能力と総合値の重みづけに関係します。</p>
+            </li>
+            <li>
+                <h3>ポジション内のプレースタイルを選ぶ</h3>
+                <p>裏抜け、ゲームメイク、対人守備など、選んだポジションで自分に近いプレースタイルを選びます。</p>
+            </li>
+            <li>
+                <h3>基礎となる能力値を整理する</h3>
+                <p>ポジションとプレースタイルの組み合わせに対応する、細かな能力の基礎値を使います。</p>
+            </li>
+            <li>
+                <h3>5つの追加質問に答える</h3>
+                <p>視野、判断、両足でのプレー、身体的特徴、サッカーへの気持ちについて、3つの選択肢から回答します。</p>
+            </li>
+            <li>
+                <h3>得意・苦手を選ぶ</h3>
+                <p>自分が得意、または苦手だと感じるプレーを選び、その自己認識を関連する細かな能力へ反映します。</p>
+            </li>
+            <li>
+                <h3>7段階で自己評価する</h3>
+                <p>同じ年代や周りの人と比べながら、細かな能力項目を「低い」から「高い」まで7つの段階で評価します。</p>
+            </li>
+            <li>
+                <h3>6つの能力へまとめる</h3>
+                <p>関連する細かな能力をグループごとに平均し、OFE・DRI・PHY・DEF・SPD・PASとして表示します。</p>
+            </li>
+            <li>
+                <h3>総合値を算出する</h3>
+                <p>6能力にポジションごとの重みづけを行い、選んだ役割の特徴を踏まえた総合値へまとめます。</p>
+            </li>
+            <li>
+                <h3>ランクを決める</h3>
+                <p>総合値の範囲に応じて、BLACK・GOLD・SILVER・BRONZE・WHITEの区分を表示します。</p>
+            </li>
+            <li>
+                <h3>結果カードに表示する</h3>
+                <p>総合値、6能力、ランク、レーダーチャート、細かな能力を、一つの診断結果として確認できます。</p>
+            </li>
+        </ol>
+    </section>
+
+    <section class="section-card" id="position">
+        <h2>ポジションによって求められるプレーが違う</h2>
+        <p>CF、WG、MF、SB、CB、GKなどでは、ボールに関わる場所もチームから求められる役割も違います。同じ能力でも、ポジションによって使われる場面や総合値の中での重要度が変わるため、本サイトでは総合値をまとめる際にポジションごとの特徴を参考にしています。</p>
+        <p>たとえば、CBではDEFやPHYが重要になりやすい一方、WGではSPDやDRIが特徴として表れやすくなります。ただし、ポジションだけで選手の能力を決めるわけではありません。同じCBでもビルドアップを得意とする選手と対人守備を得意とする選手では能力の組み合わせが異なり、同じWGでも縦突破とクロスでは生かしやすい力が変わります。</p>
+        <a class="page-link" href="position-guide.html">ポジション別の6能力を見る</a>
+    </section>
+
+    <section class="section-card" id="answers">
+        <h2>回答からプレーの傾向を整理する</h2>
+        <p>診断の質問は、試合中にどのようなプレーを選びやすいか、どのような特徴を自分に感じているかを確認するものです。正解や不正解を決めるための質問ではありません。「自分ならどうするか」「普段の自分に近いのはどれか」を考えて回答することで、複数の選択から傾向を整理します。</p>
+        <div class="point-box"><p>強そうに見える回答を選ぶより、普段の自分に近い回答を選ぶ方が、表示された結果と実際のプレーを振り返りやすくなります。一つの回答だけで能力やタイプが決まることはありません。</p></div>
+    </section>
+
+    <section class="section-card" id="base-ability">
+        <h2>能力値は一つの回答だけでは決まらない</h2>
+        <p>能力診断では、ポジションとその中で選んだプレースタイルに対応する細かな基礎値があります。そこへ追加質問、得意・苦手の選択、自己評価を組み合わせたあと、関連する項目をOFE・DRI・PHY・DEF・SPD・PASへまとめています。</p>
+        <p>つまり、診断開始時にすべての数値を0から足し上げるだけの方式ではありません。ポジションごとの役割を表す設定と、回答から見える本人の感覚を重ねることで、同じポジションを選んだ人同士でも異なる能力バランスになります。</p>
+        <div class="detail-grid">
+            <div class="detail-box">
+                <h3>ポジションとプレースタイル</h3>
+                <p>CFの裏抜け、トップ下の司令塔、CBの対人守備など、組み合わせに応じた細かな能力の基礎になります。</p>
+            </div>
+            <div class="detail-box">
+                <h3>本人の回答と自己認識</h3>
+                <p>追加質問、得意・苦手、自己評価を重ね、同じ役割の中でも一人ひとりの感じ方の違いを反映します。</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-card" id="additional-questions">
+        <h2>追加質問で細かな特徴を反映する</h2>
+        <p>現在の能力診断では、基本的な選択だけでは表しにくい補助的な要素を確認するため、次の5つの質問を使っています。</p>
+        <ul class="question-example-list">
+            <li>視野の広さに自信があるか</li>
+            <li>サッカーIQに自信があるか</li>
+            <li>両足でボールを蹴られるか</li>
+            <li>周りと比べて身長が高い方か</li>
+            <li>サッカーが好きか</li>
+        </ul>
+        <p>それぞれを「とても当てはまる」「少し当てはまる」「あまり当てはまらない」から選び、回答の合計を能力計算の補助として使います。視野や判断、両足でのプレー、身体的特徴、競技への気持ちを広く確認するもので、追加質問だけで特定の能力や最終結果が決まるわけではありません。</p>
+    </section>
+
+    <section class="section-card" id="strengths-weaknesses">
+        <h2>自分が感じている得意・苦手も結果に反映する</h2>
+        <p>質問への回答だけでは、自分が日頃から意識している武器や課題を十分に表せないことがあります。そのため、決定力、ポジショニング、ドリブル、フィジカル、空中戦、ディフェンス、足の速さ、パスなどから、得意または苦手だと感じる項目を選びます。</p>
+        <p>選んだ項目は、それに関係する細かな能力に対応し、自己評価を能力値へ加える際の調整に使われます。得意・苦手だけで最終結果を決めるのではなく、ポジション、プレースタイル、追加質問、自己評価と組み合わせています。</p>
+        <div class="point-box"><p>自分では得意だと思っている能力と、質問から見える傾向が一致しない場合もあります。その違いも、自分のプレーを振り返る材料の一つです。</p></div>
+    </section>
+
+    <section class="section-card" id="self-rating">
+        <h2>自己評価を加える理由</h2>
+        <p>能力診断では、決定力、ポジショニング、ボールコントロール、対人守備、最高速度、パスなどの細かな能力を、同じ年代や周りの人と比べて7段階で自己評価します。これは、質問だけでは分からない本人の感覚を数値へ反映するためです。</p>
+        <p>ただし、自己評価だけで能力値を決めているわけではありません。高い段階を選べば無条件に最終評価が高くなる単純な仕組みではなく、ポジションとプレースタイルの基礎値、追加質問、得意・苦手の情報と組み合わせて計算します。迷ったときは、理想の自分ではなく、直近の試合や練習でできていることを基準に選ぶと振り返りやすくなります。</p>
+    </section>
+
+    <section class="section-card" id="six-abilities">
+        <h2>最終的に6つの能力へまとめる</h2>
+        <p>細かな能力は、関係する項目ごとに平均して6つの能力へまとめます。ここでは役割だけを簡潔に紹介します。</p>
+        <div class="ability-grid">
+            <article class="ability-item">
+                <span class="ability-code">OFE</span>
+                <h3>オフェンス</h3>
+                <p>ゴールに関わる動きや決定力、攻撃時のポジショニングなどを見る項目です。</p>
+            </article>
+            <article class="ability-item">
+                <span class="ability-code">DRI</span>
+                <h3>ドリブル</h3>
+                <p>足元の技術、ボールコントロール、運ぶ力やアイデアなどを見る項目です。</p>
+            </article>
+            <article class="ability-item">
+                <span class="ability-code">PHY</span>
+                <h3>フィジカル</h3>
+                <p>体の強さ、ジャンプ、ヘディングなど、接触や空中戦に関わる項目です。</p>
+            </article>
+            <article class="ability-item">
+                <span class="ability-code">DEF</span>
+                <h3>ディフェンス</h3>
+                <p>対人守備、守備意識、相手や次のプレーを予測する力などを見る項目です。</p>
+            </article>
+            <article class="ability-item">
+                <span class="ability-code">SPD</span>
+                <h3>スピード</h3>
+                <p>最高速度、瞬発力、前へ進む推進力など、移動の速さに関わる項目です。</p>
+            </article>
+            <article class="ability-item">
+                <span class="ability-code">PAS</span>
+                <h3>パス</h3>
+                <p>短いパスや長いパスの正確さ、味方へ届けるための発想などを見る項目です。</p>
+            </article>
+        </div>
+        <a class="page-link" href="abilities.html">6つの能力について詳しく見る</a>
+    </section>
+
+    <section class="section-card" id="overall">
+        <h2>総合値だけで選手の特徴は決まらない</h2>
+        <p>総合値は、6能力を選んだポジションに応じて重みづけし、一つの目安へまとめた数値です。ポジションごとに求められやすい役割が違うため、同じ6能力でも選んだポジションによって総合値への関わり方が変わります。</p>
+        <div class="comparison-grid">
+            <div class="comparison-card">
+                <strong>総合値75・SPD＋DRI型</strong>
+                <p>スピードを使った前進や1対1の突破が特徴として表れやすいバランスです。</p>
+            </div>
+            <div class="comparison-card">
+                <strong>総合値75・DEF＋PHY型</strong>
+                <p>対人守備、競り合い、危険な場所を守るプレーが特徴として表れやすいバランスです。</p>
+            </div>
+        </div>
+        <p>このように同じ総合値でも、6能力の内訳が違えばプレーの特徴は大きく異なります。総合値は実際の選手としての絶対的な実力を示すものではないため、数値の大きさだけでなく、どの能力が高いか、どの役割と結びついているかを見てください。</p>
+        <a class="page-link" href="result-guide.html">総合値・診断結果の見方を見る</a>
+    </section>
+
+    <section class="section-card" id="rank">
+        <h2>ランクは結果を分かりやすくするための表示</h2>
+        <p>ランクは、今回の能力診断で算出した総合値を見やすく区分するための表示です。現在の基準は次のとおりです。</p>
+        <ul class="rank-list" aria-label="総合値のランク基準">
+            <li><strong>BLACK</strong><span>85以上</span></li>
+            <li><strong>GOLD</strong><span>80〜84</span></li>
+            <li><strong>SILVER</strong><span>70〜79</span></li>
+            <li><strong>BRONZE</strong><span>60〜69</span></li>
+            <li><strong>WHITE</strong><span>59以下</span></li>
+        </ul>
+        <div class="point-box"><p>BLACKだから実際のサッカーが必ず上手い、WHITEだから下手という意味ではありません。ランクは今回の回答から作られた総合値の区分であり、試合での実力や選手としての評価を決めるものではありません。</p></div>
+    </section>
+
+    <section class="section-card" id="radar-chart">
+        <h2>レーダーチャートで能力のバランスを見る</h2>
+        <p>レーダーチャートは、OFE・DRI・PHY・DEF・SPD・PASを同じ図の中で比較するためのものです。面積の大きさだけではなく、どの方向が伸び、どの能力同士が組み合わさっているかを見ると、自分の特徴をつかみやすくなります。</p>
+        <div class="detail-grid">
+            <div class="detail-box">
+                <h3>SPDとDRIが伸びている</h3>
+                <p>スピードを使ってボールを運ぶことや、相手に仕掛けるプレーが特徴になりやすい形です。</p>
+            </div>
+            <div class="detail-box">
+                <h3>DEFとPHYが伸びている</h3>
+                <p>対人守備や競り合い、相手の前進を止めるプレーが特徴になりやすい形です。</p>
+            </div>
+        </div>
+        <p>一方向に大きく伸びた形は、バランスが悪いのではなく、はっきりした強みがあるとも考えられます。ただし、6能力だけでプレースタイルを断定することはできません。ポジション、チームでの役割、実際の試合で選んだプレーも一緒に振り返りましょう。</p>
+    </section>
+
+    <section class="section-card" id="personality">
+        <h2>プレースタイル診断はどう決まる？</h2>
+        <p>プレースタイル診断では、試合開始直後の入り方、ボールを受けた瞬間の選択、ピンチやチャンスでの行動、チーム内で担いたい役割など、試合中の判断や好みについて20問に回答します。</p>
+        <p>各回答は14タイプとの関係を持っており、選んだ回答ごとの得点をタイプ別に合計します。その中で最も傾向が強く表れたタイプを診断結果として表示します。一つの回答だけでタイプが決まるわけではなく、結果に表示されなかった別のタイプの特徴を持っていることも自然です。</p>
+        <ul class="type-list" aria-label="プレースタイル診断の14タイプ">
+            <li>王様</li>
+            <li>爆速スピードスター</li>
+            <li>情熱ファイター</li>
+            <li>勝利の設計士</li>
+            <li>ファンタジスタ</li>
+            <li>フィジカルモンスター</li>
+            <li>器用貧乏のバランサー</li>
+            <li>戦場の統率者</li>
+            <li>空中戦の覇者</li>
+            <li>守備職人</li>
+            <li>ひらめき司令塔</li>
+            <li>気分屋の天才</li>
+            <li>献身的なハードワーカー</li>
+            <li>スナイパー</li>
+        </ul>
+        <a class="page-link" href="playstyle-guide.html">14種類のプレースタイルを見る</a>
+    </section>
+
+    <section class="section-card" id="changes">
+        <h2>同じ人でも結果が変わることがある</h2>
+        <p>ポジションが変わった、チームで任される役割が変わった、プレースタイルが変化した、練習や試合の経験を重ねた、回答時の自己認識が変わったといった理由で、以前とは違う結果になる場合があります。</p>
+        <p>これは診断がおかしいという意味とは限りません。以前より得意なプレーが増えたり、チームで優先する判断が変わったりして、現在の自分の考え方が結果へ表れた可能性があります。数週間や数か月後にもう一度診断し、数値やレーダーチャートの形、プレースタイルの変化を比べる使い方もできます。</p>
+    </section>
+
+    <section class="section-card" id="different-result">
+        <h2>結果が自分のイメージと違ったら？</h2>
+        <p>診断結果は絶対的な正解ではないため、自分が思っていた強みやタイプと違うこともあります。その場合は「当たった・外れた」だけで終わらせず、どの質問で普段と違う選択をしたか、どの能力を得意・苦手に選んだか、自己評価をどのように考えたかを振り返ってみてください。</p>
+        <p>試合映像や練習での出来事を思い出し、チームメートや指導者から見た自分の特徴と比べるのも一つの方法です。自分の認識と周囲から見える姿の違いに気づくことが、次に意識するプレーを考えるきっかけになります。</p>
+    </section>
+
+    <section class="section-card" id="limits">
+        <h2>この診断だけでは分からないこと</h2>
+        <p>本サイトは、質問への回答と自己評価からプレー傾向を整理するサービスです。次の情報や能力を直接測定するものではありません。</p>
+        <ul class="measure-list">
+            <li>実際の試合スタッツや対戦相手の強さ</li>
+            <li>GPSによる走行距離やスプリント速度</li>
+            <li>シュート速度やパス成功率</li>
+            <li>心肺能力、疲労度、ケガの状態</li>
+            <li>戦術理解や状況判断のすべて</li>
+            <li>選手としての適性や将来性</li>
+        </ul>
+        <p>特にGKについては、セービング、反射神経、ハイボール処理、ポジショニング、GK特有のキックや判断などを完全に評価する診断ではありません。GKの結果も、6能力で表せる範囲の特徴を振り返る参考として見てください。</p>
+    </section>
+
+    <section class="section-card" id="how-to-use">
+        <h2>診断したあとにやってみよう</h2>
+        <p>結果を数値だけで終わらせず、試合や練習で使える振り返りにつなげてみましょう。</p>
+        <ol class="use-steps">
+            <li>最初に総合値を見る</li>
+            <li>6能力の中で高い項目を見る</li>
+            <li>レーダーチャートの形を見る</li>
+            <li>自分のポジションと照らし合わせる</li>
+            <li>プレースタイル結果を見る</li>
+            <li>強みとして生かせるプレーを考える</li>
+            <li>一つだけ伸ばしたい能力を決める</li>
+            <li>練習後に時間を空けて再診断する</li>
+        </ol>
+        <div class="guide-links" aria-label="診断結果を活用するためのガイド">
+            <a class="button" href="position-guide.html">ポジション別に6能力を見る</a>
+            <a class="button" href="ability-training.html">6能力を伸ばす練習方法</a>
+            <a class="button button--secondary" href="result-guide.html">診断結果の見方</a>
+        </div>
+    </section>
+
+    <section class="faq-section" id="faq">
+        <h2>よくある質問</h2>
+        <p>診断結果を見るときに迷いやすい点をまとめました。</p>
+        <div class="faq-list">
+            <details>
+                <summary>Q. 高い総合値ほどサッカーが上手いですか？</summary>
+                <p>いいえ。総合値は、今回の回答をポジション別の重みづけでまとめた目安です。試合での技術、判断、体力、経験などを直接測った数値ではないため、実際の上手さを断定するものではありません。</p>
+            </details>
+            <details>
+                <summary>Q. 診断結果が低かった能力は苦手という意味ですか？</summary>
+                <p>必ずしもそうではありません。ポジションやプレースタイルによって必要な能力は異なり、低い項目があっても別の能力を生かして役割を果たせます。実際のプレー場面と照らし合わせて考えてください。</p>
+            </details>
+            <details>
+                <summary>Q. 同じ回答をすれば毎回同じ結果になりますか？</summary>
+                <p>同じ診断データに対して、ポジション、プレースタイル、追加質問、得意・苦手、自己評価をすべて同じように選べば、基本的に同じ計算結果になります。選択が一つでも変われば、結果が変わる場合があります。</p>
+            </details>
+            <details>
+                <summary>Q. ポジションを変えると結果は変わりますか？</summary>
+                <p>変わる場合があります。能力診断では、ポジションとその中のプレースタイルに対応する基礎値を使い、総合値にもポジションごとの重みづけを行うためです。</p>
+            </details>
+            <details>
+                <summary>Q. プレースタイルは一つだけですか？</summary>
+                <p>診断結果には、回答の合計が最も高い1タイプを表示します。ただし、実際の選手が一つの特徴だけを持つという意味ではありません。ほかのタイプの考え方や強みが混ざっていることも自然です。</p>
+            </details>
+            <details>
+                <summary>Q. 練習したら診断結果は変わりますか？</summary>
+                <p>練習や試合経験によって得意なプレーや自己評価が変われば、次の診断結果も変わる可能性があります。時間を空けて再診断し、以前の結果と比べると変化を振り返りやすくなります。</p>
+            </details>
+            <details>
+                <summary>Q. プロ選手の能力値と比較できますか？</summary>
+                <p>直接比較することはできません。本サイトの数値は質問と自己評価から作る独自の目安であり、プロ選手の試合データや能力測定を再現したものではありません。</p>
+            </details>
+        </div>
+    </section>
+
+    <section class="closing-card">
+        <h2>結果を、自分のプレーを考える入口に</h2>
+        <p>診断結果は答えではなく、強みや役割を言葉にするための入口です。6能力の内訳、ポジションとの関係、プレースタイルの特徴を順番に確認し、次の試合や練習で意識することを一つ選んでみてください。</p>
+        <div class="related-links" aria-label="関連ページ">
+            <a class="button" href="abilities.html">6つの能力について</a>
+            <a class="button" href="position-guide.html">ポジション別に6能力を見る</a>
+            <a class="button" href="ability-training.html">6能力を伸ばす練習方法</a>
+            <a class="button button--secondary" href="result-guide.html">診断結果の見方</a>
+            <a class="button button--secondary" href="playstyle-guide.html">プレースタイル解説</a>
+            <a class="button button--secondary" href="index.html">サッカー診断をしてみる</a>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <nav class="footer-links" aria-label="フッターリンク">
+            <a href="index.html">トップページ</a>
+            <a href="abilities.html">6つの能力について</a>
+            <a href="position-guide.html">ポジション別能力ガイド</a>
+            <a href="ability-training.html">6能力の練習ガイド</a>
+            <a href="result-guide.html">診断結果の見方</a>
+            <a href="playstyle-guide.html">プレースタイル解説</a>
+            <a href="privacy.html">プライバシーポリシー</a>
+            <a href="disclaimer.html">免責事項</a>
+            <a href="operator.html">運営者情報</a>
+            <a href="contact.html">お問い合わせ</a>
+        </nav>
+        <p>© サッカー診断サイト</p>
+    </footer>
+
+</main>
+
+</body>
+</html>
+
